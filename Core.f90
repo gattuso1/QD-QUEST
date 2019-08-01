@@ -1,6 +1,13 @@
-write(form_mat,'("(",i0,"f16.8)")') nstates
-write(form_arr,'("(",i0,"f16.8)")') nstates+1
+write(form_mat,'("(",i0,"ES16.5E2)")') nstates
+write(form_TDM,'("(",i0,"f16.8)")') nstates
+if (n .le. nQDA+nQDB) then
+write(form_arr,'("(f16.8,16x,",i0,"f16.8)")') nstates+1
+elseif (n .gt. nQDA+nQDB) then
+write(form_arr,'("(",i0,"f16.8)")') nstates+3
+endif
 write(form_abs,'("(2f16.8,2x,i0)")') 
+write(form_pop,'("(",i0,"ES16.8E3,ES20.12E2)")') nstates+1
+write(form_com,'("(ES12.5E3,",i0,"ES16.8E3)")') nstates+1
 
 if ( get_ei .eq. 'y' ) then
 Ham_ei = Ham
@@ -29,7 +36,11 @@ endif
 call make_Ham_l
 
 do i=1,size(matrices)
-write(matrices(i),*) n , aR(n) 
+if (n .le. nQDA+nQDB) then
+write(matrices(i),'(i0,f16.8)') n , aR(n)*1.d9
+elseif (n .gt. nQDA+nQDB) then
+write(matrices(i),'(i0,2f16.8)') n , aR(n)*1.d9, aR(n+ndim)*1.d9
+endif
 enddo
 
 do i=0,nstates-1
@@ -37,22 +48,28 @@ write(H_0_f    ,form_mat) (Ham(i,j)*Energ_au/elec, j=0,nstates-1)
 write(H_dir_f  ,form_mat) (Ham_dir(i,j)*Energ_au/elec, j=0,nstates-1)
 write(H_ex_f   ,form_mat) (Ham_ex(i,j)*Energ_au/elec, j=0,nstates-1)
 write(H_JK_f   ,form_mat) ((-1.d0*Ham_dir(i,j) + Ham_ex(i,j))*Energ_au/elec, j=0,nstates-1)
-write(Tmat_0_f ,form_mat) (TransHam(i,j), j=0,nstates-1)
+write(Tmat_0_f ,form_TDM) (TransHam(i,j), j=0,nstates-1)
 write(H_ei_f   ,form_mat) (Ham_ei(i,j), j=0,nstates-1)
-write(Tmat_ei_f,form_mat) (TransHam_ei(i,j), j=0,nstates-1)
+write(Tmat_ei_f,form_TDM) (TransHam_ei(i,j), j=0,nstates-1)
 write(Abs_imp_f,form_abs) lambda(i)*Energ_au/elec, (TransHam_ei(0,i))**2 ,i
 if ( inbox .eq. "y" ) then
-write(Tmat_x_f,form_mat) (TransHam_ei_l(i,j,1), j=0,nstates-1)
-write(Tmat_y_f,form_mat) (TransHam_ei_l(i,j,2), j=0,nstates-1)
-write(Tmat_z_f,form_mat) (TransHam_ei_l(i,j,3), j=0,nstates-1)
+write(Tmat_x_f,form_TDM) (TransHam_ei_l(i,j,1), j=0,nstates-1)
+write(Tmat_y_f,form_TDM) (TransHam_ei_l(i,j,2), j=0,nstates-1)
+write(Tmat_z_f,form_TDM) (TransHam_ei_l(i,j,3), j=0,nstates-1)
 endif
 enddo
 
-write(Tmat_0_f,*) 
-write(H_0_f,*) 
-write(H_ei_f,*) 
+do i=1,size(matrices)
+write(matrices(i),*)
+enddo
+
+if (n .le. nQDA+nQDB) then
 write(Etr_0_f,form_arr) aR(n)*1.d9, (Ham(i,i)*Energ_au/elec, i=0,nstates-1)
 write(Etr_ei_f,form_arr) aR(n)*1.d9, (lambda(i)*Energ_au/elec, i=0,nstates-1)
+elseif (n .gt. nQDA+nQDB) then
+write(Etr_0_f,form_arr) aR(n)*1.d9, aR(n+ndim)*1.d9, (Ham(i,i)*Energ_au/elec, i=0,nstates-1)
+write(Etr_ei_f,form_arr) aR(n)*1.d9, aR(n+ndim)*1.d9, (lambda(i)*Energ_au/elec, i=0,nstates-1)
+endif
 
 endif
 

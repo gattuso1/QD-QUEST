@@ -30,7 +30,6 @@ contains
 
 subroutine make_Ham_he
 
-
 if ( idlink .eq. 20 ) then
 include 'Parameters-dir-02.f90'
 include 'Parameters-ex-02.f90'
@@ -38,12 +37,6 @@ elseif ( idlink .eq. 55 ) then
 include 'Parameters-dir-55.f90'
 include 'Parameters-ex-55.f90'
 endif
-
-
-Ham     = 0.d0
-Ham_0   = 0.d0
-Ham_dir = 0.d0
-Ham_ex  = 0.d0
 
 Ham_0(1)     = minEe(1,n) + minEh(1,n)  + V0 
 Ham_dir(1,1) = elec*(a11_1d_ho + a11_2d_ho / ((aR(n)*1d9)**a11_3d_ho)) 
@@ -185,9 +178,6 @@ Ham_ex = Ham_ex/Energ_au
 
 if ( inbox .eq. "y" ) then
 
-TransHam_d = 0.d0
-TransHam_l = 0.d0
-
 TransHam_l(0,1,:) = vector(TransDip_Ana_h1e(n))
 TransHam_l(0,2,:) = vector(TransDip_Ana_h2e(n))
 TransHam_l(0,3,:) = vector(TransDip_Ana_h1e(n+ndim))
@@ -258,9 +248,109 @@ TransHam = TransHam/D_to_au
 
 end subroutine make_Ham_he
 
-subroutine make_Ham_fineSt
+subroutine make_Ham_he_FO
 
-Ham = 0.d0
+if ( idlink .eq. 20 ) then
+include 'Parameters-dir-02.f90'
+include 'Parameters-ex-02.f90'
+elseif ( idlink .eq. 55 ) then
+include 'Parameters-dir-55.f90'
+include 'Parameters-ex-55.f90'
+endif
+
+Ham_0(1)     = minEe(1,n) + minEh(1,n)  + V0 
+Ham_dir(1,1) = elec*(a11_1d_ho + a11_2d_ho / ((aR(n)*1d9)**a11_3d_ho)) 
+Ham_ex(1,1)  = elec*(a11_1e_ho + a11_2e_ho / ((aR(n)*1d9)**a11_3e_ho))
+
+Ham_0(2)     = minEe(1,n) + minEh(2,n) + V0 
+Ham_dir(2,2) = elec*(a22_1d_ho + a22_2d_ho / ((aR(n)*1d9)**a22_3d_ho))
+Ham_ex(2,2)  = elec*(a22_1e_ho + a22_2e_ho / ((aR(n)*1d9)**a22_3e_ho))
+
+Ham_0(3)     = minEe(1,n+ndim) + minEh(1,n+ndim) + V0 
+Ham_dir(3,3) = elec*(a11_1d_ho + a11_2d_ho / ((aR(n+ndim)*1d9)**a11_3d_ho))
+Ham_ex(3,3)  = elec*(a11_1e_ho + a11_2e_ho / ((aR(n+ndim)*1d9)**a11_3e_ho))
+
+Ham_0(4)     = minEe(1,n+ndim) + minEh(2,n+ndim) + V0 
+Ham_dir(4,4) = elec*(a22_1d_ho + a22_2d_ho / ((aR(n+ndim)*1d9)**a22_3d_ho))
+Ham_ex(4,4)  = elec*(a22_1e_ho + a22_2e_ho / ((aR(n+ndim)*1d9)**a22_3e_ho))
+
+Ham_dir(1,2) = elec*(a12_1d_ho + a12_2d_ho / ((aR(n)*1d9)**a12_3d_ho)) 
+Ham_ex(1,2)  = elec*(a12_1e_ho + a12_2e_ho / ((aR(n)*1d9)**a12_3e_ho))
+
+Ham_dir(1,3) = elec*(a13_1d_he + a13_2d_he / ((aR(n)*1d9)**a13_3d_he * (aR(n+ndim)*1d9)**a13_4d_he))
+Ham_ex(1,3)  = elec*(a13_1e_he + a13_2e_he / ((aR(n)*1d9)**a13_3e_he * (aR(n+ndim)*1d9)**a13_4e_he))
+
+Ham_dir(1,4) = elec*(a14_1d_he + a14_2d_he / ((aR(n)*1d9)**a14_3d_he * (aR(n+ndim)*1d9)**a14_4d_he))
+Ham_ex(1,4)  = elec*(a14_1e_he + a14_2e_he / ((aR(n)*1d9)**a14_3e_he * (aR(n+ndim)*1d9)**a14_4e_he))
+
+Ham_dir(2,3) = elec*(a14_1d_he + a14_2d_he / ((aR(n+ndim)*1d9)**a14_3d_he * (aR(n)*1d9)**a14_4d_he))
+Ham_ex(2,3)  = elec*(a14_1e_he + a14_2e_he / ((aR(n+ndim)*1d9)**a14_3e_he * (aR(n)*1d9)**a14_4e_he))
+
+Ham_dir(2,4) = elec*(a24_1d_he + a24_2d_he / ((aR(n)*1d9)**a24_3d_he * (aR(n+ndim)*1d9)**a24_4d_he))
+Ham_ex(2,4)  = elec*(a24_1e_he + a24_2e_he / ((aR(n)*1d9)**a24_3e_he * (aR(n+ndim)*1d9)**a24_4e_he))
+
+Ham_dir(3,4) = elec*(a12_1d_ho + a12_2d_ho / ((aR(n+ndim)*1d9)**a12_3d_ho)) 
+Ham_ex(3,4)  = elec*(a12_1e_ho + a12_2e_ho / ((aR(n+ndim)*1d9)**a12_3e_ho))
+
+do i=1,nstates-1
+  do j=1,nstates-1
+    if ( i .eq. j ) then
+    Ham(i,j) = Ham_0(i) - Ham_dir(i,j) + Ham_ex(i,j)
+    elseif ( i .ne. j ) then
+    Ham(i,j) = -1.d0 * Ham_dir(i,j) + Ham_ex(i,j)
+    endif
+  enddo
+enddo
+
+do i=1,nstates-1
+  do j=i+1,nstates-1
+    Ham(j,i) = Ham(i,j)
+    Ham_dir(j,i) = Ham_dir(i,j)
+    Ham_ex(j,i) = Ham_ex(i,j)
+  enddo
+enddo
+
+Ham = Ham/Energ_au
+Ham_dir = Ham_dir/Energ_au
+Ham_ex = Ham_ex/Energ_au
+
+if ( inbox .eq. "y" ) then
+
+TransHam_l(0,1,:) = vector(TransDip_Ana_h1e(n))
+TransHam_l(0,2,:) = vector(TransDip_Ana_h2e(n))
+TransHam_l(0,3,:) = vector(TransDip_Ana_h1e(n+ndim))
+TransHam_l(0,4,:) = vector(TransDip_Ana_h2e(n+ndim))
+TransHam_l(1,2,:) = vector(TransDip_Ana_h1h2(n))
+TransHam_l(3,4,:) = vector(TransDip_Ana_h1h2(n+ndim))
+
+do i=0,nstates-1
+do j=i+1,nstates-1
+TransHam_l(j,i,:) = TransHam_l(i,j,:)
+enddo
+enddo
+
+else 
+
+TransHam(0,1) = TransDip_Ana_h1e(n)
+TransHam(0,2) = TransDip_Ana_h2e(n)
+TransHam(0,3) = TransDip_Ana_h1e(n+ndim)
+TransHam(0,4) = TransDip_Ana_h2e(n+ndim)
+TransHam(1,2) = TransDip_Ana_h1h2(n)
+TransHam(3,4) = TransDip_Ana_h1h2(n+ndim)
+
+do i=0,nstates-1
+do j=i+1,nstates-1
+TransHam(j,i) = TransHam(i,j)
+enddo
+enddo
+
+endif
+
+TransHam = TransHam/D_to_au
+
+end subroutine make_Ham_he_FO
+
+subroutine make_Ham_fineSt
 
 Ham(1,1)   = Eeh1(n)  - Dso1/3.d0 - 3.d0*Kas
 Ham(2,2)   = Eeh1(n)  - Dso1/3.d0 - 3.d0*Kcs
@@ -338,8 +428,6 @@ end subroutine make_Ham_fineSt
 
 subroutine make_TransHam_0_fineSt
 
-TransHam0 = 0.d0
-
 TransHam0(0,3)  = abs(TransDip_Ana_h1e(n))
 TransHam0(0,7)  = abs(TransDip_Ana_h1e(n)) 
 TransHam0(0,10) = abs(TransDip_Ana_h1e(n))
@@ -357,8 +445,6 @@ end subroutine make_TransHam_0_fineSt
 
 subroutine make_TransHam_ei_fineSt
 
-TransHam = 0.d0
-
 do i=0,nstates-1
 do j=0,nstates-1
 TransHam(0,i) = TransHam(0,i) +  TransHam0(0,j) * Ham_ei(j,i)
@@ -373,8 +459,6 @@ do i=0,nstates-1
 TransHam(i,0) = TransHam(0,i)
 enddo
 
-Ham = 0.d0
-
 do i=0,nstates-1
 Ham(i,i) = lambda(i)
 enddo
@@ -383,8 +467,6 @@ end subroutine make_TransHam_ei_fineSt
 
 subroutine make_Ham_l
 
-Ham_l = 0.e0_dp
-
 do i=0,nstates-1
 Ham_l(i,i) = lambda(i)
 enddo
@@ -392,11 +474,6 @@ enddo
 end subroutine make_Ham_l
 
 subroutine make_Ham_singl
-
-Ham     = 0.0
-Ham_0   = 0.0
-Ham_dir = 0.0
-Ham_ex  = 0.0
 
 Ham_0(1)   = minEe(1,n) + minEh(1,n)  + V0 
 Ham_dir(1,1) = elec*(a11_1d_ho + a11_2d_ho / ((aR(n)*1d9)**a11_3d_ho)) 
@@ -432,9 +509,6 @@ Ham_dir = Ham_dir/Energ_au
 Ham_ex = Ham_ex/Energ_au
 
 if ( inbox .eq. "y" ) then
-
-TransHam_d = 0.d0
-TransHam_l = 0.d0
 
 if ( TDM_ee .eq. 'n') then
 TransHam(0,1) = TransDip_Ana_h1e(n)

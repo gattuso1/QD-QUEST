@@ -12,6 +12,9 @@ implicit none
    character*64 :: Re_c, Im_c, syst_n
    character*1 :: o_Norm, o_Over, o_Coul, o_DipS, o_Osci, o_Exti, o_DipD, dyn, hamilt, get_ei, finest, get_sp
    character*1 :: TDM_ee, Dyn_0, Dyn_ei, inbox
+   integer :: Pulse_f,Tmat_0_f,Tmat_ei_f,Tmat_x_f,Tmat_y_f,Tmat_z_f,H_0_f,H_dir_f,H_ex_f,H_JK_f,H_ei_f,Etr_0_f,Etr_ei_f,Abs_imp_f
+   integer :: popc_0_f,popc_ei_f,norm_0_f,norm_ei_f,Re_c_ei_f,Im_c_ei_f,Re_c_0_f,Im_c_0_f,TDip_ei_f
+   character*64 :: form_mat,form_arr,form_abs,form_pop,form_com,form_TDM
    integer :: syst, ndots, n, rmin, rmax, nsys, npulses, nstates, ntime, i, j, t, lwork, info, idlink, threads, nQDA, nQDB
    integer :: nhomoA,nhomoB,nhetero,totsys,ndim,nQD
    integer,allocatable :: seed(:)
@@ -41,7 +44,6 @@ contains
 
 subroutine getVariables
 
-NAMELIST /version/    syst 
 NAMELIST /outputs/    inbox,get_sp,get_ei,Dyn_0,Dyn_ei,hamilt,fineSt,TDM_ee
 NAMELIST /elecSt/     model,me,mh,eps,epsout,V0eV,omegaLO,slope,side
 NAMELIST /fineStruc/  Kas,Kbs,Kcs,Dso1,Dso2,Dxf
@@ -51,7 +53,6 @@ NAMELIST /syst/       nQDA,nQDB,nhomoA,nhomoB,nhetero,dispQD,idlink,aA,aB
 
 
 open(150,file='QD_quest.def',form='formatted')
-read(150,NML=version)
 read(150,NML=outputs)
 read(150,NML=elecSt)
 read(150,NML=pulses)
@@ -63,14 +64,6 @@ mh         = mh*m0
 rhoe       = 1.0d0/sqrt((2.d0*me*omegaLO)/hbar)
 rhoh       = 1.0d0/sqrt((2.d0*mh*omegaLO)/hbar)
 V0         = V0eV*elec
-
-!if ( model .eq. "SB") then
-!nstates = 9
-!elseif ( model .eq. "FO") then
-!nstates = 4
-!elseif ( model .eq. "FS") then
-!nstates = 25
-!endif
 
 if ( ( Dyn_0 .eq. 'y' ) .or. ( Dyn_ei .eq. 'y' ) ) then
 
@@ -94,12 +87,7 @@ phase01      =  pi
 phase02      =  pi
 phase03      =  pi
 
-allocate(k_1(3))
-allocate(k_2(3))
-allocate(k_3(3))
-allocate(Pe1(3))
-allocate(Pe2(3))
-allocate(Pe3(3))
+allocate(k_1(3),k_2(3),k_3(3),Pe1(3),Pe2(3),Pe3(3),source=0.d0)
 
 if ( npulses .eq. 3) then
 pulse1 = 1.d0 
@@ -171,20 +159,14 @@ endif
 
 endif
 
-
 !write(6,*) "You are requesting me to tackle a random set of heterodimer QD"
-!
+ 
 nQD    = nQDA+nQDB
 ndim   = nhomoA+nhomoB+nhetero
 nsys   = nQDA+nQDB+nhomoA+nhomoB+nhetero     
 totsys = nsys+nhomoA+nhomoB+nhetero
 
-allocate(aR(totsys))
-allocate(linker(nsys))
-allocate(epsin(totsys))
-allocate(epsR(totsys))
-allocate(V0e(totsys))
-allocate(V0h(totsys))
+allocate(aR(totsys),linker(nsys),epsin(totsys),epsR(totsys),V0e(totsys),V0h(totsys),source=0.d0)
 !allocate(QDcoor(2*nsys,3))
 !allocate(Dcenter(2*nsys,3))
 
@@ -193,8 +175,8 @@ linker = 0.2d-9
 elseif ( idlink .eq. 55 ) then
 linker = 0.55d-9
 endif
-!
-!
+ 
+ 
 call random_seed(size = n)
 allocate(seed(n))
 call random_seed(get=seed)
@@ -204,7 +186,6 @@ call random_seed(get=seed)
 !open(11,file="tmp.dat")
 !endif
 !
-aR = 0.d0
 
 do n=1,nQDA
 aR(n) = r8_NORMAL_AB(aA,dispQD*1d-9,seed(1))
@@ -234,15 +215,14 @@ enddo
 
 do n=1,totsys
 epsin(n) = 1.0 + (eps - 1.0) / (1.0 + (0.75d-9/(2*aR(n)))**1.2)
-epsR(n)= 1.0/((1.0/epsin(n))-((1.0/epsin(n))-(1.0/(epsin(n)+3.5)))*(1-(exp(-(36.d0/35)*aR(n)/rhoe)+exp(-(36.d0/35)*aR(n)/rhoh))/2))
-V0e(n)=-1*(-3.49+2.47*(1d9*2*aR(n))**(-1.32))*elec
-V0h(n)=-1*(-5.23-0.74*(1d9*2*aR(n))**(-0.95))*elec
+epsR(n)  = 1.0/((1.0/epsin(n))-((1.0/epsin(n))-(1.0/(epsin(n)+3.5)))*&
+           (1-(exp(-(36.d0/35)*aR(n)/rhoe)+exp(-(36.d0/35)*aR(n)/rhoh))/2))
+V0e(n)   =-1*(-3.49+2.47*(1d9*2*aR(n))**(-1.32))*elec
+V0h(n)   =-1*(-5.23-0.74*(1d9*2*aR(n))**(-0.95))*elec
 enddo
 
 
 if ( inbox .eq. 'y' ) then
-
-
 
 !open(56,file='box-dimers.xyz',form='formatted',action='read')
 !read(56,*) 

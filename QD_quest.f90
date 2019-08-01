@@ -13,9 +13,6 @@ use Make_Ham
 implicit none
 
 real(dp), external:: s13adf, ei, eone, nag_bessel_j0
-integer :: Pulse_f,Tmat_0_f,Tmat_ei_f,Tmat_x_f,Tmat_y_f,Tmat_z_f,H_0_f,H_dir_f,H_ex_f,H_JK_f,H_ei_f,Etr_0_f,Etr_ei_f,Abs_imp_f
-integer :: popc_0_f,popc_ei_f,norm_0_f,norm_ei_f,Re_c_ei_f,Im_c_ei_f,Re_c_0_f,Im_c_0_f,TDip_ei_f
-character*64 :: form_mat,form_arr,form_abs
 integer :: je,jh,k,nsteps,r,ifail, r1, r2
 integer,dimension(10) :: matrices
 real(dp) :: Ef,delta, mu, A
@@ -181,33 +178,22 @@ open(newunit=Im_c_0_f   ,file=Im_c)    !; Im_c_0_f = 55
 if ( n .le. nQDA+nQDB ) then
 
 nstates=3
-
-allocate(TransHam(0:nstates-1,0:nstates-1),TransHam_ei_l(0:nstates-1,0:nstates-1,3),TransHam_l(0:nstates-1,0:nstates-1,3),&
-TransHam_d(0:nstates-1,0:nstates-1,3),TransHam_ei(0:nstates-1,0:nstates-1),Transvec(0:nstates-1),&
-TransMat_ei(0:nstates-1,0:nstates-1),Mat(0:nstates-1,0:nstates-1),Matx(0:nstates-1,0:nstates-1),&
-Maty(0:nstates-1,0:nstates-1),Matz(0:nstates-1,0:nstates-1),Ham(0:nstates-1,0:nstates-1),Ham_l(0:nstates-1,0:nstates-1),&
-Ham_0(0:nstates-1),Ham_dir(0:nstates-1,0:nstates-1),Ham_ex(0:nstates-1,0:nstates-1),Ham_ei(0:nstates-1,0:nstates-1),source=0.d0)
-allocate(xc(0:nstates-1,0:ntime),xc_ei(0:nstates-1,0:ntime+1),c0(0:nstates-1),k1(0:nstates-1),k2(0:nstates-1),k3(0:nstates-1),&
-k4(0:nstates-1),k5(0:nstates-1),k6(0:nstates-1),k7(0:nstates-1),k8(0:nstates-1))
-
+include 'allocate_core.f90'
 call make_Ham_singl
-
 include 'Core.f90'
 
-elseif (n .gt. nQDA+nQDB) then
+elseif ( (n .gt. nQDA+nQDB) .and. ( model .eq. "FO" ) ) then
+
+nstates=5
+include 'allocate_core.f90'
+call make_Ham_he_FO
+include 'Core.f90'
+
+elseif ( (n .gt. nQDA+nQDB) .and. ( model .eq. "SB" ) ) then
 
 nstates=9
-
-allocate(TransHam(0:nstates-1,0:nstates-1),TransHam_ei_l(0:nstates-1,0:nstates-1,3),TransHam_l(0:nstates-1,0:nstates-1,3),&
-TransHam_d(0:nstates-1,0:nstates-1,3),TransHam_ei(0:nstates-1,0:nstates-1),Transvec(0:nstates-1),&
-TransMat_ei(0:nstates-1,0:nstates-1),Mat(0:nstates-1,0:nstates-1),Matx(0:nstates-1,0:nstates-1),&
-Maty(0:nstates-1,0:nstates-1),Matz(0:nstates-1,0:nstates-1),Ham(0:nstates-1,0:nstates-1),Ham_l(0:nstates-1,0:nstates-1),&
-Ham_0(0:nstates-1),Ham_dir(0:nstates-1,0:nstates-1),Ham_ex(0:nstates-1,0:nstates-1),Ham_ei(0:nstates-1,0:nstates-1),source=0.d0)
-allocate(xc(0:nstates-1,0:ntime),xc_ei(0:nstates-1,0:ntime+1),c0(0:nstates-1),k1(0:nstates-1),k2(0:nstates-1),k3(0:nstates-1),&
-k4(0:nstates-1),k5(0:nstates-1),k6(0:nstates-1),k7(0:nstates-1),k8(0:nstates-1))
-
+include 'allocate_core.f90'
 call make_Ham_he
-
 include 'Core.f90'
 
 endif

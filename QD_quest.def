@@ -1,8 +1,3 @@
-! Namelist definition
-&version !version of the code, choose between singl, dimer, range, randm
-syst = 4   
-/
-
 &outputs !Select output and computation modules, yes ("y") or ("no") 
 inbox   = "n" !For phase matching directions, read coordinates in space, orient mus ... 
 get_sp  = "n" !recover sampling from a previous Etransitions_0.dat
@@ -15,7 +10,7 @@ TDM_ee  = "y" !Request interexciton TDM or not
 /
 
 &elecSt !Parameters of CdSe QD and the model
-model     =  "SB"     !Choose between single band 9*9 (SB), Forster 5*5 (FO) or Fine structure 25*25 (FS)
+model     =  "FO"     !Choose between single band 9*9 (SB), Forster 5*5 (FO) or Fine structure 25*25 (FS)
 me        =  0.13d0        !Effective mass of particles in electron states (*m0)
 mh        =  0.82d0        !Effective mass of particles in hole states (*m0)
 eps       =  9.56d0        !Bulk dielectric constant
@@ -42,7 +37,7 @@ t01        = 100.d0     !Pulse 1 centered at (s)
 t02        = 200.d0     !Pulse 2 centered at (s)
 t03        = 300.d0     !Pulse 3 centered at (s)
 timestep   = 0.050d0      !Time step of quantum dynamic
-totaltime  = 10.d0     !Total time simulated (s)
+totaltime  = 500.d0     !Total time simulated (s)
 omega01    = 0.55d15      !Frequency (s-1)
 omega02    = 0.55d15      !Frequency (s-1)
 omega03    = 0.193d15      !Frequency (s-1)
@@ -62,11 +57,11 @@ vertex     = 8.d0     !vertex angle of beam crossing (inbox=y and 3 pulses)
 &syst !Parameters of the single dot
 nQDA      = 1          !Number of dimers
 nQDB      = 1          !Number of dimers
-nhomoA    = 2          !Number of dimers
-nhomoB    = 5          !Number of dimers
+nhomoA    = 1          !Number of dimers
+nhomoB    = 1          !Number of dimers
 nhetero   = 1          !Number of dimers
 dispQD    = 0.05d0      !Dispersion of QD radius
-idlink    = 55        !Linker length
+idlink    = 20        !Linker length
 aA        = 1.24d-9      !Radius of QDA
 aB        = 1.75d-9      !Radius of QDA
 /
