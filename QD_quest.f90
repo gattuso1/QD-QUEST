@@ -14,8 +14,8 @@ implicit none
 
 real(dp), external:: s13adf, ei, eone, nag_bessel_j0
 integer :: Pulse_f,Tmat_0_f,Tmat_ei_f,Tmat_x_f,Tmat_y_f,Tmat_z_f,H_0_f,H_dir_f,H_ex_f,H_JK_f,H_ei_f,Etr_0_f,Etr_ei_f,Abs_imp_f
-integer :: popc_0_f,popc_ei_f,norm_0_f,norm_ei_f,Re_c_ei_f,Im_c_ei_f,Re_c_0_f,Im_c_0_f 
-character*64 :: string1,string2
+integer :: popc_0_f,popc_ei_f,norm_0_f,norm_ei_f,Re_c_ei_f,Im_c_ei_f,Re_c_0_f,Im_c_0_f,TDip_ei_f
+character*64 :: form_mat,form_arr,form_abs
 integer :: je,jh,k,nsteps,r,ifail, r1, r2
 integer,dimension(10) :: matrices
 real(dp) :: Ef,delta, mu, A
@@ -132,36 +132,25 @@ TransDip_Ana_h2e(n) = abs(TransDip_Ana(Ae(n),Ah2(n),Be(n),Bh2(n),kine(n),kinh2(n
 
 enddo
 
-open(22,file='Pulse.dat')              ; Pulse_f = 22
-open(32,file='TransMat.dat')           ; Tmat_0_f = 32
-open(37,file='TransMat_ei.dat')        ; Tmat_ei_f = 37
-open(38,file='TransMat_ei_x.dat')      ; Tmat_x_f = 38
-open(39,file='TransMat_ei_y.dat')      ; Tmat_y_f = 39
-open(40,file='TransMat_ei_z.dat')      ; Tmat_z_f = 40
-open(33,file='Ham0.dat')               ; H_0_f = 33
-open(34,file='Ham_dir.dat')            ; H_dir_f = 34
-open(35,file='Ham_ex.dat')             ; H_ex_f = 35
-open(36,file='Ham_JK.dat')             ; H_JK_f = 36
-open(58,file='Ham_ei.dat')             ; H_ei_f = 58
-open(47,file='Etransitions-he_0.dat')  ; Etr_0_f = 47
-open(48,file='Etransitions-he_ei.dat') ; Etr_ei_f = 48
-open(57,file='TransDip_ei.dat')        
-open(60,file='Absorption-imp.dat')     ; Abs_imp_f = 60
+open(newunit=Pulse_f  ,file='Pulse.dat')             
+open(newunit=Tmat_0_f ,file='TransMat.dat')          
+open(newunit=Tmat_ei_f,file='TransMat_ei.dat')       
+open(newunit=Tmat_x_f ,file='TransMat_ei_x.dat')     
+open(newunit=Tmat_y_f ,file='TransMat_ei_y.dat')     
+open(newunit=Tmat_z_f ,file='TransMat_ei_z.dat')     
+open(newunit=H_0_f    ,file='Ham0.dat')          
+open(newunit=H_dir_f  ,file='Ham_dir.dat')           
+open(newunit=H_ex_f   ,file='Ham_ex.dat')            
+open(newunit=H_JK_f   ,file='Ham_JK.dat')            
+open(newunit=H_ei_f   ,file='Ham_ei.dat')            
+open(newunit=Etr_0_f  ,file='Etransitions-he_0.dat') 
+open(newunit=Etr_ei_f ,file='Etransitions-he_ei.dat')
+open(newunit=TDip_ei_f,file='TransDip_ei.dat')       
+open(newunit=Abs_imp_f,file='Absorption-imp.dat')    
 
 matrices = (/ Tmat_0_f,Tmat_ei_f,Tmat_x_f,Tmat_y_f,Tmat_z_f,H_0_f,H_dir_f,H_ex_f,H_JK_f,H_ei_f /)
 
-do i=1,size(matrices)
-write(matrices(i),'("#     Number                  QDA                       QDB                    linker")')
-enddo
-
-!write(32,'("#     Number                  QDA                       QDB                    linker")')
-!write(37,'("#     Number                  QDA                       QDB                    linker")')
-!write(38,'("#     Number                  QDA                       QDB                    linker")')
-!write(39,'("#     Number                  QDA                       QDB                    linker")')
-!write(40,'("#     Number                  QDA                       QDB                    linker")')
-!write(33,'("#     Number                  QDA                       QDB                    linker")')
-write(22,'("#  time                      pulse1                    pulse2                    pulse3")')
-!write(58,'("#     Number                  QDA                       QDB                    linker")')
+write(Pulse_f,'("#  time                      pulse1                    pulse2                    pulse3")')
 
 !$OMP PARALLEL DO private(lambda,work,Ham,Mat,TransHam_ei,Ham_ei,TransHam,Ham_dir,Ham_ex,Ham_l,xc0,xc,xc_ei)
 
@@ -180,297 +169,49 @@ write(Re_c,'(a5,i5.5,a4)') 'Re_c-', n, '.dat'
 write(Im_c,'(a5,i5.5,a4)') 'Im_c-', n, '.dat'
 write(Re_c_ei,'(a8,i5.5,a4)') 'Re_c_ei-', n, '.dat'
 write(Im_c_ei,'(a8,i5.5,a4)') 'Im_c_ei-', n, '.dat'
-open(44,file=popc)    ; popc_0_f = 44
-open(49,file=popc_ei) ; popc_ei_f = 49
-open(46,file=norm)    ; norm_0_f = 46
-open(50,file=norm_ei) ; norm_ei_f = 50
-open(52,file=Re_c_ei) ; Re_c_ei_f = 52
-open(53,file=Im_c_ei) ; Im_c_ei_f = 53
-open(54,file=Re_c)    ; Re_c_0_f = 54
-open(55,file=Im_c)    ; Im_c_0_f = 55
+open(newunit=popc_0_f   ,file=popc)    !; popc_0_f = 44
+open(newunit=popc_ei_f  ,file=popc_ei) !; popc_ei_f = 49
+open(newunit=norm_0_f   ,file=norm)    !; norm_0_f = 46
+open(newunit=norm_ei_f  ,file=norm_ei) !; norm_ei_f = 50
+open(newunit=Re_c_ei_f  ,file=Re_c_ei) !; Re_c_ei_f = 52
+open(newunit=Im_c_ei_f  ,file=Im_c_ei) !; Im_c_ei_f = 53
+open(newunit=Re_c_0_f   ,file=Re_c)    !; Re_c_0_f = 54
+open(newunit=Im_c_0_f   ,file=Im_c)    !; Im_c_0_f = 55
 
 if ( n .le. nQDA+nQDB ) then
 
 nstates=3
 
-!allocate(TransHam(0:nstates-1,0:nstates-1))
-allocate(TransHam(0:nstates-1,0:nstates-1),TransHam_ei_l(0:nstates-1,0:nstates-1,3), source = 0.d0)
-!allocate(TransHam_ei_l(0:nstates-1,0:nstates-1,3))
-allocate(TransHam_l(0:nstates-1,0:nstates-1,3))
-allocate(TransHam_d(0:nstates-1,0:nstates-1,3))
-allocate(TransHam_ei(0:nstates-1,0:nstates-1))
-allocate(Transvec(0:nstates-1))
-allocate(TransMat_ei(0:nstates-1,0:nstates-1))
-allocate(Mat(0:nstates-1,0:nstates-1))
-allocate(Matx(0:nstates-1,0:nstates-1))
-allocate(Maty(0:nstates-1,0:nstates-1))
-allocate(Matz(0:nstates-1,0:nstates-1))
-allocate(Ham(0:nstates-1,0:nstates-1),Ham_l(0:nstates-1,0:nstates-1), source = 0.d0)
-allocate(Ham_0(0:nstates-1))
-allocate(Ham_dir(0:nstates-1,0:nstates-1))
-allocate(Ham_ex(0:nstates-1,0:nstates-1))
-allocate(Ham_ei(0:nstates-1,0:nstates-1))
-allocate(xc(0:nstates-1,0:ntime))
-allocate(xc_ei(0:nstates-1,0:ntime+1))
-allocate(c0(0:nstates-1))
-allocate(k1(0:nstates-1))
-allocate(k2(0:nstates-1))
-allocate(k3(0:nstates-1))
-allocate(k4(0:nstates-1))
-allocate(k5(0:nstates-1))
-allocate(k6(0:nstates-1))
-allocate(k7(0:nstates-1))
-allocate(k8(0:nstates-1))
-
-Ham      = 0.0d0
-TransHam = 0.0d0
+allocate(TransHam(0:nstates-1,0:nstates-1),TransHam_ei_l(0:nstates-1,0:nstates-1,3),TransHam_l(0:nstates-1,0:nstates-1,3),&
+TransHam_d(0:nstates-1,0:nstates-1,3),TransHam_ei(0:nstates-1,0:nstates-1),Transvec(0:nstates-1),&
+TransMat_ei(0:nstates-1,0:nstates-1),Mat(0:nstates-1,0:nstates-1),Matx(0:nstates-1,0:nstates-1),&
+Maty(0:nstates-1,0:nstates-1),Matz(0:nstates-1,0:nstates-1),Ham(0:nstates-1,0:nstates-1),Ham_l(0:nstates-1,0:nstates-1),&
+Ham_0(0:nstates-1),Ham_dir(0:nstates-1,0:nstates-1),Ham_ex(0:nstates-1,0:nstates-1),Ham_ei(0:nstates-1,0:nstates-1),source=0.d0)
+allocate(xc(0:nstates-1,0:ntime),xc_ei(0:nstates-1,0:ntime+1),c0(0:nstates-1),k1(0:nstates-1),k2(0:nstates-1),k3(0:nstates-1),&
+k4(0:nstates-1),k5(0:nstates-1),k6(0:nstates-1),k7(0:nstates-1),k8(0:nstates-1))
 
 call make_Ham_singl
 
-write(32,*) n , aR(n) 
-write(37,*) n , aR(n) 
-write(38,*) n , aR(n) 
-write(39,*) n , aR(n) 
-write(40,*) n , aR(n) 
-write(33,*) n , aR(n) 
-write(34,*) n , aR(n) 
-write(35,*) n , aR(n) 
-write(36,*) n , aR(n) 
-
-do i=0,nstates-1
-write(33,'(3es16.6e2)') (Ham(i,j)*Energ_au/elec, j=0,nstates-1)
-write(34,'(3es16.6e2)') (Ham_dir(i,j)*Energ_au/elec, j=0,nstates-1)
-write(35,'(3es16.6e2)') (Ham_ex(i,j)*Energ_au/elec, j=0,nstates-1)
-write(36,'(3es16.6e2)') ((-1.d0*Ham_dir(i,j) + Ham_ex(i,j))*Energ_au/elec, j=0,nstates-1)
-write(32,'(3es16.6e2)') (TransHam(i,j), j=0,nstates-1)
-enddo
-
-write(32,*) 
-write(33,*) 
-
-
-write(string2,'("(",i0,"f16.10)")') nstates+1
-write(6,*) string2
-
-write(Etr_0_f,'(4f16.10)') aR(n)*1.d9, (Ham(i,i)*Energ_au/elec, i=0,nstates-1)
-write(6,'(4g0)') aR(n)*1.d9, (Ham(i,i)*Energ_au/elec, i=0,nstates-1)
-write(Etr_0_f,string2) aR(n)*1.d9, (Ham(i,i)*Energ_au/elec, i=0,nstates-1)
-
-if ( get_ei .eq. 'y' ) then
-write(58,*) n , aR(n)
-Ham_ei = Ham
-allocate(lambda(0:nstates-1))
-allocate(work(1))
-call dsyev('V','U', nstates, Ham_ei(0:nstates-1,0:nstates-1), nstates, lambda, Work, -1, info)
-lwork=nint(work(1))
-deallocate (work)
-allocate(work(0:lwork))
-call dsyev('V', 'U', nstates, Ham_ei(0:nstates-1,0:nstates-1), nstates, lambda, Work, lwork, info)
-deallocate (work)
-
-!!!Make eigenstate TDM
-if ( inbox .eq. "n" ) then
-Mat(:,:) = matmul(TransHam(:,:),Ham_ei(:,:))
-TransHam_ei(:,:) = matmul(transpose(Ham_ei(:,:)),Mat(:,:))
-elseif ( inbox .eq. "y" ) then
-Matx(:,:) = matmul(TransHam_l(:,:,1),Ham_ei(:,:))
-Maty(:,:) = matmul(TransHam_l(:,:,2),Ham_ei(:,:))
-Matz(:,:) = matmul(TransHam_l(:,:,3),Ham_ei(:,:))
-TransHam_ei_l(:,:,1) = matmul(transpose(Ham_ei(:,:)),Matx(:,:))
-TransHam_ei_l(:,:,2) = matmul(transpose(Ham_ei(:,:)),Maty(:,:))
-TransHam_ei_l(:,:,3) = matmul(transpose(Ham_ei(:,:)),Matz(:,:))
-endif
-
-call make_Ham_l
-
-do i=0,nstates-1
-write(58,'(3es16.6e2)') (Ham_ei(i,j), j=0,nstates-1)
-write(37,'(3es16.6e2)') (TransHam_ei(i,j), j=0,nstates-1)
-if ( inbox .eq. "y" ) then
-write(38,'(3es16.6e2)') (TransHam_ei_l(i,j,1), j=0,nstates-1)
-write(39,'(3es16.6e2)') (TransHam_ei_l(i,j,2), j=0,nstates-1)
-write(40,'(3es16.6e2)') (TransHam_ei_l(i,j,3), j=0,nstates-1)
-endif
-enddo
-
-write(58,*) 
-write(48,'(4es16.6e2)') aR(n)*1.d9, (lambda(i)*Energ_au/elec, i=0,nstates-1)
-
-endif
-
-do i=1,nstates-1
-write(60,*) lambda(i)*Energ_au/elec, (TransHam_ei(0,i))**2 ,i
-enddo
-
-if ( ( Dyn_0 .eq. 'y' ) .or. ( Dyn_ei .eq. 'y' ) ) then
-
-!!!!!INITIAL POPULATIONS
-c0(0) = 1.0d0
-do i=1,nstates-1
-c0(i) = 0.0d0
-enddo
-
-xc0 = dcmplx(c0,0.0d0)
-xc = dcmplx(0.d0,0.0d0)
-xc_ei = dcmplx(0.d0,0.0d0)
-xc(:,0) = xc0(:)
-xc_ei(:,0) = xc0(:)
-
-call RK_0_ei
-
-endif
-
-deallocate(TransHam,TransHam_ei_l,TransHam_l,TransHam_d,TransHam_ei,Mat,Matx,Maty,Matz,Ham,Ham_l,Ham_0,Ham_dir,Ham_ex,Ham_ei)
-deallocate(Transvec,TransMat_ei,lambda,xc,k1,k2,k3,k4,k5,k6,k7,k8,c0,xc_ei)
+include 'Core.f90'
 
 elseif (n .gt. nQDA+nQDB) then
 
 nstates=9
 
-allocate(TransHam(0:nstates-1,0:nstates-1))
-allocate(TransHam_ei_l(0:nstates-1,0:nstates-1,3))
-allocate(TransHam_l(0:nstates-1,0:nstates-1,3))
-allocate(TransHam_d(0:nstates-1,0:nstates-1,3))
-allocate(TransHam_ei(0:nstates-1,0:nstates-1))
-allocate(Transvec(0:nstates-1))
-allocate(TransMat_ei(0:nstates-1,0:nstates-1))
-allocate(Mat(0:nstates-1,0:nstates-1))
-allocate(Matx(0:nstates-1,0:nstates-1))
-allocate(Maty(0:nstates-1,0:nstates-1))
-allocate(Matz(0:nstates-1,0:nstates-1))
-allocate(Ham(0:nstates-1,0:nstates-1))
-allocate(Ham_l(0:nstates-1,0:nstates-1))
-allocate(Ham_0(0:nstates-1))
-allocate(Ham_dir(0:nstates-1,0:nstates-1))
-allocate(Ham_ex(0:nstates-1,0:nstates-1))
-allocate(Ham_ei(0:nstates-1,0:nstates-1))
-allocate(xc(0:nstates-1,0:ntime))
-allocate(xc_ei(0:nstates-1,0:ntime+1))
-allocate(c0(0:nstates-1))
-allocate(k1(0:nstates-1))
-allocate(k2(0:nstates-1))
-allocate(k3(0:nstates-1))
-allocate(k4(0:nstates-1))
-allocate(k5(0:nstates-1))
-allocate(k6(0:nstates-1))
-allocate(k7(0:nstates-1))
-allocate(k8(0:nstates-1))
-
-Ham      = 0.0d0
-TransHam = 0.0d0
+allocate(TransHam(0:nstates-1,0:nstates-1),TransHam_ei_l(0:nstates-1,0:nstates-1,3),TransHam_l(0:nstates-1,0:nstates-1,3),&
+TransHam_d(0:nstates-1,0:nstates-1,3),TransHam_ei(0:nstates-1,0:nstates-1),Transvec(0:nstates-1),&
+TransMat_ei(0:nstates-1,0:nstates-1),Mat(0:nstates-1,0:nstates-1),Matx(0:nstates-1,0:nstates-1),&
+Maty(0:nstates-1,0:nstates-1),Matz(0:nstates-1,0:nstates-1),Ham(0:nstates-1,0:nstates-1),Ham_l(0:nstates-1,0:nstates-1),&
+Ham_0(0:nstates-1),Ham_dir(0:nstates-1,0:nstates-1),Ham_ex(0:nstates-1,0:nstates-1),Ham_ei(0:nstates-1,0:nstates-1),source=0.d0)
+allocate(xc(0:nstates-1,0:ntime),xc_ei(0:nstates-1,0:ntime+1),c0(0:nstates-1),k1(0:nstates-1),k2(0:nstates-1),k3(0:nstates-1),&
+k4(0:nstates-1),k5(0:nstates-1),k6(0:nstates-1),k7(0:nstates-1),k8(0:nstates-1))
 
 call make_Ham_he
 
-write(32,*) n , aR(n), aR(n+ndim), linker(n)
-write(37,*) n , aR(n), aR(n+ndim), linker(n)
-write(38,*) n , aR(n), aR(n+ndim), linker(n)
-write(39,*) n , aR(n), aR(n+ndim), linker(n)
-write(40,*) n , aR(n), aR(n+ndim), linker(n)
-write(33,*) n , aR(n), aR(n+ndim), linker(n)
-write(34,*) n , aR(n), aR(n+ndim), linker(n)
-write(35,*) n , aR(n), aR(n+ndim), linker(n)
-write(36,*) n , aR(n), aR(n+ndim), linker(n)
-
-do i=0,nstates-1
-write(33,'(9es14.6e2)') (Ham(i,j)*Energ_au/elec, j=0,nstates-1)
-write(34,'(9es14.6e2)') (Ham_dir(i,j)*Energ_au/elec, j=0,nstates-1)
-write(35,'(9es14.6e2)') (Ham_ex(i,j)*Energ_au/elec, j=0,nstates-1)
-write(36,'(9es14.6e2)') ((-1.d0*Ham_dir(i,j) + Ham_ex(i,j))*Energ_au/elec, j=0,nstates-1)
-!do j=0,nstates-1
-!write(6,*) i , j , (-1.d0*Ham_dir(i,j) + Ham_ex(i,j))*Energ_au/elec
-!enddo
-write(32,'(9es14.6e2)') (TransHam(i,j), j=0,nstates-1)
-enddo
-write(32,*)
-write(33,*)
-
-write(47,'(11f14.10)') aR(n)*1.d9, linker(n)*1.d9, (Ham(i,i)*Energ_au/elec, i=0,nstates-1)
-
-if ( get_ei .eq. 'y' ) then
-write(58,*) n , aR(n), aR(n+ndim), linker(n)
-Ham_ei = Ham
-allocate(lambda(0:nstates-1))
-allocate(work(1))
-call dsyev('V','U', nstates, Ham_ei(0:nstates-1,0:nstates-1), nstates, lambda, Work, -1, info)
-lwork=nint(work(1))
-deallocate (work)
-allocate(work(0:lwork))
-call dsyev('V', 'U', nstates, Ham_ei(0:nstates-1,0:nstates-1), nstates, lambda, Work, lwork, info)
-deallocate (work)
-
-!!!Make eigenstate TDM
-if ( inbox .eq. "n" ) then
-Mat(:,:) = matmul(TransHam(:,:),Ham_ei(:,:))
-TransHam_ei(:,:) = matmul(transpose(Ham_ei(:,:)),Mat(:,:))
-elseif ( inbox .eq. "y" ) then
-Matx(:,:) = matmul(TransHam_l(:,:,1),Ham_ei(:,:))
-Maty(:,:) = matmul(TransHam_l(:,:,2),Ham_ei(:,:))
-Matz(:,:) = matmul(TransHam_l(:,:,3),Ham_ei(:,:))
-TransHam_ei_l(:,:,1) = matmul(transpose(Ham_ei(:,:)),Matx(:,:))
-TransHam_ei_l(:,:,2) = matmul(transpose(Ham_ei(:,:)),Maty(:,:))
-TransHam_ei_l(:,:,3) = matmul(transpose(Ham_ei(:,:)),Matz(:,:))
-endif
-
-call make_Ham_l
-
-do i=0,nstates-1
-write(58,'(10f12.6)') (Ham_ei(i,j), j=0,nstates-1)
-write(37,'(9es14.6e2)') (TransHam_ei(i,j), j=0,nstates-1)
-
-if ( inbox .eq. "y" ) then
-write(38,'(9es14.6e2)') (TransHam_ei_l(i,j,1), j=0,nstates-1)
-write(39,'(9es14.6e2)') (TransHam_ei_l(i,j,2), j=0,nstates-1)
-write(40,'(9es14.6e2)') (TransHam_ei_l(i,j,3), j=0,nstates-1)
-endif
-
-enddo
-
-write(58,*) 
-
-write(48,'(11f16.10)') aR(n)*1.d9, aR(n+ndim)*1.d9, (lambda(i)*Energ_au/elec, i=0,nstates-1)
+include 'Core.f90'
 
 endif
 
-do i=1,nstates-1
-write(60,*) lambda(i)*Energ_au/elec, (TransHam_ei(0,i))**2 ,i
-enddo
-
-if ( ( Dyn_0 .eq. 'y' ) .or. ( Dyn_ei .eq. 'y' ) ) then
-
-!!!!!INITIAL POPULATIONS
-c0(0) = 1.0d0
-do i=1,nstates-1
-c0(i) = 0.0d0
-enddo
-
-xc0 = dcmplx(c0,0.0d0)
-xc(:,:) = dcmplx(0.d0,0.0d0)
-xc_ei(:,:) = dcmplx(0.d0,0.0d0)
-xc(:,0) = xc0(:)
-xc_ei(:,0) = xc0(:)
-
-call RK_0_ei
-
-endif
-
-deallocate(TransHam,TransHam_ei_l,TransHam_l,TransHam_d,TransHam_ei,Mat,Matx,Maty,Matz,Ham,Ham_l,Ham_0,Ham_dir,Ham_ex,Ham_ei)
-deallocate(Transvec,TransMat_ei,lambda,xc,k1,k2,k3,k4,k5,k6,k7,k8,c0,xc_ei)
-
-endif
-
-!call OK
-!deallocate(xc,k1,k2,k3,k4,k5,k6,k7,k8)
-!call OK
-!deallocate(c0)
-!call OK
-!deallocate(xc_ei)
-!call OK
-
-!!close(44)
-!!close(45)
-!!close(46)
-!!close(48)
-!!close(49)
 !
 !!call cpu_time(finish)
 !
@@ -485,26 +226,5 @@ enddo !end loop number of systems
 !call cpu_time(finish)
 
 !write(6,*) finish - start
-
-!if ( vers .eq. 'singl') then
-!call makeOutputSingle
-!elseif ( vers .eq. 'dimer') then
-!call makeOutputDimer
-!elseif ( vers .eq. 'range') then
-!call makeOutputRange
-!elseif ( vers .eq. 'randm') then
-!call makeOutputRandm
-!endif
-
-!write(outputdir,'(a7,a5,a1,i2,a1,i2)') "Output-", vers, "-", nint(aA*1d9*10), "-" , nint(aB*1d9*10) 
-!
-!call system("mkdir  " // outputdir)
-!call system("mv *dat " // outputdir)
-!call system("mv *txt " // outputdir)
-
-!call system("mkdir output-`date +%x | sed 's/\//-/g'`-`date +%r | sed 's/:/-/g'`")
-!call system("mv *dat `ls -lrth | tail -n 1 | awk '{print $9}'`")
-
-!deallocate(E,diffe,diffh,minEe,minEh)
 
 end
