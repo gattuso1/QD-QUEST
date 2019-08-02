@@ -157,29 +157,18 @@ do n=1,nsys
 
 write(6,*) "Computing system number:    ", n
 
-!!!Opens output files
-write(popc,'(a5,i5.5,a4)') 'Popc-', n, '.dat'
-write(norm,'(a5,i5.5,a4)') 'Norm-', n, '.dat'
-write(norm_ei,'(a8,i5.5,a4)') 'Norm_ei-', n, '.dat'
-write(popc_ei,'(a8,i5.5,a4)') 'Popc_ei-', n, '.dat'
-write(Re_c,'(a5,i5.5,a4)') 'Re_c-', n, '.dat'
-write(Im_c,'(a5,i5.5,a4)') 'Im_c-', n, '.dat'
-write(Re_c_ei,'(a8,i5.5,a4)') 'Re_c_ei-', n, '.dat'
-write(Im_c_ei,'(a8,i5.5,a4)') 'Im_c_ei-', n, '.dat'
-open(newunit=popc_0_f   ,file=popc)    !; popc_0_f = 44
-open(newunit=popc_ei_f  ,file=popc_ei) !; popc_ei_f = 49
-open(newunit=norm_0_f   ,file=norm)    !; norm_0_f = 46
-open(newunit=norm_ei_f  ,file=norm_ei) !; norm_ei_f = 50
-open(newunit=Re_c_ei_f  ,file=Re_c_ei) !; Re_c_ei_f = 52
-open(newunit=Im_c_ei_f  ,file=Im_c_ei) !; Im_c_ei_f = 53
-open(newunit=Re_c_0_f   ,file=Re_c)    !; Re_c_0_f = 54
-open(newunit=Im_c_0_f   ,file=Im_c)    !; Im_c_0_f = 55
-
-if ( n .le. nQDA+nQDB ) then
+if ( ( n .le. nQDA+nQDB ) .and. ( model .eq. "SB" ) ) then
 
 nstates=3
 include 'allocate_core.f90'
 call make_Ham_singl
+include 'Core.f90'
+
+elseif ( ( n .le. nQDA+nQDB ) .and. ( model .eq. "FS" ) ) then
+
+nstates=25
+include 'allocate_core.f90'
+call make_Ham_fineSt
 include 'Core.f90'
 
 elseif ( (n .gt. nQDA+nQDB) .and. ( model .eq. "FO" ) ) then

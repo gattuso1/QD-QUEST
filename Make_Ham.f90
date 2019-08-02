@@ -352,55 +352,55 @@ end subroutine make_Ham_he_FO
 
 subroutine make_Ham_fineSt
 
-Ham(1,1)   = Eeh1(n)  - Dso1/3.d0 - 3.d0*Kas
-Ham(2,2)   = Eeh1(n)  - Dso1/3.d0 - 3.d0*Kcs
-Ham(3,3)   = Eeh1(n)  - Kas
-Ham(4,4)   = Eeh1(n)  - 3.d0*Kas
-Ham(5,5)   = Eeh1(n)  - 3.d0*Kbs + Dxf
-Ham(6,6)   = Eeh1(n)  - 3.d0*Kbs + Dxf
-Ham(7,7)   = Eeh1(n)  - Kcs
-Ham(8,8)   = Eeh1(n)  - 3.d0*Kcs
-Ham(9,9)   = Eeh1(n)  + Dso1/3.d0 - 3.d0*Kas
-Ham(10,10) = Eeh1(n)  - Kbs + Dxf
-Ham(11,11) = Eeh1(n)  - 3.d0*Kbs + Dxf
-Ham(12,12) = Eeh1(n)  + Dso1/3.d0 - 3.d0*Kcs
+Ham(1,1)   = minEe(1,n) + minEh(1,n)  + V0  - elec*(Dso1/3.d0 - 3.d0*Kas)
+Ham(2,2)   = minEe(1,n) + minEh(1,n)  + V0  - elec*(Dso1/3.d0 - 3.d0*Kcs)
+Ham(3,3)   = minEe(1,n) + minEh(1,n)  + V0  - elec*(Kas)
+Ham(4,4)   = minEe(1,n) + minEh(1,n)  + V0  - elec*(3.d0*Kas)
+Ham(5,5)   = minEe(1,n) + minEh(1,n)  + V0  - elec*(3.d0*Kbs + Dxf)
+Ham(6,6)   = minEe(1,n) + minEh(1,n)  + V0  - elec*(3.d0*Kbs + Dxf)
+Ham(7,7)   = minEe(1,n) + minEh(1,n)  + V0  - elec*(Kcs)
+Ham(8,8)   = minEe(1,n) + minEh(1,n)  + V0  - elec*(3.d0*Kcs)
+Ham(9,9)   = minEe(1,n) + minEh(1,n)  + V0  + elec*(Dso1/3.d0 - 3.d0*Kas)
+Ham(10,10) = minEe(1,n) + minEh(1,n)  + V0  - elec*(Kbs + Dxf)
+Ham(11,11) = minEe(1,n) + minEh(1,n)  + V0  - elec*(3.d0*Kbs + Dxf)
+Ham(12,12) = minEe(1,n) + minEh(1,n)  + V0  + elec*(Dso1/3.d0 - 3.d0*Kcs)
 
-Ham(3,4) = -1.d0*Dso1/3.d0
-Ham(4,3) = Ham(3,4)
-Ham(3,5) = Ham(3,4)
-Ham(5,3) = Ham(3,4)
-Ham(6,7) = Ham(3,4)
-Ham(7,6) = Ham(3,4)
-Ham(6,8) = Ham(3,4)
-Ham(8,6) = Ham(3,4)
+Ham(3,4)  = elec*(-1.d0*Dso1/3.d0)
+Ham(4,3)  = Ham(3,4)
+Ham(3,5)  = Ham(3,4)
+Ham(5,3)  = Ham(3,4)
+Ham(6,7)  = Ham(3,4)
+Ham(7,6)  = Ham(3,4)
+Ham(6,8)  = Ham(3,4)
+Ham(8,6)  = Ham(3,4)
 Ham(9,10) = Ham(3,4)
 Ham(10,9) = Ham(3,4)
 Ham(9,11) = Ham(3,4)
 Ham(11,9) = Ham(3,4)
-Ham(10,12) = Ham(3,4)
-Ham(12,10) = Ham(3,4)
+Ham(10,12)= Ham(3,4)
+Ham(12,10)= Ham(3,4)
 
-Ham(4,5) = Dso1/3.d0
-Ham(5,4) = Ham(4,5)
-Ham(7,8) = Ham(4,5)
-Ham(8,7) = Ham(4,5)
+Ham(4,5)   = elec*(Dso1/3.d0)
+Ham(5,4)   = Ham(4,5)
+Ham(7,8)   = Ham(4,5)
+Ham(8,7)   = Ham(4,5)
 Ham(11,12) = Ham(4,5)
 Ham(12,11) = Ham(4,5)
 
-Ham(13,13)   = Eeh2(n)  - Dso2/3.d0 - 3.d0*Kas
-Ham(14,14)   = Eeh2(n)  - Dso2/3.d0 - 3.d0*Kcs
-Ham(15,15)   = Eeh2(n)  - Kas
-Ham(16,16)   = Eeh2(n)  - 3.d0*Kas
-Ham(17,17)   = Eeh2(n)  - 3*Kbs + Dxf
-Ham(18,18)   = Eeh2(n)  - 3*Kbs + Dxf
-Ham(19,19)   = Eeh2(n)  - Kcs
-Ham(20,20)   = Eeh2(n)  - 3.d0*Kcs
-Ham(21,21)   = Eeh2(n)  + Dso2/3.d0 - 3.d0*Kas
-Ham(22,22)   = Eeh2(n)  - Kbs + Dxf
-Ham(23,23)   = Eeh2(n)  - 3.d0*Kbs + Dxf
-Ham(24,24)   = Eeh2(n)  + Dso2/3.d0 - 3.d0*Kcs
+Ham(13,13)   = minEe(1,n) + minEh(2,n)  + V0  - elec*(Dso2/3.d0 - 3.d0*Kas)
+Ham(14,14)   = minEe(1,n) + minEh(2,n)  + V0  - elec*(Dso2/3.d0 - 3.d0*Kcs)
+Ham(15,15)   = minEe(1,n) + minEh(2,n)  + V0  - elec*(Kas)
+Ham(16,16)   = minEe(1,n) + minEh(2,n)  + V0  - elec*(3.d0*Kas)
+Ham(17,17)   = minEe(1,n) + minEh(2,n)  + V0  - elec*(3*Kbs + Dxf)
+Ham(18,18)   = minEe(1,n) + minEh(2,n)  + V0  - elec*(3*Kbs + Dxf)
+Ham(19,19)   = minEe(1,n) + minEh(2,n)  + V0  - elec*(Kcs)
+Ham(20,20)   = minEe(1,n) + minEh(2,n)  + V0  - elec*(3.d0*Kcs)
+Ham(21,21)   = minEe(1,n) + minEh(2,n)  + V0  + elec*(Dso2/3.d0 - 3.d0*Kas)
+Ham(22,22)   = minEe(1,n) + minEh(2,n)  + V0  - elec*(Kbs + Dxf)
+Ham(23,23)   = minEe(1,n) + minEh(2,n)  + V0  - elec*(3.d0*Kbs + Dxf)
+Ham(24,24)   = minEe(1,n) + minEh(2,n)  + V0  + elec*(Dso2/3.d0 - 3.d0*Kcs)
 
-Ham(15,16) = -1.d0*Dso2/3.d0
+Ham(15,16) = elec*(-1.d0*Dso2/3.d0)
 Ham(16,15) = Ham(15,16)
 Ham(15,17) = Ham(15,16)
 Ham(17,15) = Ham(15,16)
@@ -415,7 +415,7 @@ Ham(23,21) = Ham(15,16)
 Ham(22,24) = Ham(15,16)
 Ham(24,22) = Ham(15,16)
 
-Ham(16,17) = Dso2/3
+Ham(16,17) = elec*(Dso2/3)
 Ham(17,16) = Ham(16,17)
 Ham(19,20) = Ham(16,17)
 Ham(20,19) = Ham(16,17)
@@ -424,46 +424,18 @@ Ham(24,23) = Ham(16,17)
 
 Ham = Ham/Energ_au
 
-end subroutine make_Ham_fineSt
-
-subroutine make_TransHam_0_fineSt
-
-TransHam0(0,3)  = abs(TransDip_Ana_h1e(n))
-TransHam0(0,7)  = abs(TransDip_Ana_h1e(n)) 
-TransHam0(0,10) = abs(TransDip_Ana_h1e(n))
-TransHam0(0,15) = abs(TransDip_Ana_h2e(n))
-TransHam0(0,19) = abs(TransDip_Ana_h2e(n))
-TransHam0(0,22) = abs(TransDip_Ana_h2e(n))
-
-TransHam0 = TransHam0/Dip_au
-
-do i=0,nstates-1
-TransHam0(i,0) = TransHam0(0,i)
-enddo
-
-end subroutine make_TransHam_0_fineSt
-
-subroutine make_TransHam_ei_fineSt
-
-do i=0,nstates-1
-do j=0,nstates-1
-TransHam(0,i) = TransHam(0,i) +  TransHam0(0,j) * Ham_ei(j,i)
-enddo
-enddo
-
-TransHam = abs(TransHam)
-
-write(6,*) (abs(TransHam(0,i)*Dip_au/Cm_to_D), i=0,nstates-1)
+TransHam(0,3)  = abs(TransDip_Ana_h1e(n))
+TransHam(0,7)  = abs(TransDip_Ana_h1e(n)) 
+TransHam(0,10) = abs(TransDip_Ana_h1e(n))
+TransHam(0,15) = abs(TransDip_Ana_h2e(n))
+TransHam(0,19) = abs(TransDip_Ana_h2e(n))
+TransHam(0,22) = abs(TransDip_Ana_h2e(n))
 
 do i=0,nstates-1
 TransHam(i,0) = TransHam(0,i)
 enddo
 
-do i=0,nstates-1
-Ham(i,i) = lambda(i)
-enddo
-
-end subroutine make_TransHam_ei_fineSt
+end subroutine make_Ham_fineSt
 
 subroutine make_Ham_l
 

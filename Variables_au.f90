@@ -55,6 +55,7 @@ NAMELIST /syst/       nQDA,nQDB,nhomoA,nhomoB,nhetero,dispQD,idlink,aA,aB
 open(150,file='QD_quest.def',form='formatted')
 read(150,NML=outputs)
 read(150,NML=elecSt)
+read(150,NML=fineStruc)
 read(150,NML=pulses)
 read(150,NML=syst)
 
