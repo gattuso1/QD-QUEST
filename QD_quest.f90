@@ -178,6 +178,13 @@ include 'allocate_core.f90'
 call make_Ham_he_FO
 include 'Core.f90'
 
+elseif ( (n .gt. nQDA+nQDB) .and. ( model .eq. "FS" ) ) then
+
+nstates=49
+include 'allocate_core.f90'
+call make_Ham_FS_FO
+include 'Core.f90'
+
 elseif ( (n .gt. nQDA+nQDB) .and. ( model .eq. "SB" ) ) then
 
 nstates=9

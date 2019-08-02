@@ -56,10 +56,10 @@ vertex     = 8.d0     !vertex angle of beam crossing (inbox=y and 3 pulses)
 
 &syst !Parameters of the single dot
 nQDA      = 0          !Number of dimers
-nQDB      = 100          !Number of dimers
+nQDB      = 0          !Number of dimers
 nhomoA    = 0          !Number of dimers
 nhomoB    = 0          !Number of dimers
-nhetero   = 0          !Number of dimers
+nhetero   = 100          !Number of dimers
 dispQD    = 0.05d0      !Dispersion of QD radius
 idlink    = 20        !Linker length
 aA        = 1.24d-9      !Radius of QDA
