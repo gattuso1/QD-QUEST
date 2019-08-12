@@ -15,9 +15,9 @@ implicit none
 real(dp), external:: s13adf, ei, eone, nag_bessel_j0
 integer :: je,jh,k,nsteps,r,ifail, r1, r2
 integer,dimension(10) :: matrices
-real(dp) :: Ef,delta, mu, A
+real(dp) :: Ef,delta, mu, A, I1eh1, I1eh2, I2eh1, I2eh2, I3eh1, I3eh2
 real(dp),allocatable :: Ae(:), Ah1(:), Ah2(:), Be(:), Bh1(:), Bh2(:)
-real(dp),allocatable :: I1eh1(:), I1eh2(:), I2eh1(:), I2eh2(:), I3eh1(:), I3eh2(:), kine(:), kinh1(:), kinh2(:)
+real(dp),allocatable :: kine(:), kinh1(:), kinh2(:), Eeh1(:), Eeh2(:)
 real(dp),allocatable :: koute(:), kouth1(:), kouth2(:),diffe(:), diffh(:), E(:)
 
 call getVariables
@@ -36,6 +36,8 @@ ifail=  1
 !   write(*,*) omp_get_max_threads()
 !   write(*,*) omp_get_num_threads()
 
+allocate(Eg(1000))
+allocate(TDM(1000))
 allocate(E(nsteps))
 allocate(diffe(nsteps))
 allocate(diffh(nsteps))
@@ -123,6 +125,38 @@ Bh1(n)=Ah1(n)*sin(kinh1(n)*aR(n))*exp(kouth1(n)*aR(n))
 Ah2(n)=1.d0/sqrt(aR(n)/2.d0-sin(2.d0*kinh2(n)*aR(n))/(4.d0*kinh2(n))+sin(kinh2(n)*aR(n))**2/(2.d0*kouth2(n)))
 Bh2(n)=Ah2(n)*sin(kinh2(n)*aR(n))*exp(kouth2(n)*aR(n))
 
+alphae  = kine(n) *aR(n)
+alphah1 = kinh1(n)*aR(n)
+alphah2 = kinh2(n)*aR(n)
+
+betae  = koute(n) *aR(n)
+betah1 = kouth1(n)*aR(n)
+betah2 = kouth2(n)*aR(n)
+
+!Coulomb Ferreyra
+I1eh1=(Ae(n)**2*Ah1(n)**2*aR(n)/4)*(1-sin(2*alphae)/(2*alphae)-s13adf(2*alphae,ifail)/(2*alphae)+&
+         (s13adf(2*alphae-2*alphah1,ifail)+s13adf(2*alphae+2*alphah1,ifail))/(4*alphae)) + &
+         (Ae(n)**2*Ah1(n)**2*aR(n)/4)*(1-sin(2*alphah1)/(2*alphah1)-s13adf(2*alphah1,ifail)/(2*alphah1)+&
+         (s13adf(2*alphah1-2*alphae,ifail)+s13adf(2*alphah1+2*alphae,ifail))/(4*alphah1))
+I2eh1=(Ae(n)**2*Bh1(n)**2*aR(n)/2)*(1-sin(2*alphae)/(2*alphae))*eone(2*betah1)+&
+         (Ah1(n)**2*Be(n)**2*aR(n)/2)*(1-sin(2*alphah1)/(2*alphah1))*eone(2*betae)
+I3eh1=(Be(n)**2*Bh1(n)**2*aR(n)/(2*betae)*(exp(-2*betae)*eone(2*betah1)-eone(2*betae+2*betah1)))+&
+         (Be(n)**2*Bh1(n)**2*aR(n)/(2*betah1)*(exp(-2*betah1)*eone(2*betae)-eone(2*betah1+2*betae)))
+
+I1eh2=(Ae(n)**2*Ah2(n)**2*aR(n)/4)*(1-sin(2*alphae)/(2*alphae)-s13adf(2*alphae,ifail)/(2*alphae)+&
+         (s13adf(2*alphae-2*alphah2,ifail)+s13adf(2*alphae+2*alphah2,ifail))/(4*alphae)) + &
+         (Ae(n)**2*Ah2(n)**2*aR(n)/4)*(1-sin(2*alphah2)/(2*alphah2)-s13adf(2*alphah2,ifail)/(2*alphah1)+&
+         (s13adf(2*alphah2-2*alphae,ifail)+s13adf(2*alphah2+2*alphae,ifail))/(4*alphah2))
+I2eh2=(Ae(n)**2*Bh2(n)**2*aR(n)/2)*(1-sin(2*alphae)/(2*alphae))*eone(2*betah2)+&
+         (Ah2(n)**2*Be(n)**2*aR(n)/2)*(1-sin(2*alphah2)/(2*alphah2))*eone(2*betae)
+I3eh2=(Be(n)**2*Bh2(n)**2*aR(n)/(2*betae)*(exp(-2*betae)*eone(2*betah2)-eone(2*betae+2*betah2)))+&
+         (Be(n)**2*Bh2(n)**2*aR(n)/(2*betah2)*(exp(-2*betah2)*eone(2*betae)-eone(2*betah2+2*betae)))
+
+print*, Eeh1(n)
+
+Eeh1(n)=(elec/(4.d0*PI*eps0*epsin(n)))*(I1eh1+I2eh1+I3eh1)
+Eeh2(n)=(elec/(4.d0*PI*eps0*epsin(n)))*(I1eh2+I2eh2+I3eh2)
+
 TransDip_Ana_h1e(n) = abs(TransDip_Ana(Ae(n),Ah1(n),Be(n),Bh1(n),kine(n),kinh1(n),koute(n),kouth1(n),aR(n)))
 TransDip_Ana_h1h2(n) = abs(TransDip_Ana(Ah1(n),Ah2(n),Bh1(n),Bh2(n),kinh1(n),kinh2(n),kouth1(n),kouth2(n),aR(n)))
 TransDip_Ana_h2e(n) = abs(TransDip_Ana(Ae(n),Ah2(n),Be(n),Bh2(n),kine(n),kinh2(n),koute(n),kouth2(n),aR(n)))
@@ -166,9 +200,9 @@ include 'Core.f90'
 
 elseif ( ( n .le. nQDA+nQDB ) .and. ( model .eq. "FS" ) ) then
 
-nstates=25
+nstates=55
 include 'allocate_core.f90'
-call make_Ham_fineSt
+call make_Ham_FS_FO
 include 'Core.f90'
 
 elseif ( (n .gt. nQDA+nQDB) .and. ( model .eq. "FO" ) ) then
@@ -180,7 +214,8 @@ include 'Core.f90'
 
 elseif ( (n .gt. nQDA+nQDB) .and. ( model .eq. "FS" ) ) then
 
-nstates=49
+!nstates=49
+nstates=109
 include 'allocate_core.f90'
 call make_Ham_FS_FO
 include 'Core.f90'

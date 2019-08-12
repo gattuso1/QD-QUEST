@@ -22,12 +22,13 @@ side      =  0.5d-9      !Width of side buffer of integration box
 / 
 
 &fineStruc !Parameters of the fine structure
-Kas = 0.012d0 
-Kbs = 0.012d0
-Kcs = 0.012d0
+Kas  = 0.012d0 
+Kbs  = 0.012d0
+Kcs  = 0.012d0
+Kpp  = 0.0d0
 Dso1 = 0.220d0
 Dso2 = 0.220d0
-Dxf = 0.025d0
+Dxf  = 0.025d0
 /
 
 &pulses !Parameters of quantum dynamic and pulses
@@ -55,14 +56,14 @@ vertex     = 8.d0     !vertex angle of beam crossing (inbox=y and 3 pulses)
 /
 
 &syst !Parameters of the single dot
-nQDA      = 0          !Number of dimers
+nQDA      = 100          !Number of dimers
 nQDB      = 0          !Number of dimers
 nhomoA    = 0          !Number of dimers
 nhomoB    = 0          !Number of dimers
-nhetero   = 100          !Number of dimers
-dispQD    = 0.05d0      !Dispersion of QD radius
+nhetero   = 0          !Number of dimers
+dispQD    = 0.0d0      !Dispersion of QD radius
 idlink    = 20        !Linker length
-aA        = 1.24d-9      !Radius of QDA
+aA        = 1.65d-9      !Radius of QDA
 aB        = 1.75d-9      !Radius of QDA
 /
 
