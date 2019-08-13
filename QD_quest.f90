@@ -17,7 +17,7 @@ integer :: je,jh,k,nsteps,r,ifail, r1, r2
 integer,dimension(10) :: matrices
 real(dp) :: Ef,delta, mu, A, I1eh1, I1eh2, I2eh1, I2eh2, I3eh1, I3eh2
 real(dp),allocatable :: Ae(:), Ah1(:), Ah2(:), Be(:), Bh1(:), Bh2(:)
-real(dp),allocatable :: kine(:), kinh1(:), kinh2(:), Eeh1(:), Eeh2(:)
+real(dp),allocatable :: kine(:), kinh1(:), kinh2(:)
 real(dp),allocatable :: koute(:), kouth1(:), kouth2(:),diffe(:), diffh(:), E(:)
 
 call getVariables
@@ -151,8 +151,6 @@ I2eh2=(Ae(n)**2*Bh2(n)**2*aR(n)/2)*(1-sin(2*alphae)/(2*alphae))*eone(2*betah2)+&
          (Ah2(n)**2*Be(n)**2*aR(n)/2)*(1-sin(2*alphah2)/(2*alphah2))*eone(2*betae)
 I3eh2=(Be(n)**2*Bh2(n)**2*aR(n)/(2*betae)*(exp(-2*betae)*eone(2*betah2)-eone(2*betae+2*betah2)))+&
          (Be(n)**2*Bh2(n)**2*aR(n)/(2*betah2)*(exp(-2*betah2)*eone(2*betae)-eone(2*betah2+2*betae)))
-
-print*, Eeh1(n)
 
 Eeh1(n)=(elec/(4.d0*PI*eps0*epsin(n)))*(I1eh1+I2eh1+I3eh1)
 Eeh2(n)=(elec/(4.d0*PI*eps0*epsin(n)))*(I1eh2+I2eh2+I3eh2)

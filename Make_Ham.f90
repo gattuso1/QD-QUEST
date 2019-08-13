@@ -528,12 +528,12 @@ end subroutine make_Ham_singl
 
 subroutine make_Ham_FS_FO
 
-print*, Eeh1
+!print*, (minEe(1,n) + minEh(1,n)), V0, Eeh1(n)*elec
 
-Eg(1) = minEe(1,n) + minEh(1,n)  + V0 - Eeh1
+Eg(1) = minEe(1,n) + minEh(1,n)  + V0 - Eeh1(n)*elec
 !Eg(2) = minEe(1,n) + minEh(2,n)  + V0
 Eg(2) = Eg(1) + elec*(-0.523865d0 + Eg(1)/elec * 0.293665d0)
-Eg(3) = minEe(1,n+ndim) + minEh(1,n+ndim)  + V0
+Eg(3) = minEe(1,n+ndim) + minEh(1,n+ndim)  + V0 - Eeh1(n)*elec
 !Eg(4) = minEe(1,n+ndim) + minEh(2,n+ndim)  + V0
 Eg(4) = Eg(3) + elec*(-0.523865d0 + Eg(3)/elec * 0.293665d0)
 
