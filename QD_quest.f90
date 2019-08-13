@@ -234,6 +234,8 @@ endif
 
 enddo !end loop number of systems
 
+call Convolution
+
 !!$OMP END DO
 
 !$OMP END PARALLEL DO

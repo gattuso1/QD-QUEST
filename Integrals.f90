@@ -2053,4 +2053,48 @@ enddo
 
 end subroutine RK_0_ei
 
+subroutine Convolution
+
+rewind Abs_Imp_f
+open(newunit=abso,file="Absorption.dat")
+
+k=0
+
+do
+read(Abs_Imp_f,*,iostat=io)
+if (io .ne. 0) exit
+k = k + 1
+enddo
+
+allocate(dipole(2,k))
+
+rewind Abs_Imp_f
+
+do i=1,k
+read(Abs_Imp_f,*) dipole(1,i), dipole(2,i)
+!print*, dipole(1,i), dipole(2,i)
+enddo
+
+sigma_conv=0.03d0
+Emin=1.d0
+Emax=7.d0
+Estep=1000.d0
+
+EminID = nint(Emin*Estep)
+EmaxID = nint(Emax*Estep)
+
+allocate(spec(EmaxID))
+
+do j=EminID,EmaxID
+do i=1,k
+spec(j) = spec(j) + (dipole(2,i))**2 * exp(-1.d0*((j/1000.d0)-dipole(1,i))**2/(2*sigma_conv**2))
+!print*, (j/1000.d0),dipole(1,i)*Energ_au/elec, (-1.d0*((j/1000.d0)-dipole(1,i)*Energ_au/elec)**2/(2*sigma_conv**2))
+enddo
+write(abso,*) j/1000.d0, spec(j), j
+enddo
+
+deallocate(spec,dipole)
+
+end
+
 end module Integrals

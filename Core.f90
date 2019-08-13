@@ -53,7 +53,7 @@ write(H_ei_f   ,form_mat) (Ham_ei(i,j), j=0,nstates-1)
 write(Tmat_ei_f,form_TDM) (TransHam_ei(i,j), j=0,nstates-1)
 !   if ( TransHam_ei(0,i) .gt. 1.d-5 ) then
 !   write(Abs_imp_f,form_abs) lambda(i)*Energ_au/elec, (TransHam_ei(0,i))**2 ,i
-   write(Abs_imp_f,form_abs) lambda(i)*Energ_au/elec, abs(TransHam_ei(0,i)) ,i
+   write(Abs_imp_f,form_abs) lambda(i)*Energ_au/elec, (TransHam_ei(0,i))**2 ,i
 !   endif
 if ( inbox .eq. "y" ) then
 write(Tmat_x_f,form_TDM) (TransHam_ei_l(i,j,1), j=0,nstates-1)
@@ -61,6 +61,8 @@ write(Tmat_y_f,form_TDM) (TransHam_ei_l(i,j,2), j=0,nstates-1)
 write(Tmat_z_f,form_TDM) (TransHam_ei_l(i,j,3), j=0,nstates-1)
 endif
 enddo
+
+!call Convolution
 
 do i=1,size(matrices)
 write(matrices(i),*)
