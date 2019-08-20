@@ -1654,6 +1654,15 @@ RK_k_inbox = -im * (Ham - pulse1 * Pe1(1) * TransHamx * Ed01 * cos(k_1(1)*Dcente
 
 end function RK_k_inbox
 
+real(dp) function pulse(t)
+real(dp) :: t
+
+pulse = pulse1 * Ed01 * cos(omega01*(t-t01)+phase01) * exp(-1.d0*((t-t01)**2.d0/(2.d0*width01**2.d0))) + &
+        pulse2 * Ed02 * cos(omega02*(t-t02)+phase02) * exp(-1.d0*((t-t02)**2.d0/(2.d0*width02**2.d0))) + &
+        pulse3 * Ed03 * cos(omega03*(t-t03)+phase03) * exp(-1.d0*((t-t03)**2.d0/(2.d0*width03**2.d0)))
+
+end function pulse
+
 subroutine RK_0_ei
 
 do t=0,ntime
@@ -1818,32 +1827,6 @@ enddo
 
 endif 
 
-!if ( MOD(t,10) .eq. 0 ) then
-!if ( n .le. nQDA+nQDB ) then 
-!cnorm2 = 0.d0
-!do i=0,nstates-1
-!cnorm2 = cnorm2 + dreal(xc(i,t))**2 + aimag(xc(i,t))**2
-!enddo
-!!!!NORM
-!write(46,*) time*t_au, cnorm2 
-!!!!POPULATIONS
-!write(44,'(4ES15.6E3)') time*t_au, (dreal(xc(i,t))**2+aimag(xc(i,t))**2, i=0,2), 
-!write(54,'(ES11.5E2,3ES15.6E3)') time*t_au, (dreal(xc(i,t)), i=0,nstates-1)
-!write(55,'(ES11.5E2,3ES15.6E3)') time*t_au, (aimag(xc(i,t)), i=0,nstates-1)
-!else if ( n .gt. nQDA+nQDB ) then 
-!cnorm2 = 0.d0
-!do i=0,nstates-1
-!cnorm2 = cnorm2 + dreal(xc(i,t))**2 + aimag(xc(i,t))**2
-!enddo
-!!!!NORM
-!write(46,*) time*t_au, cnorm2 !cnormabs !, cnormconj, cnorm2
-!!!!POPULATIONS
-!write(44,'(10ES15.6E3)') time*t_au, (dreal(xc(i,t))**2+aimag(xc(i,t))**2, i=0,8)
-!write(54,'(ES11.5E2,9ES15.6E3)') time*t_au, (dreal(xc(i,t)), i=0,nstates-1)
-!write(55,'(ES11.5E2,9ES15.6E3)') time*t_au, (aimag(xc(i,t)), i=0,nstates-1)
-!endif
-!endif
-
 if ( MOD(t,10) .eq. 0 ) then
 cnorm2 = 0.d0
 do i=0,nstates-1
@@ -1860,74 +1843,59 @@ if ( Dyn_ei .eq. 'y' ) then
 
 if ( inbox .eq. 'n' ) then 
 
-k1 = dcmplx(0.0d0,0.0d0)
-k2 = dcmplx(0.0d0,0.0d0)
-k3 = dcmplx(0.0d0,0.0d0)
-k4 = dcmplx(0.0d0,0.0d0)
-k5 = dcmplx(0.0d0,0.0d0)
-k6 = dcmplx(0.0d0,0.0d0)
-k7 = dcmplx(0.0d0,0.0d0)
-k8 = dcmplx(0.0d0,0.0d0)
+tp1 = pulse(time)
+tp2 = pulse(time+(timestep/9.d0))
+tp3 = pulse(time+(timestep/6.d0))
+tp4 = pulse(time+(timestep/3.d0))
+tp5 = pulse(time+(timestep/2.d0))
+tp6 = pulse(time+(2.d0*timestep/3.d0))
+tp7 = pulse(time+(5.d0*timestep/6.d0))
+tp8 = pulse(time+timestep)
+
+k1 = 0.0d0 ; k2 = 0.0d0 ; k3 = 0.0d0 ; k4 = 0.0d0 ; k5 = 0.0d0 ; k6 = 0.0d0 ; k7 = 0.0d0 ; k8 = 0.0d0
 
 do i=0,nstates-1
-do j=0,nstates-1
-k1(i) = k1(i) + dcmplx(timestep,0.d0)*RK_k(time,Ham_l(i,j),TransHam_ei(i,j), xc_ei(j,t)) 
-enddo
-enddo
-
-do i=0,nstates-1
-do j=0,nstates-1
-k2(i) = k2(i) + dcmplx(timestep,0.d0)*RK_k(time+(timestep/9.e0_dp),Ham_l(i,j), TransHam_ei(i,j), &
-xc_ei(j,t)+(1.e0_dp/9.e0_dp)*k1(j)) 
-enddo
+k1(i) = k1(i) - dcmplx(timestep,0.d0) * sum(dcmplx(0.d0,Ham_l(i,:) - TransHam_ei(i,:) * tp1) * &
+xc_ei(:,t)) 
 enddo
 
 do i=0,nstates-1
-do j=0,nstates-1
-k3(i) = k3(i) + dcmplx(timestep,0.d0)*RK_k(time+(timestep/6.e0_dp),Ham_l(i,j), TransHam_ei(i,j), &
-xc_ei(j,t)+(1.e0_dp/24.e0_dp)*(k1(j)+3.e0_dp*k2(j))) 
-enddo
+k2(i) = k2(i) - dcmplx(timestep,0.d0) * sum(dcmplx(0.d0,Ham_l(i,:) - TransHam_ei(i,:) * tp2) * &
+(xc_ei(:,t)+(1.e0_dp/9.e0_dp)*k1(:)))
 enddo
 
 do i=0,nstates-1
-do j=0,nstates-1
-k4(i) = k4(i) + dcmplx(timestep,0.d0)*RK_k(time+(timestep/3.e0_dp),Ham_l(i,j), TransHam_ei(i,j), &
-xc_ei(j,t)+(1.e0_dp/6.e0_dp)*(k1(j)-3.e0_dp*k2(j)+4.e0_dp*k3(j))) 
-enddo
+k3(i) = k3(i) - dcmplx(timestep,0.d0) * sum(dcmplx(0.d0,Ham_l(i,:) - TransHam_ei(i,:) * tp3) * &
+(xc_ei(:,t)+(1.e0_dp/24.e0_dp)*(k1(:)+3.e0_dp*k2(:)))) 
 enddo
 
 do i=0,nstates-1
-do j=0,nstates-1
-k5(i) = k5(i) + dcmplx(timestep,0.d0)*RK_k(time+(timestep/2.e0_dp),Ham_l(i,j), TransHam_ei(i,j), &
-xc_ei(j,t)+(1.e0_dp/8.e0_dp)*(-5.e0_dp*k1(j)+27.e0_dp*k2(j)-24.e0_dp*k3(j)+6.e0_dp*k4(j)))
-enddo
+k4(i) = k4(i) - dcmplx(timestep,0.d0) * sum(dcmplx(0.d0,Ham_l(i,:) - TransHam_ei(i,:) * tp4) * &
+(xc_ei(:,t)+(1.e0_dp/6.e0_dp)*(k1(:)-3.e0_dp*k2(:)+4.e0_dp*k3(:)))) 
 enddo
 
 do i=0,nstates-1
-do j=0,nstates-1
-k6(i) = k6(i) + dcmplx(timestep,0.d0)*RK_k(time+(2.e0_dp*timestep/3.e0_dp),Ham_l(i,j), TransHam_ei(i,j), &
-xc_ei(j,t)+(1.e0_dp/9.e0_dp)*(221.e0_dp*k1(j)-981.e0_dp*k2(j)+867.e0_dp*k3(j)-102.e0_dp*k4(j)+k5(j)))
-enddo
+k5(i) = k5(i) - dcmplx(timestep,0.d0) * sum(dcmplx(0.d0,Ham_l(i,:) - TransHam_ei(i,:) * tp5) * &
+(xc_ei(:,t)+(1.e0_dp/8.e0_dp)*(-5.e0_dp*k1(:)+27.e0_dp*k2(:)-24.e0_dp*k3(:)+6.e0_dp*k4(:))))
 enddo
 
 do i=0,nstates-1
-do j=0,nstates-1
-k7(i) = k7(i) + dcmplx(timestep,0.d0)*RK_k(time+(5.e0_dp*timestep/6.e0_dp),Ham_l(i,j), TransHam_ei(i,j), &
-xc_ei(j,t)+(1.e0_dp/48.e0_dp)*(-183.e0_dp*k1(j)+678.e0_dp*k2(j)-472.e0_dp*k3(j)-66.e0_dp*k4(j)+80.e0_dp*k5(j)+3.e0_dp*k6(j)))
-enddo
+k6(i) = k6(i) - dcmplx(timestep,0.d0) * sum(dcmplx(0.d0,Ham_l(i,:) - TransHam_ei(i,:) * tp6) * &
+(xc_ei(:,t)+(1.e0_dp/9.e0_dp)*(221.e0_dp*k1(:)-981.e0_dp*k2(:)+867.e0_dp*k3(:)-102.e0_dp*k4(:)+k5(:))))
 enddo
 
 do i=0,nstates-1
-do j=0,nstates-1
-k8(i)=k8(i)+dcmplx(timestep,0.d0)*RK_k(time+timestep,Ham_l(i,j), TransHam_ei(i,j), &
-xc_ei(j,t)+(1.e0_dp/82.e0_dp)*&
-(716.e0_dp*k1(j)-2079.e0_dp*k2(j)+1002.e0_dp*k3(j)+834.e0_dp*k4(j)-454.e0_dp*k5(j)-9.e0_dp*k6(j)+72.e0_dp*k7(j)))
-enddo
+k7(i) = k7(i) - dcmplx(timestep,0.d0) * sum(dcmplx(0.d0,Ham_l(i,:) - TransHam_ei(i,:) * tp7) * &
+(xc_ei(:,t)+(1.e0_dp/48.e0_dp)*(-183.e0_dp*k1(:)+678.e0_dp*k2(:)-472.e0_dp*k3(:)-66.e0_dp*k4(:)+80.e0_dp*k5(:)+3.e0_dp*k6(:))))
 enddo
 
 do i=0,nstates-1
-xc_ei(i,t+1)=xc_ei(i,t)+(1.e0_dp/840.e0_dp)*(41.e0_dp*(k1(i)+k8(i))+216.e0_dp*(k3(i)+k7(i))+27.e0_dp*(k4(i)+k6(i))+272.e0_dp*k5(i))
+k8(i) = k8(i) - dcmplx(timestep,0.d0) * sum(dcmplx(0.d0,Ham_l(i,:) - TransHam_ei(i,:) * tp8) * &
+(xc_ei(:,t)+(1.e0_dp/82.e0_dp) * &
+(716.e0_dp*k1(:)-2079.e0_dp*k2(:)+1002.e0_dp*k3(:)+834.e0_dp*k4(:)-454.e0_dp*k5(:)-9.e0_dp*k6(:)+72.e0_dp*k7(:))))
 enddo
+
+xc_ei(:,t+1)=xc_ei(:,t)+(41.e0_dp*(k1(:)+k8(:))+216.e0_dp*(k3(:)+k7(:))+27.e0_dp*(k4(:)+k6(:))+272.e0_dp*k5(:))/840.e0_dp
 
 elseif ( inbox .eq. 'y' ) then 
 
@@ -2008,37 +1976,8 @@ enddo
 
 endif 
 
-!if ( MOD(t,10) .eq. 0 ) then
-!if ( n .le. nQDA+nQDB ) then 
-!cnorm2 = 0.d0
-!do i=0,nstates-1
-!cnorm2 = cnorm2 + dreal(xc_ei(i,t))**2 + aimag(xc_ei(i,t))**2
-!enddo
-!!!!NORM
-!write(50,*) time*t_au, cnorm2 !cnormabs !, cnormconj, cnorm2
-!!!!POPULATIONS
-!write(49,'(4ES15.6E3)') time*t_au, (dreal(xc_ei(i,t))**2+aimag(xc_ei(i,t))**2, i=0,2)
-!write(52,'(ES11.5E2,3ES15.6E3)') time*t_au, (dreal(xc_ei(i,t)), i=0,nstates-1)
-!write(53,'(ES11.5E2,3ES15.6E3)') time*t_au, (aimag(xc_ei(i,t)), i=0,nstates-1)
-!else if ( n .gt. nQDA+nQDB ) then
-!cnorm2 = 0.d0
-!do i=0,nstates-1
-!cnorm2 = cnorm2 + dreal(xc_ei(i,t))**2 + aimag(xc_ei(i,t))**2
-!enddo
-!!!!NORM
-!write(50,*) time*t_au, cnorm2 !cnormabs !, cnormconj, cnorm2
-!!!!POPULATIONS
-!write(49,'(10ES15.6E3)') time*t_au, (dreal(xc_ei(i,t))**2+aimag(xc_ei(i,t))**2, i=0,8)
-!write(52,'(ES11.5E2,3ES15.6E3)') time*t_au, (dreal(xc_ei(i,t)), i=0,nstates-1)
-!write(53,'(ES11.5E2,3ES15.6E3)') time*t_au, (aimag(xc_ei(i,t)), i=0,nstates-1)
-!endif
-!endif
-
 if ( MOD(t,10) .eq. 0 ) then
-cnorm2 = 0.d0
-do i=0,nstates-1
-cnorm2 = cnorm2 + dreal(xc_ei(i,t))**2 + aimag(xc_ei(i,t))**2
-enddo
+cnorm2 = sum(dreal(xc_ei(:,t))**2 + aimag(xc_ei(:,t))**2)
 write(popc_ei_f,form_pop) time*t_au, (dreal(xc_ei(i,t))**2+aimag(xc_ei(i,t))**2, i=0,nstates-1), cnorm2
 write(Re_c_ei_f,form_com) time*t_au, (dreal(xc_ei(i,t)), i=0,nstates-1)
 write(Im_c_ei_f,form_com) time*t_au, (aimag(xc_ei(i,t)), i=0,nstates-1)

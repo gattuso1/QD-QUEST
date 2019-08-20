@@ -3,14 +3,14 @@ inbox   = "n" !For phase matching directions, read coordinates in space, orient 
 get_sp  = "n" !recover sampling from a previous Etransitions_0.dat
 get_ei  = "y" !Generates eigenstate vectors and TDM 
 Dyn_0   = "n" !Should I perform dynamics in 0 order basis?
-Dyn_ei  = "n" !Should I perform dynamics in eigenstate basis?
+Dyn_ei  = "y" !Should I perform dynamics in eigenstate basis?
 hamilt  = "n" !Should I print the time dependent Hamiltonian (very heavy and time consuming)
 fineSt  = "n" !Request fine structure 
 TDM_ee  = "y" !Request interexciton TDM or not
 /
 
 &elecSt !Parameters of CdSe QD and the model
-model     =  "FS"     !Choose between single band 9*9 (SB), Forster 5*5 (FO) or Fine structure 25*25 (FS)
+model     =  "SB"     !Choose between single band 9*9 (SB), Forster 5*5 (FO) or Fine structure 25*25 (FS)
 me        =  0.13d0        !Effective mass of particles in electron states (*m0)
 mh        =  0.82d0        !Effective mass of particles in hole states (*m0)
 eps       =  9.56d0        !Bulk dielectric constant
@@ -33,12 +33,12 @@ Dxf  = 0.025d0
 
 &pulses !Parameters of quantum dynamic and pulses
 integ      = "RK6"       !Choose between integrator RK4 or RK6
-npulses    = 3           !Number of pulses (up to 3)
+npulses    = 2           !Number of pulses (up to 3)
 t01        = 100.d0     !Pulse 1 centered at (s)
 t02        = 200.d0     !Pulse 2 centered at (s)
 t03        = 300.d0     !Pulse 3 centered at (s)
-timestep   = 0.050d0      !Time step of quantum dynamic
-totaltime  = 500.d0     !Total time simulated (s)
+timestep   = 0.01d0      !Time step of quantum dynamic
+totaltime  = 2000.d0     !Total time simulated (s)
 omega01    = 0.55d15      !Frequency (s-1)
 omega02    = 0.55d15      !Frequency (s-1)
 omega03    = 0.193d15      !Frequency (s-1)
@@ -56,12 +56,12 @@ vertex     = 8.d0     !vertex angle of beam crossing (inbox=y and 3 pulses)
 /
 
 &syst !Parameters of the single dot
-nQDA      = 100          !Number of dimers
+nQDA      = 0          !Number of dimers
 nQDB      = 0          !Number of dimers
-nhomoA    = 100          !Number of dimers
+nhomoA    = 0          !Number of dimers
 nhomoB    = 0          !Number of dimers
-nhetero   = 100          !Number of dimers
-dispQD    = 0.05d0      !Dispersion of QD radius
+nhetero   = 1          !Number of dimers
+dispQD    = 0.0d0      !Dispersion of QD radius
 idlink    = 20        !Linker length
 aA        = 1.10d-9      !Radius of QDA
 aB        = 2.2d-9      !Radius of QDA

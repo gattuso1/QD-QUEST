@@ -704,4 +704,118 @@ enddo
 
 end subroutine make_Ham_FS_FO
 
+subroutine make_Ham_FS_FO_P
+
+Eg(1) = minEe(1,n) + minEh(1,n)  + V0 - Eeh1(n)*elec
+!Eg(2) = Eg(1) + elec*(-0.523865d0 + Eg(1)/elec * 0.293665d0)
+!Eg(3) = minEe(1,n+ndim) + minEh(1,n+ndim)  + V0 - Eeh1(n)*elec
+!Eg(4) = Eg(3) + elec*(-0.523865d0 + Eg(3)/elec * 0.293665d0)
+
+TDM(1) = TransDip_Ana_h1e(n)
+!TDM(2) = TransDip_Ana_h2e(n)
+!TDM(3) = TransDip_Ana_h1e(n+ndim)
+!TDM(4) = TransDip_Ana_h2e(n+ndim)
+
+!print*, Eg(1), Eg(2), Eg(3), Eg(4)
+
+j = 0
+k = 1
+i = 0
+
+!if ( n .le. nQDA+nQDB ) then
+!nbands = 2
+!elseif ( n .gt. nQDA+nQDB ) then
+!nbands = 4 
+!endif
+
+!do while ( k .le. nbands ) 
+
+!i = modulo(k-1,2)+1
+!nsys = n
+!
+!if ( k .gt. 2 ) then
+!nsys = n + ndim
+!endif
+
+!print*, i,j,k,n
+
+Ham(j+1 ,j+1 ) = Eg(k)  - elec* (2.d0*Dsop/3.d0 + 3.d0*Kp)
+Ham(j+2 ,j+2 ) = Eg(k)  - elec* (2.d0*Dsop/3.d0 + 3.d0*Kp)
+Ham(j+3 ,j+3 ) = Eg(k)  - elec* Kpp
+Ham(j+4 ,j+4 ) = Eg(k)  - elec* 3.d0*Kpp
+Ham(j+5 ,j+5 ) = Eg(k)  - elec* (3.d0*Kpp - Dsop/3.d0)
+Ham(j+6 ,j+6 ) = Eg(k)  - elec* (3.d0*Kpp - Dsop/3.d0)
+Ham(j+7 ,j+7 ) = Eg(k)  - elec* (3.d0*Kpp - Dsop/3.d0)
+Ham(j+8 ,j+8 ) = Eg(k)  - elec* (3.d0*Kpp - Dsop/3.d0)
+Ham(j+9 ,j+9 ) = Eg(k)  - elec* Kpp
+Ham(j+10,j+10) = Eg(k)  - elec* 3.d0*Kpp
+Ham(j+11,j+11) = Eg(k)  - elec* (3.d0*Kpp - 2.d0*Dsop/3.d0)
+Ham(j+12,j+12) = Eg(k)  - elec* Kpp
+Ham(j+13,j+13) = Eg(k)  - elec* 3.d0*Kpp
+Ham(j+14,j+14) = Eg(k)  - elec* Kpp
+Ham(j+15,j+15) = Eg(k)  - elec* 3.d0*Kpp
+Ham(j+16,j+16) = Eg(k)  - elec* (3.d0*Kpp - Dxf)
+Ham(j+17,j+17) = Eg(k)  - elec* (3.d0*Kpp - Dxf)
+Ham(j+18,j+18) = Eg(k)  - elec* (3.d0*Kpp - Dxf)
+Ham(j+19,j+19) = Eg(k)  - elec* (3.d0*Kpp - Dxf)
+Ham(j+20,j+20) = Eg(k)  - elec* (3.d0*Kpp - Dxf)
+Ham(j+21,j+21) = Eg(k)  - elec* (3.d0*Kpp - Dxf)
+Ham(j+22,j+22) = Eg(k)  - elec* Kcs
+Ham(j+23,j+23) = Eg(k)  - elec* 3.d0*Kpp
+Ham(j+24,j+24) = Eg(k)  - elec* Kpp
+Ham(j+25,j+25) = Eg(k)  - elec* 3.d0*Kpp
+Ham(j+26,j+26) = Eg(k)  - elec* (3.d0*Kpp - 2*Dsop/3.d0)
+Ham(j+27,j+27) = Eg(k)  - elec* (3.d0*Kpp - Dsop/3.d0)
+Ham(j+28,j+28) = Eg(k)  - elec* (3.d0*Kpp - Dsop/3.d0)
+Ham(j+29,j+29) = Eg(k)  - elec* (Kpp - Dxf)
+Ham(j+30,j+30) = Eg(k)  - elec* (3.d0*Kpp - Dxf)
+Ham(j+31,j+31) = Eg(k)  - elec* (Kpp - Dxf)
+Ham(j+32,j+32) = Eg(k)  - elec* (3.d0*Kpp - Dxf)
+Ham(j+33,j+33) = Eg(k)  - elec* (Kpp - Dxf)
+Ham(j+34,j+34) = Eg(k)  - elec* (3.d0*Kpp - Dxf)
+Ham(j+35,j+35) = Eg(k)  - elec* (3.d0*Kpp - Dsop/3.d0)
+Ham(j+36,j+36) = Eg(k)  - elec* (3.d0*Kpp - Dsop/3.d0)
+
+Ham(j+3 ,j+4 ) = elec*(-1.d0*Dso1/3.d0)
+Ham(j+4 ,j+3 ) = Ham(j+3,j+4)
+Ham(j+3 ,j+5 ) = Ham(j+3,j+4)
+Ham(j+5 ,j+3 ) = Ham(j+3,j+4)
+Ham(j+6 ,j+7 ) = Ham(j+3,j+4)
+Ham(j+7 ,j+6 ) = Ham(j+3,j+4)
+Ham(j+6 ,j+8 ) = Ham(j+3,j+4)
+Ham(j+8 ,j+6 ) = Ham(j+3,j+4)
+Ham(j+9 ,j+10) = Ham(j+3,j+4)
+Ham(j+10,j+9 ) = Ham(j+3,j+4)
+Ham(j+9 ,j+11) = Ham(j+3,j+4)
+Ham(j+11,j+9 ) = Ham(j+3,j+4)
+Ham(j+10,j+12) = Ham(j+3,j+4)
+Ham(j+12,j+10) = Ham(j+3,j+4)
+
+Ham(j+4 ,j+5 ) = elec*(Dso1/3.d0)
+Ham(j+5 ,j+4 ) = Ham(j+4,j+5)
+Ham(j+7 ,j+8 ) = Ham(j+4,j+5)
+Ham(j+8 ,j+7 ) = Ham(j+4,j+5)
+Ham(j+11,j+12) = Ham(j+4,j+5)
+Ham(j+12,j+11) = Ham(j+4,j+5)
+
+TransHam(0 ,j+3 ) = abs(TDM(k))/sqrt(3.d0) 
+TransHam(0 ,j+7 ) = abs(TDM(k))/sqrt(3.d0)
+TransHam(0 ,j+10) = abs(TDM(k))/sqrt(3.d0)
+
+!print*, TransHam(j+0 ,j+3 )
+
+!k = k + 1
+!j = j + 12
+
+!enddo
+
+Ham = Ham/Energ_au
+
+do i=0,nstates-1
+TransHam(i,0) = TransHam(0,i)
+enddo
+
+end subroutine make_Ham_FS_FO_P
+
+
 end module Make_Ham
