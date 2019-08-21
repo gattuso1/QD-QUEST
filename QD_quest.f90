@@ -187,11 +187,10 @@ do n=1,nsys
 
 !write(*,*) omp_get_num_threads()
 
-write(6,*) "Computing system number:    ", n
-
 if ( ( n .le. nQDA+nQDB ) .and. ( model .eq. "SB" ) ) then
 
 nstates=3
+print*, "Computing system number:    ", n, "which possesses", nstates, "states"
 include 'allocate_core.f90'
 call make_Ham_singl
 include 'Core.f90'
@@ -199,6 +198,7 @@ include 'Core.f90'
 elseif ( ( n .le. nQDA+nQDB ) .and. ( model .eq. "FS" ) ) then
 
 nstates=55
+print*, "Computing system number:    ", n, "which possesses", nstates, "states"
 include 'allocate_core.f90'
 call make_Ham_FS_FO
 include 'Core.f90'
@@ -206,6 +206,7 @@ include 'Core.f90'
 elseif ( (n .gt. nQDA+nQDB) .and. ( model .eq. "FO" ) ) then
 
 nstates=5
+print*, "Computing system number:    ", n, "which possesses", nstates, "states"
 include 'allocate_core.f90'
 call make_Ham_he_FO
 include 'Core.f90'
@@ -214,6 +215,7 @@ elseif ( (n .gt. nQDA+nQDB) .and. ( model .eq. "FS" ) ) then
 
 !nstates=49
 nstates=109
+print*, "Computing system number:    ", n, "which possesses", nstates, "states"
 include 'allocate_core.f90'
 call make_Ham_FS_FO
 include 'Core.f90'
@@ -221,6 +223,7 @@ include 'Core.f90'
 elseif ( (n .gt. nQDA+nQDB) .and. ( model .eq. "SB" ) ) then
 
 nstates=9
+print*, "Computing system number:    ", n, "which possesses", nstates, "states"
 include 'allocate_core.f90'
 call make_Ham_he
 include 'Core.f90'

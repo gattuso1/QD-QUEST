@@ -1,5 +1,5 @@
 &outputs !Select output and computation modules, yes ("y") or ("no") 
-inbox   = "n" !For phase matching directions, read coordinates in space, orient mus ... 
+inbox   = "y" !For phase matching directions, read coordinates in space, orient mus ... 
 get_sp  = "n" !recover sampling from a previous Etransitions_0.dat
 get_ei  = "y" !Generates eigenstate vectors and TDM 
 Dyn_0   = "n" !Should I perform dynamics in 0 order basis?
@@ -38,7 +38,7 @@ t01        = 100.d0     !Pulse 1 centered at (s)
 t02        = 200.d0     !Pulse 2 centered at (s)
 t03        = 300.d0     !Pulse 3 centered at (s)
 timestep   = 0.01d0      !Time step of quantum dynamic
-totaltime  = 2000.d0     !Total time simulated (s)
+totaltime  = 500.d0     !Total time simulated (s)
 omega01    = 0.55d15      !Frequency (s-1)
 omega02    = 0.55d15      !Frequency (s-1)
 omega03    = 0.193d15      !Frequency (s-1)

@@ -1884,14 +1884,7 @@ xc_ei(:,t+1)=xc_ei(:,t)+(41.e0_dp*(k1(:)+k8(:))+216.e0_dp*(k3(:)+k7(:))+27.e0_dp
 
 elseif ( inbox .eq. 'y' ) then 
 
-k1 = dcmplx(0.0d0,0.0d0)
-k2 = dcmplx(0.0d0,0.0d0)
-k3 = dcmplx(0.0d0,0.0d0)
-k4 = dcmplx(0.0d0,0.0d0)
-k5 = dcmplx(0.0d0,0.0d0)
-k6 = dcmplx(0.0d0,0.0d0)
-k7 = dcmplx(0.0d0,0.0d0)
-k8 = dcmplx(0.0d0,0.0d0)
+k1 = 0.0d0 ; k2 = 0.0d0 ; k3 = 0.0d0 ; k4 = 0.0d0 ; k5 = 0.0d0 ; k6 = 0.0d0 ; k7 = 0.0d0 ; k8 = 0.0d0
 
 do i=0,nstates-1
 do j=0,nstates-1
@@ -1967,9 +1960,6 @@ write(popc_ei_f,form_pop) time*t_au, (dreal(xc_ei(i,t))**2+aimag(xc_ei(i,t))**2,
 write(Re_c_ei_f,form_com) time*t_au, (dreal(xc_ei(i,t)), i=0,nstates-1)
 write(Im_c_ei_f,form_com) time*t_au, (aimag(xc_ei(i,t)), i=0,nstates-1)
 endif
-
-!write(form_pop,'("(",i0,"ES16.8E3)")') nstates+2
-!write(form_com,'("(ES12.5E3",i0,"ES16.8E3)")') nstates+1
 
 endif
 

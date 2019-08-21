@@ -169,8 +169,8 @@ nsys   = nQDA+nQDB+nhomoA+nhomoB+nhetero
 totsys = nsys+nhomoA+nhomoB+nhetero
 
 allocate(aR(totsys),linker(nsys),epsin(totsys),epsR(totsys),V0e(totsys),V0h(totsys),source=0.d0)
-!allocate(QDcoor(2*nsys,3))
-!allocate(Dcenter(2*nsys,3))
+allocate(QDcoor(totsys,3))
+allocate(Dcenter(totsys,3))
 
 if ( idlink .eq. 20 ) then
 linker = 0.2d-9
@@ -219,28 +219,28 @@ elseif ( get_sp .eq. 'y' ) then
 endif
 
 do n=1,totsys
-epsin(n) = 1.0 + (eps - 1.0) / (1.0 + (0.75d-9/(2*aR(n)))**1.2)
-epsR(n)  = 1.0/((1.0/epsin(n))-((1.0/epsin(n))-(1.0/(epsin(n)+3.5)))*&
-           (1-(exp(-(36.d0/35)*aR(n)/rhoe)+exp(-(36.d0/35)*aR(n)/rhoh))/2))
-V0e(n)   =-1*(-3.49+2.47*(1d9*2*aR(n))**(-1.32))*elec
-V0h(n)   =-1*(-5.23-0.74*(1d9*2*aR(n))**(-0.95))*elec
+epsin(n) = 1.0e0_dp + (eps - 1.0e0_dp) / (1.0e0_dp + (0.75e-9_dp/(2.e0_dp*aR(n)))**1.2e0_dp)
+epsR(n)  = 1.0e0_dp/((1.0e0_dp/epsin(n))-((1.0e0_dp/epsin(n))-(1.0e0_dp/(epsin(n)+3.5e0_dp)))*&
+           (1.e0_dp-(exp(-(36e0_dp/35.e0_dp)*aR(n)/rhoe)+exp(-(36.e0_dp/35.e0_dp)*aR(n)/rhoh))/2.e0_dp))
+V0e(n)   =-1.e0_dp*(-3.49e0_dp+2.47e0_dp*(2.e9_dp*aR(n))**(-1.32e0_dp))*elec
+V0h(n)   =-1.e0_dp*(-5.23e0_dp-0.74e0_dp*(2.e9_dp*aR(n))**(-0.95e0_dp))*elec
 enddo
 
 
 if ( inbox .eq. 'y' ) then
 
-!open(56,file='box-dimers.xyz',form='formatted',action='read')
-!read(56,*) 
-!read(56,*) 
-!do n = 1,nsys
-!read(56,*) dummy, QDcoor(n,1), QDcoor(n,2), QDcoor(n,3)
-!read(56,*) dummy, QDcoor(n+ndim,1), QDcoor(n+ndim,2), QDcoor(n+ndim,3)
-!Dcenter(n,1) = (QDcoor(n,1) + QDcoor(n+ndim,1))/2.
-!Dcenter(n,2) = (QDcoor(n,2) + QDcoor(n+ndim,2))/2.
-!Dcenter(n,3) = (QDcoor(n,3) + QDcoor(n+ndim,3))/2.
-!enddo
-!QDcoor(:,:) = QDcoor(:,:) * 1.e-10_dp
-!Dcenter(:,:) = Dcenter(:,:) * 1.e-10_dp
+open(56,file='box-dimers.xyz',form='formatted',action='read')
+read(56,*) 
+read(56,*) 
+do n = 1,totsys
+read(56,*) dummy, QDcoor(n,1), QDcoor(n,2), QDcoor(n,3)
+read(56,*) dummy, QDcoor(n+ndim,1), QDcoor(n+ndim,2), QDcoor(n+ndim,3)
+Dcenter(n,1) = (QDcoor(n,1) + QDcoor(n+ndim,1))/2.e0_dp
+Dcenter(n,2) = (QDcoor(n,2) + QDcoor(n+ndim,2))/2.e0_dp
+Dcenter(n,3) = (QDcoor(n,3) + QDcoor(n+ndim,3))/2.e0_dp
+enddo
+QDcoor(:,:) = QDcoor(:,:) * 1.e-10_dp
+Dcenter(:,:) = Dcenter(:,:) * 1.e-10_dp
 
 endif
 
