@@ -1679,74 +1679,59 @@ if ( Dyn_0 .eq. 'y' ) then
 
 if ( inbox .eq. 'n' ) then 
 
-k1 = dcmplx(0.0d0,0.0d0)
-k2 = dcmplx(0.0d0,0.0d0)
-k3 = dcmplx(0.0d0,0.0d0)
-k4 = dcmplx(0.0d0,0.0d0)
-k5 = dcmplx(0.0d0,0.0d0)
-k6 = dcmplx(0.0d0,0.0d0)
-k7 = dcmplx(0.0d0,0.0d0)
-k8 = dcmplx(0.0d0,0.0d0)
+tp1 = pulse(time)
+tp2 = pulse(time+(timestep/9.d0))
+tp3 = pulse(time+(timestep/6.d0))
+tp4 = pulse(time+(timestep/3.d0))
+tp5 = pulse(time+(timestep/2.d0))
+tp6 = pulse(time+(2.d0*timestep/3.d0))
+tp7 = pulse(time+(5.d0*timestep/6.d0))
+tp8 = pulse(time+timestep)
+
+k1 = 0.0d0 ; k2 = 0.0d0 ; k3 = 0.0d0 ; k4 = 0.0d0 ; k5 = 0.0d0 ; k6 = 0.0d0 ; k7 = 0.0d0 ; k8 = 0.0d0
 
 do i=0,nstates-1
-do j=0,nstates-1
-k1(i) = k1(i) + dcmplx(timestep,0.d0)*RK_k(time,Ham(i,j), TransHam(i,j), xc(j,t)) 
-enddo
-enddo
-
-do i=0,nstates-1
-do j=0,nstates-1
-k2(i) = k2(i) + dcmplx(timestep,0.d0)*RK_k(time+(timestep/9.e0_dp),Ham(i,j), TransHam(i,j), &
-xc(j,t)+(1.e0_dp/9.e0_dp)*k1(j)) 
-enddo
+k1(i) = k1(i) - dcmplx(timestep,0.d0) * sum(dcmplx(0.d0,Ham(i,:) - TransHam(i,:) * tp1) * &
+xc(:,t)) 
 enddo
 
 do i=0,nstates-1
-do j=0,nstates-1
-k3(i) = k3(i) + dcmplx(timestep,0.d0)*RK_k(time+(timestep/6.e0_dp),Ham(i,j), TransHam(i,j), &
-xc(j,t)+(1.e0_dp/24.e0_dp)*(k1(j)+3.e0_dp*k2(j))) 
-enddo
+k2(i) = k2(i) - dcmplx(timestep,0.d0) * sum(dcmplx(0.d0,Ham(i,:) - TransHam(i,:) * tp2) * &
+(xc(:,t)+(1.e0_dp/9.e0_dp)*k1(:)))
 enddo
 
 do i=0,nstates-1
-do j=0,nstates-1
-k4(i) = k4(i) + dcmplx(timestep,0.d0)*RK_k(time+(timestep/3.e0_dp),Ham(i,j), TransHam(i,j), &
-xc(j,t)+(1.e0_dp/6.e0_dp)*(k1(j)-3.e0_dp*k2(j)+4.e0_dp*k3(j))) 
-enddo
+k3(i) = k3(i) - dcmplx(timestep,0.d0) * sum(dcmplx(0.d0,Ham(i,:) - TransHam(i,:) * tp3) * &
+(xc(:,t)+(1.e0_dp/24.e0_dp)*(k1(:)+3.e0_dp*k2(:)))) 
 enddo
 
 do i=0,nstates-1
-do j=0,nstates-1
-k5(i) = k5(i) + dcmplx(timestep,0.d0)*RK_k(time+(timestep/2.e0_dp),Ham(i,j), TransHam(i,j), &
-xc(j,t)+(1.e0_dp/8.e0_dp)*(-5.e0_dp*k1(j)+27.e0_dp*k2(j)-24.e0_dp*k3(j)+6.e0_dp*k4(j)))
-enddo
+k4(i) = k4(i) - dcmplx(timestep,0.d0) * sum(dcmplx(0.d0,Ham(i,:) - TransHam(i,:) * tp4) * &
+(xc(:,t)+(1.e0_dp/6.e0_dp)*(k1(:)-3.e0_dp*k2(:)+4.e0_dp*k3(:)))) 
 enddo
 
 do i=0,nstates-1
-do j=0,nstates-1
-k6(i) = k6(i) + dcmplx(timestep,0.d0)*RK_k(time+(2.e0_dp*timestep/3.e0_dp),Ham(i,j), TransHam(i,j), &
-xc(j,t)+(1.e0_dp/9.e0_dp)*(221.e0_dp*k1(j)-981.e0_dp*k2(j)+867.e0_dp*k3(j)-102.e0_dp*k4(j)+k5(j)))
-enddo
+k5(i) = k5(i) - dcmplx(timestep,0.d0) * sum(dcmplx(0.d0,Ham(i,:) - TransHam(i,:) * tp5) * &
+(xc(:,t)+(1.e0_dp/8.e0_dp)*(-5.e0_dp*k1(:)+27.e0_dp*k2(:)-24.e0_dp*k3(:)+6.e0_dp*k4(:))))
 enddo
 
 do i=0,nstates-1
-do j=0,nstates-1
-k7(i) = k7(i) + dcmplx(timestep,0.d0)*RK_k(time+(5.e0_dp*timestep/6.e0_dp),Ham(i,j), TransHam(i,j), &
-xc(j,t)+(1.e0_dp/48.e0_dp)*(-183.e0_dp*k1(j)+678.e0_dp*k2(j)-472.e0_dp*k3(j)-66.e0_dp*k4(j)+80.e0_dp*k5(j)+3.e0_dp*k6(j)))
-enddo
+k6(i) = k6(i) - dcmplx(timestep,0.d0) * sum(dcmplx(0.d0,Ham(i,:) - TransHam(i,:) * tp6) * &
+(xc(:,t)+(1.e0_dp/9.e0_dp)*(221.e0_dp*k1(:)-981.e0_dp*k2(:)+867.e0_dp*k3(:)-102.e0_dp*k4(:)+k5(:))))
 enddo
 
 do i=0,nstates-1
-do j=0,nstates-1
-k8(i)=k8(i)+dcmplx(timestep,0.d0)*RK_k(time+timestep,Ham(i,j), TransHam(i,j), &
-xc(j,t)+(1.e0_dp/82.e0_dp)*&
-(716.e0_dp*k1(j)-2079.e0_dp*k2(j)+1002.e0_dp*k3(j)+834.e0_dp*k4(j)-454.e0_dp*k5(j)-9.e0_dp*k6(j)+72.e0_dp*k7(j)))
-enddo
+k7(i) = k7(i) - dcmplx(timestep,0.d0) * sum(dcmplx(0.d0,Ham(i,:) - TransHam(i,:) * tp7) * &
+(xc(:,t)+(1.e0_dp/48.e0_dp)*(-183.e0_dp*k1(:)+678.e0_dp*k2(:)-472.e0_dp*k3(:)-66.e0_dp*k4(:)+80.e0_dp*k5(:)+3.e0_dp*k6(:))))
 enddo
 
 do i=0,nstates-1
-xc(i,t+1) = xc(i,t)+(1.e0_dp/840.e0_dp)*(41.e0_dp*(k1(i)+k8(i))+216.e0_dp*(k3(i)+k7(i))+27.e0_dp*(k4(i)+k6(i))+272.e0_dp*k5(i))
+k8(i) = k8(i) - dcmplx(timestep,0.d0) * sum(dcmplx(0.d0,Ham(i,:) - TransHam(i,:) * tp8) * &
+(xc(:,t)+(1.e0_dp/82.e0_dp) * &
+(716.e0_dp*k1(:)-2079.e0_dp*k2(:)+1002.e0_dp*k3(:)+834.e0_dp*k4(:)-454.e0_dp*k5(:)-9.e0_dp*k6(:)+72.e0_dp*k7(:))))
 enddo
+
+xc(:,t+1)=xc(:,t)+(41.e0_dp*(k1(:)+k8(:))+216.e0_dp*(k3(:)+k7(:))+27.e0_dp*(k4(:)+k6(:))+272.e0_dp*k5(:))/840.e0_dp
 
 elseif ( inbox .eq. 'y' ) then 
 
@@ -1847,7 +1832,7 @@ tp1 = pulse(time)
 tp2 = pulse(time+(timestep/9.d0))
 tp3 = pulse(time+(timestep/6.d0))
 tp4 = pulse(time+(timestep/3.d0))
-tp5 = pulse(time+(timestep/2.d0))
+tp5 = pulse(time+0.5d0*timestep)
 tp6 = pulse(time+(2.d0*timestep/3.d0))
 tp7 = pulse(time+(5.d0*timestep/6.d0))
 tp8 = pulse(time+timestep)
@@ -1861,38 +1846,38 @@ enddo
 
 do i=0,nstates-1
 k2(i) = k2(i) - dcmplx(timestep,0.d0) * sum(dcmplx(0.d0,Ham_l(i,:) - TransHam_ei(i,:) * tp2) * &
-(xc_ei(:,t)+(1.e0_dp/9.e0_dp)*k1(:)))
+(xc_ei(:,t)+k1(:)/9.e0_dp))
 enddo
 
 do i=0,nstates-1
 k3(i) = k3(i) - dcmplx(timestep,0.d0) * sum(dcmplx(0.d0,Ham_l(i,:) - TransHam_ei(i,:) * tp3) * &
-(xc_ei(:,t)+(1.e0_dp/24.e0_dp)*(k1(:)+3.e0_dp*k2(:)))) 
+(xc_ei(:,t)+(k1(:)+3.e0_dp*k2(:))/24.e0_dp)) 
 enddo
 
 do i=0,nstates-1
 k4(i) = k4(i) - dcmplx(timestep,0.d0) * sum(dcmplx(0.d0,Ham_l(i,:) - TransHam_ei(i,:) * tp4) * &
-(xc_ei(:,t)+(1.e0_dp/6.e0_dp)*(k1(:)-3.e0_dp*k2(:)+4.e0_dp*k3(:)))) 
+(xc_ei(:,t)+(k1(:)-3.e0_dp*k2(:)+4.e0_dp*k3(:))/6.e0_dp)) 
 enddo
 
 do i=0,nstates-1
 k5(i) = k5(i) - dcmplx(timestep,0.d0) * sum(dcmplx(0.d0,Ham_l(i,:) - TransHam_ei(i,:) * tp5) * &
-(xc_ei(:,t)+(1.e0_dp/8.e0_dp)*(-5.e0_dp*k1(:)+27.e0_dp*k2(:)-24.e0_dp*k3(:)+6.e0_dp*k4(:))))
+(xc_ei(:,t)+(-5.e0_dp*k1(:)+27.e0_dp*k2(:)-24.e0_dp*k3(:)+6.e0_dp*k4(:))*0.125e0_dp))
 enddo
 
 do i=0,nstates-1
 k6(i) = k6(i) - dcmplx(timestep,0.d0) * sum(dcmplx(0.d0,Ham_l(i,:) - TransHam_ei(i,:) * tp6) * &
-(xc_ei(:,t)+(1.e0_dp/9.e0_dp)*(221.e0_dp*k1(:)-981.e0_dp*k2(:)+867.e0_dp*k3(:)-102.e0_dp*k4(:)+k5(:))))
+(xc_ei(:,t)+(221.e0_dp*k1(:)-981.e0_dp*k2(:)+867.e0_dp*k3(:)-102.e0_dp*k4(:)+k5(:))/9.e0_dp))
 enddo
 
 do i=0,nstates-1
 k7(i) = k7(i) - dcmplx(timestep,0.d0) * sum(dcmplx(0.d0,Ham_l(i,:) - TransHam_ei(i,:) * tp7) * &
-(xc_ei(:,t)+(1.e0_dp/48.e0_dp)*(-183.e0_dp*k1(:)+678.e0_dp*k2(:)-472.e0_dp*k3(:)-66.e0_dp*k4(:)+80.e0_dp*k5(:)+3.e0_dp*k6(:))))
+(xc_ei(:,t)+(-183.e0_dp*k1(:)+678.e0_dp*k2(:)-472.e0_dp*k3(:)-66.e0_dp*k4(:)+80.e0_dp*k5(:)+3.e0_dp*k6(:))/48.e0_dp))
 enddo
 
 do i=0,nstates-1
 k8(i) = k8(i) - dcmplx(timestep,0.d0) * sum(dcmplx(0.d0,Ham_l(i,:) - TransHam_ei(i,:) * tp8) * &
-(xc_ei(:,t)+(1.e0_dp/82.e0_dp) * &
-(716.e0_dp*k1(:)-2079.e0_dp*k2(:)+1002.e0_dp*k3(:)+834.e0_dp*k4(:)-454.e0_dp*k5(:)-9.e0_dp*k6(:)+72.e0_dp*k7(:))))
+(xc_ei(:,t)+&
+(716.e0_dp*k1(:)-2079.e0_dp*k2(:)+1002.e0_dp*k3(:)+834.e0_dp*k4(:)-454.e0_dp*k5(:)-9.e0_dp*k6(:)+72.e0_dp*k7(:))/82.e0_dp))
 enddo
 
 xc_ei(:,t+1)=xc_ei(:,t)+(41.e0_dp*(k1(:)+k8(:))+216.e0_dp*(k3(:)+k7(:))+27.e0_dp*(k4(:)+k6(:))+272.e0_dp*k5(:))/840.e0_dp
