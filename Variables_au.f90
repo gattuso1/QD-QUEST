@@ -18,6 +18,10 @@ implicit none
    integer :: syst, ndots, n, rmin, rmax, nsys, npulses, nstates, ntime, i, j, t, lwork, info, idlink, threads, nQDA, nQDB
    integer :: nhomoA,nhomoB,nhetero,totsys,ndim,nQD, EminID,EmaxID,Estep,nmax,io,abso
    integer,allocatable :: seed(:)
+   real(dp) :: tp1,tp2,tp3,tp4,tp5,tp6,tp7,tp8
+   real(dp) :: tpx1,tpx2,tpx3,tpx4,tpx5,tpx6,tpx7,tpx8
+   real(dp) :: tpy1,tpy2,tpy3,tpy4,tpy5,tpy6,tpy7,tpy8
+   real(dp) :: tpz1,tpz2,tpz3,tpz4,tpz5,tpz6,tpz7,tpz8
    real(dp) :: aA, aB, me, mh, eps, epsout, V0, omegaLO, rhoe, rhoh, slope, V0eV, minr, maxr, rsteps, side, link
    real(dp) :: sigma_conv,Emin,Emax
    real(dp) :: vertex, zbase, start, finish, alphae, alphah1, alphah2, betae, betah1, betah2

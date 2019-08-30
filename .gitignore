@@ -1,0 +1,15 @@
+fort*
+*.pdf
+*.out
+*.log
+*.o
+*.mod
+fort*
+*.dat
+QD_quest
+gnu*
+*eps
+Output-*
+*txt
+plot*
+*BAK
