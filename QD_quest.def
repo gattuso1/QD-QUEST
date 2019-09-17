@@ -10,7 +10,7 @@ TDM_ee  = "y" !Request interexciton TDM or not
 /
 
 &elecSt !Parameters of CdSe QD and the model
-model     =  "SB"     !Choose between single band 9*9 (SB), Forster 5*5 (FO) or Fine structure 25*25 (FS)
+model     =  "FS"     !Choose between single band 9*9 (SB), Forster 5*5 (FO) or Fine structure 25*25 (FS)
 me        =  0.13d0        !Effective mass of particles in electron states (*m0)
 mh        =  0.82d0        !Effective mass of particles in hole states (*m0)
 eps       =  9.56d0        !Bulk dielectric constant

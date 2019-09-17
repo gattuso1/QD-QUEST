@@ -78,6 +78,82 @@ endif
 
 endif
 
+if ( Dyn_L .eq. 'y' ) then
+
+allocate(irow(0:nstates2-1,2),icol(0:nstates2-1,2))
+allocate(merge_diag(0:nstates2-1,0:nstates2-1))
+allocate(merge_odiag(0:nstates2-1,0:nstates2-1))
+
+do i=0,nstates2-1
+do j=0,nstates2-1
+merge_diag(i,j)  = merge(1,0,i.eq.j)
+merge_odiag(i,j) = merge(0,1,i.eq.j)
+enddo
+enddo
+
+!!!!!Liouvillian
+do k=0,nstates-1
+do l=0,nstates-1
+do i=0,nstates-1
+!!!!!Commutator [H,Eij]
+xliou(k,l,i,l)=xliou(k,l,i,l)+haml(i,k)
+print*, k,l,i,l,haml(i,k),xliou(k,l,i,l)
+enddo
+do j=0,nstates-1
+xliou(k,l,k,j)=xliou(k,l,k,j)-haml(l,j)
+print*, k,l,k,j,haml(l,j),xliou(k,l,k,j)
+enddo
+enddo
+enddo
+
+!!!!!Print xLiouvillian
+do i=0,nstates-1
+do j=0,nstates-1
+do k=0,nstates-1
+do l=0,nstates-1
+print*, i,j,k,l,xliou(i,j,k,l)
+enddo
+enddo
+enddo
+enddo
+
+do i=0,nstates-1
+do j=0,nstates-1
+write(9,form2) ((xliou(i,j,k,l),l=0,nstates-1),k=0,nstates-1)
+write(*,form2) ((xliou(i,j,k,l),l=0,nstates-1),k=0,nstates-1)
+enddo
+enddo
+
+!!!!Renumber xLiou
+kl=-1
+do i=0,nstates-1
+do j=0,nstates-1
+kl=kl+1
+irow(kl,1)=i
+irow(kl,2)=j
+kc=-1
+do k=0,nstates-1
+do l=0,nstates-1
+kc=kc+1
+icol(kc,1)=k
+icol(kc,2)=l
+lfield(kl,kc)=xliou(i,j,k,l)
+enddo
+enddo
+enddo
+enddo
+
+xlfield(:,:) = dcmplx(lfield,0.d0)
+
+do i=0,nstates2-1
+do j=0,nstates2-1
+merge_diag(i,j)  = merge(1,0,i.eq.j)
+merge_odiag(i,j) = merge(0,1,i.eq.j)
+enddo
+enddo
+
+endif
+
 if ( ( Dyn_0 .eq. 'y' ) .or. ( Dyn_ei .eq. 'y' ) ) then
 
 !!!Opens output files
