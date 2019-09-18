@@ -6,24 +6,24 @@ use Variables_au
 use Integrals
 use Normal
 
-real(dp), parameter :: a11_1d_ho = 0.0191697d0  
-real(dp), parameter :: a11_2d_ho = 0.242775d0  
-real(dp), parameter :: a11_3d_ho = 1.28322d0 
-real(dp), parameter :: a11_1e_ho = 0.0131599d0       
-real(dp), parameter :: a11_2e_ho = 0.199444d0        
-real(dp), parameter :: a11_3e_ho = 1.10133d0
-real(dp), parameter :: a22_1d_ho = 0.0178298d0  
-real(dp), parameter :: a22_2d_ho = 0.239631d0   
-real(dp), parameter :: a22_3d_ho = 1.25828d0
-real(dp), parameter :: a22_1e_ho = 0.00477726d0      
-real(dp), parameter :: a22_2e_ho = 0.0379395d0       
-real(dp), parameter :: a22_3e_ho = 1.66235d0
-real(dp), parameter :: a12_1d_ho = -0.00288509
-real(dp), parameter :: a12_2d_ho = 0.0260066
-real(dp), parameter :: a12_3d_ho = 0.57151
-real(dp), parameter :: a12_1e_ho = -0.00651569   
-real(dp), parameter :: a12_2e_ho = 0.0530662     
-real(dp), parameter :: a12_3e_ho = 1.71364
+real(dp), parameter :: a11_1d_ho = 0.0191697e0_dp  
+real(dp), parameter :: a11_2d_ho = 0.242775e0_dp  
+real(dp), parameter :: a11_3d_ho = 1.28322e0_dp 
+real(dp), parameter :: a11_1e_ho = 0.0131599e0_dp       
+real(dp), parameter :: a11_2e_ho = 0.199444e0_dp        
+real(dp), parameter :: a11_3e_ho = 1.10133e0_dp
+real(dp), parameter :: a22_1d_ho = 0.0178298e0_dp  
+real(dp), parameter :: a22_2d_ho = 0.239631e0_dp   
+real(dp), parameter :: a22_3d_ho = 1.25828e0_dp
+real(dp), parameter :: a22_1e_ho = 0.00477726e0_dp      
+real(dp), parameter :: a22_2e_ho = 0.0379395e0_dp       
+real(dp), parameter :: a22_3e_ho = 1.66235e0_dp
+real(dp), parameter :: a12_1d_ho = -0.00288509e0_dp
+real(dp), parameter :: a12_2d_ho = 0.0260066e0_dp
+real(dp), parameter :: a12_3d_ho = 0.57151e0_dp
+real(dp), parameter :: a12_1e_ho = -0.00651569e0_dp  
+real(dp), parameter :: a12_2e_ho = 0.0530662e0_dp     
+real(dp), parameter :: a12_3e_ho = 1.71364e0_dp
 
 
 contains
@@ -259,45 +259,45 @@ include 'Parameters-ex-55.f90'
 endif
 
 Ham_0(1)     = minEe(1,n) + minEh(1,n)  + V0 
-Ham_dir(1,1) = elec*(a11_1d_ho + a11_2d_ho / ((aR(n)*1d9)**a11_3d_ho)) 
-Ham_ex(1,1)  = elec*(a11_1e_ho + a11_2e_ho / ((aR(n)*1d9)**a11_3e_ho))
+Ham_dir(1,1) = elec*(a11_1d_ho + a11_2d_ho / ((aR(n)*1e9_dp)**a11_3d_ho)) 
+Ham_ex(1,1)  = elec*(a11_1e_ho + a11_2e_ho / ((aR(n)*1e9_dp)**a11_3e_ho))
 
 Ham_0(2)     = minEe(1,n) + minEh(2,n) + V0 
-Ham_dir(2,2) = elec*(a22_1d_ho + a22_2d_ho / ((aR(n)*1d9)**a22_3d_ho))
-Ham_ex(2,2)  = elec*(a22_1e_ho + a22_2e_ho / ((aR(n)*1d9)**a22_3e_ho))
+Ham_dir(2,2) = elec*(a22_1d_ho + a22_2d_ho / ((aR(n)*1e9_dp)**a22_3d_ho))
+Ham_ex(2,2)  = elec*(a22_1e_ho + a22_2e_ho / ((aR(n)*1e9_dp)**a22_3e_ho))
 
 Ham_0(3)     = minEe(1,n+ndim) + minEh(1,n+ndim) + V0 
-Ham_dir(3,3) = elec*(a11_1d_ho + a11_2d_ho / ((aR(n+ndim)*1d9)**a11_3d_ho))
-Ham_ex(3,3)  = elec*(a11_1e_ho + a11_2e_ho / ((aR(n+ndim)*1d9)**a11_3e_ho))
+Ham_dir(3,3) = elec*(a11_1d_ho + a11_2d_ho / ((aR(n+ndim)*1e9_dp)**a11_3d_ho))
+Ham_ex(3,3)  = elec*(a11_1e_ho + a11_2e_ho / ((aR(n+ndim)*1e9_dp)**a11_3e_ho))
 
 Ham_0(4)     = minEe(1,n+ndim) + minEh(2,n+ndim) + V0 
-Ham_dir(4,4) = elec*(a22_1d_ho + a22_2d_ho / ((aR(n+ndim)*1d9)**a22_3d_ho))
-Ham_ex(4,4)  = elec*(a22_1e_ho + a22_2e_ho / ((aR(n+ndim)*1d9)**a22_3e_ho))
+Ham_dir(4,4) = elec*(a22_1d_ho + a22_2d_ho / ((aR(n+ndim)*1e9_dp)**a22_3d_ho))
+Ham_ex(4,4)  = elec*(a22_1e_ho + a22_2e_ho / ((aR(n+ndim)*1e9_dp)**a22_3e_ho))
 
-Ham_dir(1,2) = elec*(a12_1d_ho + a12_2d_ho / ((aR(n)*1d9)**a12_3d_ho)) 
-Ham_ex(1,2)  = elec*(a12_1e_ho + a12_2e_ho / ((aR(n)*1d9)**a12_3e_ho))
+Ham_dir(1,2) = elec*(a12_1d_ho + a12_2d_ho / ((aR(n)*1e9_dp)**a12_3d_ho)) 
+Ham_ex(1,2)  = elec*(a12_1e_ho + a12_2e_ho / ((aR(n)*1e9_dp)**a12_3e_ho))
 
-Ham_dir(1,3) = elec*(a13_1d_he + a13_2d_he / ((aR(n)*1d9)**a13_3d_he * (aR(n+ndim)*1d9)**a13_4d_he))
-Ham_ex(1,3)  = elec*(a13_1e_he + a13_2e_he / ((aR(n)*1d9)**a13_3e_he * (aR(n+ndim)*1d9)**a13_4e_he))
+Ham_dir(1,3) = elec*(a13_1d_he + a13_2d_he / ((aR(n)*1e9_dp)**a13_3d_he * (aR(n+ndim)*1e9_dp)**a13_4d_he))
+Ham_ex(1,3)  = elec*(a13_1e_he + a13_2e_he / ((aR(n)*1e9_dp)**a13_3e_he * (aR(n+ndim)*1e9_dp)**a13_4e_he))
 
-Ham_dir(1,4) = elec*(a14_1d_he + a14_2d_he / ((aR(n)*1d9)**a14_3d_he * (aR(n+ndim)*1d9)**a14_4d_he))
-Ham_ex(1,4)  = elec*(a14_1e_he + a14_2e_he / ((aR(n)*1d9)**a14_3e_he * (aR(n+ndim)*1d9)**a14_4e_he))
+Ham_dir(1,4) = elec*(a14_1d_he + a14_2d_he / ((aR(n)*1e9_dp)**a14_3d_he * (aR(n+ndim)*1e9_dp)**a14_4d_he))
+Ham_ex(1,4)  = elec*(a14_1e_he + a14_2e_he / ((aR(n)*1e9_dp)**a14_3e_he * (aR(n+ndim)*1e9_dp)**a14_4e_he))
 
-Ham_dir(2,3) = elec*(a14_1d_he + a14_2d_he / ((aR(n+ndim)*1d9)**a14_3d_he * (aR(n)*1d9)**a14_4d_he))
-Ham_ex(2,3)  = elec*(a14_1e_he + a14_2e_he / ((aR(n+ndim)*1d9)**a14_3e_he * (aR(n)*1d9)**a14_4e_he))
+Ham_dir(2,3) = elec*(a14_1d_he + a14_2d_he / ((aR(n+ndim)*1e9_dp)**a14_3d_he * (aR(n)*1e9_dp)**a14_4d_he))
+Ham_ex(2,3)  = elec*(a14_1e_he + a14_2e_he / ((aR(n+ndim)*1e9_dp)**a14_3e_he * (aR(n)*1e9_dp)**a14_4e_he))
 
-Ham_dir(2,4) = elec*(a24_1d_he + a24_2d_he / ((aR(n)*1d9)**a24_3d_he * (aR(n+ndim)*1d9)**a24_4d_he))
-Ham_ex(2,4)  = elec*(a24_1e_he + a24_2e_he / ((aR(n)*1d9)**a24_3e_he * (aR(n+ndim)*1d9)**a24_4e_he))
+Ham_dir(2,4) = elec*(a24_1d_he + a24_2d_he / ((aR(n)*1e9_dp)**a24_3d_he * (aR(n+ndim)*1e9_dp)**a24_4d_he))
+Ham_ex(2,4)  = elec*(a24_1e_he + a24_2e_he / ((aR(n)*1e9_dp)**a24_3e_he * (aR(n+ndim)*1e9_dp)**a24_4e_he))
 
-Ham_dir(3,4) = elec*(a12_1d_ho + a12_2d_ho / ((aR(n+ndim)*1d9)**a12_3d_ho)) 
-Ham_ex(3,4)  = elec*(a12_1e_ho + a12_2e_ho / ((aR(n+ndim)*1d9)**a12_3e_ho))
+Ham_dir(3,4) = elec*(a12_1d_ho + a12_2d_ho / ((aR(n+ndim)*1e9_dp)**a12_3d_ho)) 
+Ham_ex(3,4)  = elec*(a12_1e_ho + a12_2e_ho / ((aR(n+ndim)*1e9_dp)**a12_3e_ho))
 
 do i=1,nstates-1
   do j=1,nstates-1
     if ( i .eq. j ) then
     Ham(i,j) = Ham_0(i) - Ham_dir(i,j) + Ham_ex(i,j)
     elseif ( i .ne. j ) then
-    Ham(i,j) = -1.d0 * Ham_dir(i,j) + Ham_ex(i,j)
+    Ham(i,j) = -1.e0_dp * Ham_dir(i,j) + Ham_ex(i,j)
     endif
   enddo
 enddo

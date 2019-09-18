@@ -6,8 +6,11 @@ elseif (n .gt. nQDA+nQDB) then
 write(form_arr,'("(",i0,"f16.8)")') nstates+3
 endif
 write(form_abs,'("(2f16.8,2x,i0)")') 
-write(form_pop,'("(",i0,"ES16.8E3,ES20.12E2)")') nstates+1
-write(form_com,'("(ES12.5E3,",i0,"ES16.8E3)")') nstates+1
+write(form_pop,'("(",i0,"ES17.8E3,ES25.16E3)")') nstates+1
+write(form_com,'("(ES12.5E3,",i0,"ES18.8E3)")') nstates+1
+write(form_com_L,'("(ES12.5E3,",i0,"ES18.8E3)")') nstates2+1
+
+write(6,*) form_com_L
 
 if ( get_ei .eq. 'y' ) then
 Ham_ei = Ham
@@ -80,9 +83,8 @@ endif
 
 if ( Dyn_L .eq. 'y' ) then
 
-allocate(irow(0:nstates2-1,2),icol(0:nstates2-1,2))
-allocate(merge_diag(0:nstates2-1,0:nstates2-1))
-allocate(merge_odiag(0:nstates2-1,0:nstates2-1))
+write(form1,'("(i4,i4,i4,i4,1x,100(e24.16,1x))")')
+!write(form2,'("(100(f7.3,1x))")')
 
 do i=0,nstates2-1
 do j=0,nstates2-1
@@ -91,17 +93,27 @@ merge_odiag(i,j) = merge(0,1,i.eq.j)
 enddo
 enddo
 
+do i=0,nstates-1
+do j=i+0,nstates-1
+haml(i,j)=TransHam_ei(i,j)
+haml(j,i)=TransHam_ei(j,i)
+enddo
+enddo
+
+do i=0,nstates-1
+haml(i,i)=lambda(i)
+enddo
+
 !!!!!Liouvillian
 do k=0,nstates-1
 do l=0,nstates-1
 do i=0,nstates-1
 !!!!!Commutator [H,Eij]
-xliou(k,l,i,l)=xliou(k,l,i,l)+haml(i,k)
-print*, k,l,i,l,haml(i,k),xliou(k,l,i,l)
+xliou(k,l,i,l) = xliou(k,l,i,l) + haml(i,k)
+!print*, k,l,i,l,Ham_l(i,k),xliou(k,l,i,l)
 enddo
 do j=0,nstates-1
-xliou(k,l,k,j)=xliou(k,l,k,j)-haml(l,j)
-print*, k,l,k,j,haml(l,j),xliou(k,l,k,j)
+xliou(k,l,k,j) = xliou(k,l,k,j) - haml(l,j)
 enddo
 enddo
 enddo
@@ -111,18 +123,19 @@ do i=0,nstates-1
 do j=0,nstates-1
 do k=0,nstates-1
 do l=0,nstates-1
-print*, i,j,k,l,xliou(i,j,k,l)
+write(Liou_f,form1) i,j,k,l,xliou(i,j,k,l)
+!print*, i,j,k,l,xliou(i,j,k,l)
 enddo
 enddo
 enddo
 enddo
 
-do i=0,nstates-1
-do j=0,nstates-1
-write(9,form2) ((xliou(i,j,k,l),l=0,nstates-1),k=0,nstates-1)
-write(*,form2) ((xliou(i,j,k,l),l=0,nstates-1),k=0,nstates-1)
-enddo
-enddo
+!do i=0,nstates-1
+!do j=0,nstates-1
+!write(9,form2) ((xliou(i,j,k,l),l=0,nstates-1),k=0,nstates-1)
+!write(*,form2) ((xliou(i,j,k,l),l=0,nstates-1),k=0,nstates-1)
+!enddo
+!enddo
 
 !!!!Renumber xLiou
 kl=-1
@@ -143,14 +156,7 @@ enddo
 enddo
 enddo
 
-xlfield(:,:) = dcmplx(lfield,0.d0)
-
-do i=0,nstates2-1
-do j=0,nstates2-1
-merge_diag(i,j)  = merge(1,0,i.eq.j)
-merge_odiag(i,j) = merge(0,1,i.eq.j)
-enddo
-enddo
+xlfield(:,:) = dcmplx(lfield,0.e0_dp)
 
 endif
 
@@ -165,6 +171,8 @@ write(Re_c,'(a5,i5.5,a4)') 'Re_c-', n, '.dat'
 write(Im_c,'(a5,i5.5,a4)') 'Im_c-', n, '.dat'
 write(Re_c_ei,'(a8,i5.5,a4)') 'Re_c_ei-', n, '.dat'
 write(Im_c_ei,'(a8,i5.5,a4)') 'Im_c_ei-', n, '.dat'
+write(Re_c_L,'(a7,i5.5,a4)') 'Re_c_L-', n, '.dat'
+write(Im_c_L,'(a7,i5.5,a4)') 'Im_c_L-', n, '.dat'
 open(newunit=popc_0_f   ,file=popc)    !; popc_0_f = 44
 open(newunit=popc_ei_f  ,file=popc_ei) !; popc_ei_f = 49
 open(newunit=norm_0_f   ,file=norm)    !; norm_0_f = 46
@@ -173,13 +181,15 @@ open(newunit=Re_c_ei_f  ,file=Re_c_ei) !; Re_c_ei_f = 52
 open(newunit=Im_c_ei_f  ,file=Im_c_ei) !; Im_c_ei_f = 53
 open(newunit=Re_c_0_f   ,file=Re_c)    !; Re_c_0_f = 54
 open(newunit=Im_c_0_f   ,file=Im_c)    !; Im_c_0_f = 55
+open(newunit=Re_c_L_f   ,file=Re_c_L)    !; Im_c_0_f = 55
+open(newunit=Im_c_L_f   ,file=Im_c_L)    !; Im_c_0_f = 55
 
 !!!!!INITIAL POPULATIONS
-c0    = 0.d0
-c0(0) = 1.d0
-xc0 = dcmplx(c0,0.0d0)
-xc = dcmplx(0.d0,0.0d0)
-xc_ei = dcmplx(0.d0,0.0d0)
+c0    = 0.e0_dp
+c0(0) = 1.e0_dp
+xc0 = dcmplx(c0,0.0e0_dp)
+xc = dcmplx(0.e0_dp,0.0e0_dp)
+xc_ei = dcmplx(0.e0_dp,0.0e0_dp)
 xc(:,0) = xc0(:)
 xc_ei(:,0) = xc0(:)
 
@@ -187,5 +197,6 @@ call RK_0_ei
 
 endif
 
-deallocate(TransHam,TransHam_ei_l,TransHam_l,TransHam_d,TransHam_ei,Mat,Matx,Maty,Matz,Ham,Ham_l,Ham_0,Ham_dir,Ham_ex,Ham_ei)
+deallocate(TransHam,TransHam_ei_l,TransHam_l,TransHam_d,TransHam_ei,Mat,Matx,Maty,Matz,Ham,Ham_l,Ham_0,Ham_dir,Ham_ex,Ham_ei,haml)
 deallocate(Transvec,TransMat_ei,lambda,xc,k1,k2,k3,k4,k5,k6,k7,k8,c0,xc_ei)
+deallocate(merge_diag,merge_odiag,icol,irow,xliou,lfield,xlfield)

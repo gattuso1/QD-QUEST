@@ -13,7 +13,7 @@ use Make_Ham
 implicit none
 
 real(dp), external:: s13adf, ei, eone, nag_bessel_j0
-integer :: je,jh,k,nsteps,r,ifail, r1, r2
+integer :: je,jh,nsteps,r,ifail, r1, r2
 integer,dimension(10) :: matrices
 real(dp) :: Ef,delta, mu, A, I1eh1, I1eh2, I2eh1, I2eh2, I3eh1, I3eh2
 real(dp),allocatable :: Ae(:), Ah1(:), Ah2(:), Be(:), Bh1(:), Bh2(:)
@@ -22,8 +22,8 @@ real(dp),allocatable :: koute(:), kouth1(:), kouth2(:),diffe(:), diffh(:), E(:)
 
 call getVariables
 
-delta=  0.00001d-18
-Ef=     1.28174d-18
+delta=  0.00001e-18_dp
+Ef=     1.28174e-18_dp
 nsteps= int(Ef/delta)
 ifail=  1
 
@@ -83,9 +83,9 @@ diffh = 0.d0
 
 do i=1,nsteps
 E(i)=delta*i
-diffe(i) = abs(sqrt(2.0d0*me*E(i))/hbar * aR(n) * 1.0d0/tan(sqrt(2*me*E(i))/hbar * aR(n)) - 1.0d0 + (me/m0) + (me*aR(n))/(hbar) &
+diffe(i)=abs(sqrt(2.0d0*me*E(i))/hbar * aR(n) * 1.0d0/tan(sqrt(2.e0_dp*me*E(i))/hbar * aR(n)) - 1.0d0 + (me/m0) + (me*aR(n))/(hbar)&
            * sqrt((2.0d0/m0)*(V0e(n)-E(i))))
-if ((diffe(0) .eq. 0.000) .and. (diffh(0) .eq. 0.00)) then 
+if ((diffe(0) .eq. 0.000) .and. (diffh(0) .eq. 0.000)) then 
         diffe(0)=diffe(i)
         diffh(0)=diffe(i)
 endif
@@ -96,7 +96,7 @@ elseif ( (diffe(i) .ge. diffe(i-1)) .and. (E(i-1) .eq. minEe(je,n)) ) then
         je=je+1
 endif
 
-diffh(i) = abs(sqrt(2.d0*mh*E(i))/hbar * aR(n) * 1.d0/tan(sqrt(2.d0*mh*E(i))/hbar * aR(n)) - 1.d0 + (mh/m0) + (mh*aR(n))/(hbar) &
+diffh(i)=abs(sqrt(2.d0*mh*E(i))/hbar * aR(n) * 1.d0/tan(sqrt(2.e0_dp*mh*E(i))/hbar * aR(n)) - 1.d0 + (mh/m0) + (mh*aR(n))/(hbar)&
            * sqrt((2.d0/m0)*(V0h(n)-E(i))))
 if (diffh(i) .le. diffh(i-1)) then
         minEh(jh,n) = E(i)
@@ -176,6 +176,7 @@ open(newunit=Etr_0_f  ,file='Etransitions-he_0.dat')
 open(newunit=Etr_ei_f ,file='Etransitions-he_ei.dat')
 open(newunit=TDip_ei_f,file='TransDip_ei.dat')       
 open(newunit=Abs_imp_f,file='Absorption-imp.dat')    
+open(newunit=Liou_f   ,file='Liou.dat')
 
 matrices = (/ Tmat_0_f,Tmat_ei_f,Tmat_x_f,Tmat_y_f,Tmat_z_f,H_0_f,H_dir_f,H_ex_f,H_JK_f,H_ei_f /)
 
@@ -206,6 +207,8 @@ include 'Core.f90'
 elseif ( (n .gt. nQDA+nQDB) .and. ( model .eq. "FO" ) ) then
 
 nstates=5
+nstates2=nstates**2
+
 print*, "Computing system number:    ", n, "which possesses", nstates, "states"
 include 'allocate_core.f90'
 call make_Ham_he_FO

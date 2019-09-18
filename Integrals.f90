@@ -202,12 +202,12 @@ real(dp) function TransDip_Fit_h1e_ho(a,b)
       implicit none
       real(dp) :: d1,d2,d3,d4,a,b
 
-d1 = -1.53548d-07
-d2 = 52.6179d0
-d3 = 4.36573d0
-d4 = 9.86824d0
+d1 = -1.53548e-07_dp
+d2 = 52.6179e0_dp
+d3 = 4.36573e0_dp
+d4 = 9.86824e0_dp
 
-TransDip_Fit_h1e_ho =  ( d1 + d2 / ((a*1d9)**d3) * exp(-1.0d0*d4*b*1d9) )*1.0d-33
+TransDip_Fit_h1e_ho =  ( d1 + d2 / ((a*1e9_dp)**d3) * exp(-1.0e0_dp*d4*b*1e9_dp) )*1.0e-33_dp
 
 end function TransDip_Fit_h1e_ho
 
@@ -217,10 +217,10 @@ real(dp) function TransDip_Fit_h2e_ho(a,b)
       implicit none
       real(dp) :: d1,d2,d3,d4,a,b
 
-d1   = 2.20868d-06      
-d2   = 39.8905d0          
-d3   = 9.61212d0          
-d4   = 8.88849d0
+d1   = 2.20868e-06_dp      
+d2   = 39.8905e0_dp          
+d3   = 9.61212e0_dp          
+d4   = 8.88849e0_dp
 
 !link=1.0nm
 !d1              = 1.09021e-05    
@@ -228,7 +228,7 @@ d4   = 8.88849d0
 !d3              = 1.82566        
 !d4              = 2.70059
 
-TransDip_Fit_h2e_ho = ( d1 + d2 / ((a*1d9)**d3) * exp(-1.0d0*d4*b*1d9) )*1.0d-33
+TransDip_Fit_h2e_ho = ( d1 + d2 / ((a*1e9_dp)**d3) * exp(-1.0e0_dp*d4*b*1e9_dp) )*1.0e-33_dp
 
 end function TransDip_Fit_h2e_ho
 
@@ -237,17 +237,17 @@ real(dp) function TransDip_Fit_h1e_he(a,b)
       implicit none
       real(dp) :: d1,d2,d3,d4,a,b
 if ( idlink .eq. 20 ) then
-d1              = 0.0087115d0 
-d2              = 0.418797d0  
-d3              = 1.03237d0   
-d4              = 1.23661d0   
+d1              = 0.0087115e0_dp
+d2              = 0.418797e0_dp  
+d3              = 1.03237e0_dp   
+d4              = 1.23661e0_dp   
 else if ( idlink .eq. 55 ) then
-d1              = 0.00119598d0 
-d2              = 0.0314746d0  
-d3              = 1.0704d0     
-d4              = 2.18365d0    
+d1              = 0.00119598e0_dp 
+d2              = 0.0314746e0_dp  
+d3              = 1.0704e0_dp     
+d4              = 2.18365e0_dp    
 endif
-TransDip_Fit_h1e_he =  d1 + d2 / ((a*1d9)**d3*(b*1d9)**d4)
+TransDip_Fit_h1e_he =  d1 + d2 / ((a*1e9_dp)**d3*(b*1e9_dp)**d4)
 end function TransDip_Fit_h1e_he
 
 !TDM homodimer h1e from fit
@@ -255,17 +255,17 @@ real(dp) function TransDip_Fit_h2e_he(a,b)
       implicit none
       real(dp) :: d1,d2,d3,d4,a,b
 if ( idlink .eq. 20 ) then
-d1              = 0.00536146d0  
-d2              = 0.834794d0    
-d3              = 1.03382d0     
-d4              = 1.11718d0     
+d1              = 0.00536146e0_dp  
+d2              = 0.834794e0_dp    
+d3              = 1.03382e0_dp     
+d4              = 1.11718e0_dp     
 else if ( idlink .eq. 55 ) then
-d1              = 0.0163095d0  
-d2              = 0.752361d0   
-d3              = 1.17482d0    
-d4              = 1.87855d0    
+d1              = 0.0163095e0_dp  
+d2              = 0.752361e0_dp   
+d3              = 1.17482e0_dp    
+d4              = 1.87855e0_dp    
 endif
-TransDip_Fit_h2e_he =  d1 + d2 / ((a*1d9)**d3*(b*1d9)**d4)
+TransDip_Fit_h2e_he =  d1 + d2 / ((a*1e9_dp)**d3*(b*1e9_dp)**d4)
 end function TransDip_Fit_h2e_he
 
 !TDM homodimer h1e from fit
@@ -273,17 +273,17 @@ real(dp) function TransDip_Fit_h1h1_he(a,b)
       implicit none
       real(dp) :: d1,d2,d3,d4,a,b
 if ( idlink .eq. 20 ) then
-d1              = 0.000465077d0  
-d2              = 0.0461328d0    
-d3              = 1.11291d0      
-d4              = 1.11376d0      
+d1              = 0.000465077e0_dp  
+d2              = 0.0461328e0_dp    
+d3              = 1.11291e0_dp      
+d4              = 1.11376e0_dp      
 else if ( idlink .eq. 55 ) then
-d1              = 1.27936d-05   
-d2              = 0.00108558d0  
-d3              = 1.15109d0     
-d4              = 1.15094d0     
+d1              = 1.27936e-05_dp   
+d2              = 0.00108558e0_dp  
+d3              = 1.15109e0_dp     
+d4              = 1.15094e0_dp     
 endif
-TransDip_Fit_h1h1_he =  d1 + d2 / ((a*1d9)**d3*(b*1d9)**d4)
+TransDip_Fit_h1h1_he =  d1 + d2 / ((a*1e9_dp)**d3*(b*1e9_dp)**d4)
 end function TransDip_Fit_h1h1_he
 
 !TDM homodimer h1e from fit
@@ -291,17 +291,17 @@ real(dp) function TransDip_Fit_h2h2_he(a,b)
       implicit none
       real(dp) :: d1,d2,d3,d4,a,b
 if ( idlink .eq. 20 ) then
-d1                  = 0.00359745d0 
-d2                  = 0.242846d0   
-d3                  = 1.27172d0    
-d4                  = 1.26927d0    
+d1                  = 0.00359745e0_dp 
+d2                  = 0.242846e0_dp   
+d3                  = 1.27172e0_dp    
+d4                  = 1.26927e0_dp    
 else if ( idlink .eq. 55 ) then
-d1                   = 0.000166763d0 
-d2                   = 0.00893376d0  
-d3                   = 1.56922d0     
-d4                   = 1.57073d0     
+d1                   = 0.000166763e0_dp 
+d2                   = 0.00893376e0_dp  
+d3                   = 1.56922e0_dp     
+d4                   = 1.57073e0_dp     
 endif
-TransDip_Fit_h2h2_he =  d1 + d2 / ((a*1d9)**d3*(b*1d9)**d4)
+TransDip_Fit_h2h2_he =  d1 + d2 / ((a*1e9_dp)**d3*(b*1e9_dp)**d4)
 end function TransDip_Fit_h2h2_he
 
 !TDM homodimer h1e from fit
@@ -309,17 +309,17 @@ real(dp) function TransDip_Fit_ee_he(a,b)
       implicit none
       real(dp) :: d1,d2,d3,d4,a,b
 if ( idlink .eq. 20 ) then
-d1                = 0.0119711d0 
-d2                = 2.18843d0   
-d3                = 0.904435d0  
-d4                = 0.906561d0  
+d1                = 0.0119711e0_dp 
+d2                = 2.18843e0_dp   
+d3                = 0.904435e0_dp  
+d4                = 0.906561e0_dp  
 else if ( idlink .eq. 55 ) then
-d1               = 0.00336278d0 
-d2               = 0.278173d0   
-d3               = 1.30876d0    
-d4               = 1.30738d0    
+d1               = 0.00336278e0_dp 
+d2               = 0.278173e0_dp   
+d3               = 1.30876e0_dp    
+d4               = 1.30738e0_dp    
 endif
-TransDip_Fit_ee_he =  d1 + d2 / ((a*1d9)**d3*(b*1d9)**d4)
+TransDip_Fit_ee_he =  d1 + d2 / ((a*1e9_dp)**d3*(b*1e9_dp)**d4)
 end function TransDip_Fit_ee_he
 
 !TDM homodimer h1e from fit
@@ -327,17 +327,17 @@ real(dp) function TransDip_Fit_h1h2_he(a,b)
       implicit none
       real(dp) :: d1,d2,d3,d4,a,b
 if ( idlink .eq. 20 ) then
-d1              = 0.00184203d0   
-d2              = 0.107537d0     
-d3              = 1.12685d0      
-d4              = 1.31525d0      
+d1              = 0.00184203e0_dp   
+d2              = 0.107537e0_dp     
+d3              = 1.12685e0_dp      
+d4              = 1.31525e0_dp      
 else if ( idlink .eq. 55 ) then
-d1                = 8.62101d-05  
-d2                = 0.0032382d0    
-d3                = 1.19545d0      
-d4                = 1.69668d0      
+d1                = 8.62101e-05_dp  
+d2                = 0.0032382e0_dp    
+d3                = 1.19545e0_dp      
+d4                = 1.69668e0_dp      
 endif
-TransDip_Fit_h1h2_he =  d1 + d2 / ((a*1d9)**d3*(b*1d9)**d4)
+TransDip_Fit_h1h2_he =  d1 + d2 / ((a*1e9_dp)**d3*(b*1e9_dp)**d4)
 end function TransDip_Fit_h1h2_he
 
 !Computation of dimer transition dipole moments integrating using Monte-Carlo
@@ -780,14 +780,14 @@ real(dp) function TransDip_Ana(A1,A2,B1,B2,kin1,kin2,kout1,kout2,r)
       implicit none
       real(dp) :: A1,A2,B1,B2,kin1,kin2,kout1,kout2,r,rmin,rmax
 
-      rmin=0.0d0
-      rmax=2*r
+      rmin=0.0e0_dp
+      rmax=2.e0_dp*r
 
-      TransDip_Ana=(-1.0d0*elec*(((A1*A2*0.5d0*((r*sin(r*(kin1-kin2))/(kin1-kin2))-(r*sin(r*(kin1+kin2))/(kin1+kin2))+&
+      TransDip_Ana=(-1.0e0_dp*elec*(((A1*A2*0.5e0_dp*((r*sin(r*(kin1-kin2))/(kin1-kin2))-(r*sin(r*(kin1+kin2))/(kin1+kin2))+&
                        (cos(r*(kin1-kin2))/(kin1-kin2)**2)-(cos(r*(kin1+kin2))/(kin1+kin2)**2))) - &
-                       A1*A2*0.5d0*((cos(rmin*(kin1-kin2))/(kin1-kin2)**2)-(cos(rmin*(kin1+kin2))/(kin1+kin2)**2))) + &
-                       (B1*B2*((-1.0d0*(exp(-1.0d0*rmax*(kout1+kout2))*(kout1*rmax+kout2*rmax+1d0)/(kout1+kout2)**2))+&
-                       ((exp(-1.0d0*r*(kout1+kout2))*(kout1*r+kout2*r+1.d0)/(kout1+kout2)**2))))))/Cm_to_D
+                       A1*A2*0.5e0_dp*((cos(rmin*(kin1-kin2))/(kin1-kin2)**2)-(cos(rmin*(kin1+kin2))/(kin1+kin2)**2))) + &
+                       (B1*B2*((-1.0e0_dp*(exp(-1.0e0_dp*rmax*(kout1+kout2))*(kout1*rmax+kout2*rmax+1e0_dp)/(kout1+kout2)**2))+&
+                       ((exp(-1.0e0_dp*r*(kout1+kout2))*(kout1*r+kout2*r+1.e0_dp)/(kout1+kout2)**2))))))/Cm_to_D
 
 end function TransDip_Ana
 
@@ -1615,11 +1615,11 @@ real(dp) function DXXex(A1,B1,kin1,kout1,A2,B2,kin2,kout2,A3,B3,kin3,kout3,A4,B4
 
 end function DXXex
 
-complex(kind=8) function RK_k(t,Ham,TransHam,xc)
+complex(8) function RK_k(t,Ham,TransHam,xc)
 implicit none
 
 real(dp) :: t,Ham,TransHam
-complex(kind=8) :: xc
+complex(8) :: xc
 
 RK_k = -im * (Ham - pulse1 * TransHam * Ed01 * cos(omega01*(t-t01)+phase01) * exp(-1.0d0*(t-t01)**2.d0/(2.0d0*(width01**2))) - &
                     pulse2 * TransHam * Ed02 * cos(omega02*(t-t02)+phase02) * exp(-1.0d0*(t-t02)**2.d0/(2.0d0*(width02**2))) - &
@@ -1627,11 +1627,11 @@ RK_k = -im * (Ham - pulse1 * TransHam * Ed01 * cos(omega01*(t-t01)+phase01) * ex
 
 end function RK_k
 
-complex(kind=8) function RK_k_inbox(t,Ham,TransHamx,TransHamy,TransHamz,xc)
+complex(8) function RK_k_inbox(t,Ham,TransHamx,TransHamy,TransHamz,xc)
 implicit none
 
 real(dp) :: t,Ham,TransHamx,TransHamy,TransHamz
-complex(kind=8) :: xc
+complex(8) :: xc
 
 RK_k_inbox = -im * (Ham - pulse1 * Pe1(1) * TransHamx * Ed01 * cos(k_1(1)*Dcenter(n,1)+omega01*(t-t01)+phase01) &
                                                           * exp(-1.0d0*(t-t01)**2.d0/(2.0d0*(width01**2))) - &
@@ -1657,9 +1657,9 @@ end function RK_k_inbox
 real(dp) function pulse(t)
 real(dp) :: t
 
-pulse = pulse1 * Ed01 * cos(omega01*(t-t01)+phase01) * exp(-1.d0*((t-t01)**2.d0/(2.d0*width01**2.d0))) + &
-        pulse2 * Ed02 * cos(omega02*(t-t02)+phase02) * exp(-1.d0*((t-t02)**2.d0/(2.d0*width02**2.d0))) + &
-        pulse3 * Ed03 * cos(omega03*(t-t03)+phase03) * exp(-1.d0*((t-t03)**2.d0/(2.d0*width03**2.d0)))
+pulse = pulse1 * Ed01 * cos(omega01*(t-t01)+phase01) * exp(-1.e0_dp*((t-t01)**2.e0_dp/(2.e0_dp*width01**2.e0_dp))) + &
+        pulse2 * Ed02 * cos(omega02*(t-t02)+phase02) * exp(-1.e0_dp*((t-t02)**2.e0_dp/(2.e0_dp*width02**2.e0_dp))) + &
+        pulse3 * Ed03 * cos(omega03*(t-t03)+phase03) * exp(-1.e0_dp*((t-t03)**2.e0_dp/(2.e0_dp*width03**2.e0_dp)))
 
 end function pulse
 
@@ -1842,11 +1842,11 @@ endif
 if ( MOD(t,10) .eq. 0 ) then
 cnorm2 = 0.d0
 do i=0,nstates-1
-cnorm2 = cnorm2 + dreal(xc(i,t))**2 + aimag(xc(i,t))**2
+cnorm2 = cnorm2 + dreal(xc(i,t))**2 + dimag(xc(i,t))**2
 enddo
-write(popc_0_f,form_pop) time*t_au, (dreal(xc(i,t))**2+aimag(xc(i,t))**2, i=0,nstates-1), cnorm2
+write(popc_0_f,form_pop) time*t_au, (dreal(xc(i,t))**2+dimag(xc(i,t))**2, i=0,nstates-1), cnorm2
 write(Re_c_0_f,form_com) time*t_au, (dreal(xc(i,t)), i=0,nstates-1)
-write(Im_c_0_f,form_com) time*t_au, (aimag(xc(i,t)), i=0,nstates-1)
+write(Im_c_0_f,form_com) time*t_au, (dimag(xc(i,t)), i=0,nstates-1)
 endif
 
 endif
@@ -1856,53 +1856,53 @@ if ( Dyn_ei .eq. 'y' ) then
 if ( inbox .eq. 'n' ) then 
 
 tp1 = pulse(time)
-tp2 = pulse(time+(timestep/9.d0))
-tp3 = pulse(time+(timestep/6.d0))
-tp4 = pulse(time+(timestep/3.d0))
-tp5 = pulse(time+0.5d0*timestep)
-tp6 = pulse(time+(2.d0*timestep/3.d0))
-tp7 = pulse(time+(5.d0*timestep/6.d0))
+tp2 = pulse(time+(timestep/9.e0_dp))
+tp3 = pulse(time+(timestep/6.e0_dp))
+tp4 = pulse(time+(timestep/3.e0_dp))
+tp5 = pulse(time+0.5e0_dp*timestep)
+tp6 = pulse(time+(2.e0_dp*timestep/3.e0_dp))
+tp7 = pulse(time+(5.e0_dp*timestep/6.e0_dp))
 tp8 = pulse(time+timestep)
 
-k1 = 0.0d0 ; k2 = 0.0d0 ; k3 = 0.0d0 ; k4 = 0.0d0 ; k5 = 0.0d0 ; k6 = 0.0d0 ; k7 = 0.0d0 ; k8 = 0.0d0
+k1 = 0.0e0_dp ; k2 = 0.0e0_dp ; k3 = 0.0e0_dp ; k4 = 0.0e0_dp ; k5 = 0.0e0_dp ; k6 = 0.0e0_dp ; k7 = 0.0e0_dp ; k8 = 0.0e0_dp
 
 do i=0,nstates-1
-k1(i) = k1(i) - dcmplx(timestep,0.d0) * sum(dcmplx(0.d0,Ham_l(i,:) - TransHam_ei(i,:) * tp1) * &
+k1(i) = k1(i) - dcmplx(timestep,0.e0_dp) * sum(dcmplx(0.e0_dp,Ham_l(i,:) - TransHam_ei(i,:) * tp1) * &
 xc_ei(:,t)) 
 enddo
 
 do i=0,nstates-1
-k2(i) = k2(i) - dcmplx(timestep,0.d0) * sum(dcmplx(0.d0,Ham_l(i,:) - TransHam_ei(i,:) * tp2) * &
+k2(i) = k2(i) - dcmplx(timestep,0.e0_dp) * sum(dcmplx(0.e0_dp,Ham_l(i,:) - TransHam_ei(i,:) * tp2) * &
 (xc_ei(:,t)+k1(:)/9.e0_dp))
 enddo
 
 do i=0,nstates-1
-k3(i) = k3(i) - dcmplx(timestep,0.d0) * sum(dcmplx(0.d0,Ham_l(i,:) - TransHam_ei(i,:) * tp3) * &
+k3(i) = k3(i) - dcmplx(timestep,0.e0_dp) * sum(dcmplx(0.e0_dp,Ham_l(i,:) - TransHam_ei(i,:) * tp3) * &
 (xc_ei(:,t)+(k1(:)+3.e0_dp*k2(:))/24.e0_dp)) 
 enddo
 
 do i=0,nstates-1
-k4(i) = k4(i) - dcmplx(timestep,0.d0) * sum(dcmplx(0.d0,Ham_l(i,:) - TransHam_ei(i,:) * tp4) * &
+k4(i) = k4(i) - dcmplx(timestep,0.e0_dp) * sum(dcmplx(0.e0_dp,Ham_l(i,:) - TransHam_ei(i,:) * tp4) * &
 (xc_ei(:,t)+(k1(:)-3.e0_dp*k2(:)+4.e0_dp*k3(:))/6.e0_dp)) 
 enddo
 
 do i=0,nstates-1
-k5(i) = k5(i) - dcmplx(timestep,0.d0) * sum(dcmplx(0.d0,Ham_l(i,:) - TransHam_ei(i,:) * tp5) * &
+k5(i) = k5(i) - dcmplx(timestep,0.e0_dp) * sum(dcmplx(0.e0_dp,Ham_l(i,:) - TransHam_ei(i,:) * tp5) * &
 (xc_ei(:,t)+(-5.e0_dp*k1(:)+27.e0_dp*k2(:)-24.e0_dp*k3(:)+6.e0_dp*k4(:))*0.125e0_dp))
 enddo
 
 do i=0,nstates-1
-k6(i) = k6(i) - dcmplx(timestep,0.d0) * sum(dcmplx(0.d0,Ham_l(i,:) - TransHam_ei(i,:) * tp6) * &
+k6(i) = k6(i) - dcmplx(timestep,0.e0_dp) * sum(dcmplx(0.e0_dp,Ham_l(i,:) - TransHam_ei(i,:) * tp6) * &
 (xc_ei(:,t)+(221.e0_dp*k1(:)-981.e0_dp*k2(:)+867.e0_dp*k3(:)-102.e0_dp*k4(:)+k5(:))/9.e0_dp))
 enddo
 
 do i=0,nstates-1
-k7(i) = k7(i) - dcmplx(timestep,0.d0) * sum(dcmplx(0.d0,Ham_l(i,:) - TransHam_ei(i,:) * tp7) * &
+k7(i) = k7(i) - dcmplx(timestep,0.e0_dp) * sum(dcmplx(0.e0_dp,Ham_l(i,:) - TransHam_ei(i,:) * tp7) * &
 (xc_ei(:,t)+(-183.e0_dp*k1(:)+678.e0_dp*k2(:)-472.e0_dp*k3(:)-66.e0_dp*k4(:)+80.e0_dp*k5(:)+3.e0_dp*k6(:))/48.e0_dp))
 enddo
 
 do i=0,nstates-1
-k8(i) = k8(i) - dcmplx(timestep,0.d0) * sum(dcmplx(0.d0,Ham_l(i,:) - TransHam_ei(i,:) * tp8) * &
+k8(i) = k8(i) - dcmplx(timestep,0.e0_dp) * sum(dcmplx(0.e0_dp,Ham_l(i,:) - TransHam_ei(i,:) * tp8) * &
 (xc_ei(:,t)+&
 (716.e0_dp*k1(:)-2079.e0_dp*k2(:)+1002.e0_dp*k3(:)+834.e0_dp*k4(:)-454.e0_dp*k5(:)-9.e0_dp*k6(:)+72.e0_dp*k7(:))/82.e0_dp))
 enddo
@@ -1994,72 +1994,81 @@ xc_ei(:,t+1)=xc_ei(:,t)+(41.e0_dp*(k1(:)+k8(:))+216.e0_dp*(k3(:)+k7(:))+27.e0_dp
 endif 
 
 if ( MOD(t,10) .eq. 0 ) then
-cnorm2 = sum(dreal(xc_ei(:,t))**2 + aimag(xc_ei(:,t))**2)
-write(popc_ei_f,form_pop) time*t_au, (dreal(xc_ei(i,t))**2+aimag(xc_ei(i,t))**2, i=0,nstates-3), cnorm2
+cnorm2 = sum(dreal(xc_ei(:,t))**2 + dimag(xc_ei(:,t))**2)
+write(popc_ei_f,form_pop) time*t_au, (dreal(xc_ei(i,t))**2+dimag(xc_ei(i,t))**2, i=0,nstates-1), cnorm2
 write(Re_c_ei_f,form_com) time*t_au, (dreal(xc_ei(i,t)), i=0,nstates-1)
-write(Im_c_ei_f,form_com) time*t_au, (aimag(xc_ei(i,t)), i=0,nstates-1)
+write(Im_c_ei_f,form_com) time*t_au, (dimag(xc_ei(i,t)), i=0,nstates-1)
 endif
 
 endif
 
 if ( Dyn_L .eq. 'y' ) then
 
-tp1 = e0 * cos(wc*(time                     -t0f)+cep) * exp(-1.0d0*((time                     -t0f)/sig)**2.d0)
-tp2 = e0 * cos(wc*(time+(timestep/9.d0)     -t0f)+cep) * exp(-1.0d0*((time+(timestep/9.d0)     -t0f)/sig)**2.d0)
-tp3 = e0 * cos(wc*(time+(timestep/6.d0)     -t0f)+cep) * exp(-1.0d0*((time+(timestep/6.d0)     -t0f)/sig)**2.d0)
-tp4 = e0 * cos(wc*(time+(timestep/3.d0)     -t0f)+cep) * exp(-1.0d0*((time+(timestep/3.d0)     -t0f)/sig)**2.d0)
-tp5 = e0 * cos(wc*(time+(timestep/2.d0)     -t0f)+cep) * exp(-1.0d0*((time+(timestep/2.d0)     -t0f)/sig)**2.d0)
-tp6 = e0 * cos(wc*(time+(2.d0*timestep/3.d0)-t0f)+cep) * exp(-1.0d0*((time+(2.d0*timestep/3.d0)-t0f)/sig)**2.d0)
-tp7 = e0 * cos(wc*(time+(5.d0*timestep/6.d0)-t0f)+cep) * exp(-1.0d0*((time+(5.d0*timestep/6.d0)-t0f)/sig)**2.d0)
-tp8 = e0 * cos(wc*(time+timestep            -t0f)+cep) * exp(-1.0d0*((time+timestep            -t0f)/sig)**2.d0)
+!tp1 = e0 * cos(wc*(time                     -t0f)+cep) * exp(-1.0d0*((time                     -t0f)/sig)**2.d0)
+!tp2 = e0 * cos(wc*(time+(timestep/9.d0)     -t0f)+cep) * exp(-1.0d0*((time+(timestep/9.d0)     -t0f)/sig)**2.d0)
+!tp3 = e0 * cos(wc*(time+(timestep/6.d0)     -t0f)+cep) * exp(-1.0d0*((time+(timestep/6.d0)     -t0f)/sig)**2.d0)
+!tp4 = e0 * cos(wc*(time+(timestep/3.d0)     -t0f)+cep) * exp(-1.0d0*((time+(timestep/3.d0)     -t0f)/sig)**2.d0)
+!tp5 = e0 * cos(wc*(time+(timestep/2.d0)     -t0f)+cep) * exp(-1.0d0*((time+(timestep/2.d0)     -t0f)/sig)**2.d0)
+!tp6 = e0 * cos(wc*(time+(2.d0*timestep/3.d0)-t0f)+cep) * exp(-1.0d0*((time+(2.d0*timestep/3.d0)-t0f)/sig)**2.d0)
+!tp7 = e0 * cos(wc*(time+(5.d0*timestep/6.d0)-t0f)+cep) * exp(-1.0d0*((time+(5.d0*timestep/6.d0)-t0f)/sig)**2.d0)
+!tp8 = e0 * cos(wc*(time+timestep            -t0f)+cep) * exp(-1.0d0*((time+timestep            -t0f)/sig)**2.d0)
+tp1 = pulse(time)
+tp2 = pulse(time+(timestep/9.e0_dp))
+tp3 = pulse(time+(timestep/6.e0_dp))
+tp4 = pulse(time+(timestep/3.e0_dp))
+tp5 = pulse(time+0.5e0_dp*timestep)
+tp6 = pulse(time+(2.e0_dp*timestep/3.e0_dp))
+tp7 = pulse(time+(5.e0_dp*timestep/6.e0_dp))
+tp8 = pulse(time+timestep)
 
-k1 = 0.d0 ; k2 = 0.d0 ; k3 = 0.d0 ; k4 = 0.d0 ; k5 = 0.d0 ; k6 = 0.d0 ; k7 = 0.d0 ; k8 = 0.d0 
+k1 = 0.e0_dp ; k2 = 0.e0_dp ; k3 = 0.e0_dp ; k4 = 0.e0_dp ; k5 = 0.e0_dp ; k6 = 0.e0_dp ; k7 = 0.e0_dp ; k8 = 0.e0_dp 
 
 do i=0,nstates2-1
-k1(i) = k1(i) - dcmplx(timestep,0.d0) * sum(dcmplx(0.d0,(merge_diag(i,:)*lfield(i,:) + merge_odiag(i,:)*lfield(i,:) * tp1)) * &
+k1(i) = k1(i) - dcmplx(timestep,0.e0_dp) * sum(dcmplx(0.e0_dp,(merge_diag(i,:)*lfield(i,:) + merge_odiag(i,:)*lfield(i,:)*tp1)) * &
 xc_ei(:,t))
 enddo
 
 do i=0,nstates2-1
-k2(i) = k2(i) - dcmplx(timestep,0.d0) * sum(dcmplx(0.d0,(merge_diag(i,:)*lfield(i,:)  + merge_odiag(i,:)*lfield(i,:)  * tp2)) * &
-(xc_ei(:,t)+(1.d0/9.d0)*k1(:)))
+k2(i) = k2(i) - dcmplx(timestep,0.e0_dp) * sum(dcmplx(0.e0_dp,(merge_diag(i,:)*lfield(i,:)  + merge_odiag(i,:)*lfield(i,:)*tp2)) * &
+(xc_ei(:,t)+(1.e0_dp/9.e0_dp)*k1(:)))
 enddo
 
 do i=0,nstates2-1
-k3(i) = k3(i) - dcmplx(timestep,0.d0) * sum(dcmplx(0.d0,(merge_diag(i,:)*lfield(i,:)  + merge_odiag(i,:)*lfield(i,:)  * tp3)) * &
-(xc_ei(:,t)+(1.d0/24.d0)*(k1(:)+3.d0*k2(:))))
+k3(i) = k3(i) - dcmplx(timestep,0.e0_dp) * sum(dcmplx(0.e0_dp,(merge_diag(i,:)*lfield(i,:)  + merge_odiag(i,:)*lfield(i,:)*tp3)) * &
+(xc_ei(:,t)+(1.e0_dp/24.e0_dp)*(k1(:)+3.e0_dp*k2(:))))
 enddo
 
 do i=0,nstates2-1
-k4(i) = k4(i) - dcmplx(timestep,0.d0) * sum(dcmplx(0.d0,(merge_diag(i,:)*lfield(i,:)  + merge_odiag(i,:)*lfield(i,:)  * tp4)) * &
-(xc_ei(:,t)+(1.d0/6.d0)*(k1(:)-3.d0*k2(:)+4.d0*k3(:))))
+k4(i) = k4(i) - dcmplx(timestep,0.e0_dp) * sum(dcmplx(0.e0_dp,(merge_diag(i,:)*lfield(i,:)  + merge_odiag(i,:)*lfield(i,:)*tp4)) * &
+(xc_ei(:,t)+(1.e0_dp/6.e0_dp)*(k1(:)-3.e0_dp*k2(:)+4.e0_dp*k3(:))))
 enddo
 
 do i=0,nstates2-1
-k5(i) = k5(i) - dcmplx(timestep,0.d0) * sum(dcmplx(0.d0,(merge_diag(i,:)*lfield(i,:)  + merge_odiag(i,:)*lfield(i,:)  * tp5)) * &
-(xc_ei(:,t)+(1.d0/8.d0)*(-5.d0*k1(:)+27.d0*k2(:)-24.d0*k3(:)+6.d0*k4(:))))
+k5(i) = k5(i) - dcmplx(timestep,0.e0_dp) * sum(dcmplx(0.e0_dp,(merge_diag(i,:)*lfield(i,:)  + merge_odiag(i,:)*lfield(i,:)*tp5)) * &
+(xc_ei(:,t)+(1.e0_dp/8.e0_dp)*(-5.e0_dp*k1(:)+27.e0_dp*k2(:)-24.e0_dp*k3(:)+6.e0_dp*k4(:))))
 enddo
 
 do i=0,nstates2-1
-k6(i) = k6(i) - dcmplx(timestep,0.d0) * sum(dcmplx(0.d0,(merge_diag(i,:)*lfield(i,:)  + merge_odiag(i,:)*lfield(i,:)  * tp6)) * &
-(xc_ei(:,t)+(1.d0/9.d0)*(221.d0*k1(:)-981.d0*k2(:)+867.d0*k3(:)-102.d0*k4(:)+k5(:))))
+k6(i) = k6(i) - dcmplx(timestep,0.e0_dp) * sum(dcmplx(0.e0_dp,(merge_diag(i,:)*lfield(i,:)  + merge_odiag(i,:)*lfield(i,:)*tp6)) * &
+(xc_ei(:,t)+(1.e0_dp/9.e0_dp)*(221.e0_dp*k1(:)-981.e0_dp*k2(:)+867.e0_dp*k3(:)-102.e0_dp*k4(:)+k5(:))))
 enddo
 
 do i=0,nstates2-1
-k7(i) = k7(i) - dcmplx(timestep,0.d0) * sum(dcmplx(0.d0,(merge_diag(i,:)*lfield(i,:)  + merge_odiag(i,:)*lfield(i,:)  * tp7)) * &
-(xc_ei(:,t)+(1.d0/48.d0)*(-183.d0*k1(:)+678.d0*k2(:)-472.d0*k3(:)-66.d0*k4(:)+80.d0*k5(:)+3.d0*k6(:))))
+k7(i) = k7(i) - dcmplx(timestep,0.e0_dp) * sum(dcmplx(0.e0_dp,(merge_diag(i,:)*lfield(i,:)  + merge_odiag(i,:)*lfield(i,:)*tp7)) * &
+(xc_ei(:,t)+(1.e0_dp/48.e0_dp)*(-183.e0_dp*k1(:)+678.e0_dp*k2(:)-472.e0_dp*k3(:)-66.e0_dp*k4(:)+80.e0_dp*k5(:)+3.e0_dp*k6(:))))
 enddo
 
 do i=0,nstates2-1
-k8(i) = k8(i) - dcmplx(timestep,0.d0) * sum(dcmplx(0.d0,(merge_diag(i,:)*lfield(i,:)  + merge_odiag(i,:)*lfield(i,:)  * tp8)) * &
-(xc_ei(:,t)+(1.d0/82.d0) * (716.d0*k1(:)-2079.d0*k2(:)+1002.d0*k3(:)+834.d0*k4(:)-454.d0*k5(:)-9.d0*k6(:)+72.d0*k7(:))))
+k8(i) = k8(i) - dcmplx(timestep,0.e0_dp) * sum(dcmplx(0.e0_dp,(merge_diag(i,:)*lfield(i,:)  + merge_odiag(i,:)*lfield(i,:)*tp8)) * &
+(xc_ei(:,t)+(1.e0_dp/82.e0_dp) * (716.e0_dp*k1(:)-2079.e0_dp*k2(:)+1002.e0_dp*k3(:)+834.e0_dp*k4(:)-454.e0_dp*k5(:)-&
+9.e0_dp*k6(:)+72.e0_dp*k7(:))))
 enddo
 
-xc_ei(:,t+1)=xc_ei(:,t)+(41.d0*(k1(:)+k8(:))+216.d0*(k3(:)+k7(:))+27.d0*(k4(:)+k6(:))+272.d0*k5(:))/840.d0
+xc_ei(:,t+1)=xc_ei(:,t)+(41.e0_dp*(k1(:)+k8(:))+216.e0_dp*(k3(:)+k7(:))+27.e0_dp*(k4(:)+k6(:))+272.e0_dp*k5(:))/840.e0_dp
 
 if ( MOD(t,10) .eq. 0 ) then
-write(14,form_com) time*t_au, time*t_au, (dreal(xc_ei(i,t)), i=0,nstates2-1)
-write(15,form_com) time*t_au, time*t_au, (aimag(xc_ei(i,t)), i=0,nstates2-1)
+write(Re_c_L_f,form_com_L) time*t_au, (dreal(xc_ei(i,t)), i=0,nstates2-1)
+write(Im_c_L_f,form_com_L) time*t_au, (dimag(xc_ei(i,t)), i=0,nstates2-1)
 endif
 
 endif

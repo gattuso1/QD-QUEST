@@ -14,16 +14,16 @@ function vector(d)
 
       call random_number(rand1)
       call random_number(rand2)
-      teta = rand1*2.d0*PI
-      phi = acos(2*rand2-1.d0)
+      teta = rand1*2.e0_dp*PI
+      phi = acos(2*rand2-1.e0_dp)
 
-      vector(1)=0.d0
-      vector(2)=0.d0
-      vector(3)=0.d0
+      vector(1)=0.e0_dp
+      vector(2)=0.e0_dp
+      vector(3)=0.e0_dp
 
-      vector(1)= d*sqrt(1-cos(phi)**2)*cos(teta)
+      vector(1)= d*sqrt(1.e0_dp-cos(phi)**2)*cos(teta)
 
-      vector(2)= d*sqrt(1-cos(phi)**2)*sin(teta)
+      vector(2)= d*sqrt(1.e0_dp-cos(phi)**2)*sin(teta)
 
       vector(3)= d*cos(phi)
 
