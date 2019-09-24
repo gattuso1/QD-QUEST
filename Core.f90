@@ -8,9 +8,7 @@ endif
 write(form_abs,'("(2f16.8,2x,i0)")') 
 write(form_pop,'("(",i0,"ES17.8E3,ES25.16E3)")') nstates+1
 write(form_com,'("(ES12.5E3,",i0,"ES18.8E3)")') nstates+1
-write(form_com_L,'("(ES12.5E3,",i0,"ES18.8E3)")') nstates2+1
-
-write(6,*) form_com_L
+write(form_com_L,'("(ES12.5E3,",i0,"ES18.8E3)")') nstates2+2
 
 if ( get_ei .eq. 'y' ) then
 Ham_ei = Ham
@@ -94,14 +92,14 @@ enddo
 enddo
 
 do i=0,nstates-1
-do j=i+0,nstates-1
+do j=i+1,nstates-1
 haml(i,j)=TransHam_ei(i,j)
 haml(j,i)=TransHam_ei(j,i)
 enddo
 enddo
 
 do i=0,nstates-1
-haml(i,i)=lambda(i)
+haml(i,i)=lambda(i) 
 enddo
 
 !!!!!Liouvillian
@@ -192,11 +190,13 @@ xc = dcmplx(0.e0_dp,0.0e0_dp)
 xc_ei = dcmplx(0.e0_dp,0.0e0_dp)
 xc(:,0) = xc0(:)
 xc_ei(:,0) = xc0(:)
+xc_L(:,0) = xc0(:)
 
 call RK_0_ei
 
 endif
 
 deallocate(TransHam,TransHam_ei_l,TransHam_l,TransHam_d,TransHam_ei,Mat,Matx,Maty,Matz,Ham,Ham_l,Ham_0,Ham_dir,Ham_ex,Ham_ei,haml)
-deallocate(Transvec,TransMat_ei,lambda,xc,k1,k2,k3,k4,k5,k6,k7,k8,c0,xc_ei)
+deallocate(Transvec,TransMat_ei,lambda,xc,k1,k2,k3,k4,k5,k6,k7,k8,c0,xc_ei,xc_L,xc0)
+deallocate(k1_L,k2_L,k3_L,k4_L,k5_L,k6_L,k7_L,k8_L)
 deallocate(merge_diag,merge_odiag,icol,irow,xliou,lfield,xlfield)

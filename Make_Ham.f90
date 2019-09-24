@@ -39,127 +39,127 @@ include 'Parameters-ex-55.f90'
 endif
 
 Ham_0(1)     = minEe(1,n) + minEh(1,n)  + V0 
-Ham_dir(1,1) = elec*(a11_1d_ho + a11_2d_ho / ((aR(n)*1d9)**a11_3d_ho)) 
-Ham_ex(1,1)  = elec*(a11_1e_ho + a11_2e_ho / ((aR(n)*1d9)**a11_3e_ho))
+Ham_dir(1,1) = elec*(a11_1d_ho + a11_2d_ho / ((aR(n)*1e9_dp)**a11_3d_ho)) 
+Ham_ex(1,1)  = elec*(a11_1e_ho + a11_2e_ho / ((aR(n)*1e9_dp)**a11_3e_ho))
 
 Ham_0(2)     = minEe(1,n) + minEh(2,n) + V0 
-Ham_dir(2,2) = elec*(a22_1d_ho + a22_2d_ho / ((aR(n)*1d9)**a22_3d_ho))
-Ham_ex(2,2)  = elec*(a22_1e_ho + a22_2e_ho / ((aR(n)*1d9)**a22_3e_ho))
+Ham_dir(2,2) = elec*(a22_1d_ho + a22_2d_ho / ((aR(n)*1e9_dp)**a22_3d_ho))
+Ham_ex(2,2)  = elec*(a22_1e_ho + a22_2e_ho / ((aR(n)*1e9_dp)**a22_3e_ho))
 
 Ham_0(3)     = minEe(1,n+ndim) + minEh(1,n+ndim) + V0 
-Ham_dir(3,3) = elec*(a11_1d_ho + a11_2d_ho / ((aR(n+ndim)*1d9)**a11_3d_ho))
-Ham_ex(3,3)  = elec*(a11_1e_ho + a11_2e_ho / ((aR(n+ndim)*1d9)**a11_3e_ho))
+Ham_dir(3,3) = elec*(a11_1d_ho + a11_2d_ho / ((aR(n+ndim)*1e9_dp)**a11_3d_ho))
+Ham_ex(3,3)  = elec*(a11_1e_ho + a11_2e_ho / ((aR(n+ndim)*1e9_dp)**a11_3e_ho))
 
 Ham_0(4)     = minEe(1,n+ndim) + minEh(2,n+ndim) + V0 
-Ham_dir(4,4) = elec*(a22_1d_ho + a22_2d_ho / ((aR(n+ndim)*1d9)**a22_3d_ho))
-Ham_ex(4,4)  = elec*(a22_1e_ho + a22_2e_ho / ((aR(n+ndim)*1d9)**a22_3e_ho))
+Ham_dir(4,4) = elec*(a22_1d_ho + a22_2d_ho / ((aR(n+ndim)*1e9_dp)**a22_3d_ho))
+Ham_ex(4,4)  = elec*(a22_1e_ho + a22_2e_ho / ((aR(n+ndim)*1e9_dp)**a22_3e_ho))
 
 Ham_0(5)     = minEe(1,n+ndim) + minEh(1,n) + V0 
-Ham_dir(5,5) = elec*(a55_1d_he + a55_2d_he / ((aR(n)*1d9)**a55_3d_he * (aR(n+ndim)*1d9)**a55_4d_he)) 
-Ham_ex(5,5)  = elec*(a55_1e_he + a55_2e_he / ((aR(n)*1d9)**a55_3e_he * (aR(n+ndim)*1d9)**a55_4e_he))
+Ham_dir(5,5) = elec*(a55_1d_he + a55_2d_he / ((aR(n)*1e9_dp)**a55_3d_he * (aR(n+ndim)*1d9)**a55_4d_he)) 
+Ham_ex(5,5)  = elec*(a55_1e_he + a55_2e_he / ((aR(n)*1e9_dp)**a55_3e_he * (aR(n+ndim)*1d9)**a55_4e_he))
                                   
 Ham_0(6)     = minEe(1,n+ndim) + minEh(2,n) + V0 
-Ham_dir(6,6) = elec*(a66_1d_he + a66_2d_he / ((aR(n)*1d9)**a66_3d_he * (aR(n+ndim)*1d9)**a66_4d_he)) 
-Ham_ex(6,6)  = elec*(a66_1e_he + a66_2e_he / ((aR(n)*1d9)**a66_3e_he * (aR(n+ndim)*1d9)**a66_4e_he)) 
+Ham_dir(6,6) = elec*(a66_1d_he + a66_2d_he / ((aR(n)*1e9_dp)**a66_3d_he * (aR(n+ndim)*1d9)**a66_4d_he)) 
+Ham_ex(6,6)  = elec*(a66_1e_he + a66_2e_he / ((aR(n)*1e9_dp)**a66_3e_he * (aR(n+ndim)*1d9)**a66_4e_he)) 
                                   
 Ham_0(7)     = minEe(1,n) + minEh(1,n+ndim) + V0 
-Ham_dir(7,7) = elec*(a55_1d_he + a55_2d_he / ((aR(n+ndim)*1d9)**a55_3d_he * (aR(n)*1d9)**a55_4d_he)) 
-Ham_ex(7,7)  = elec*(a55_1e_he + a55_2e_he / ((aR(n+ndim)*1d9)**a55_3e_he * (aR(n)*1d9)**a55_4e_he))
+Ham_dir(7,7) = elec*(a55_1d_he + a55_2d_he / ((aR(n+ndim)*1e9_dp)**a55_3d_he * (aR(n)*1d9)**a55_4d_he)) 
+Ham_ex(7,7)  = elec*(a55_1e_he + a55_2e_he / ((aR(n+ndim)*1e9_dp)**a55_3e_he * (aR(n)*1d9)**a55_4e_he))
 
 Ham_0(8)     = minEe(1,n) + minEh(2,n+ndim) + V0 
-Ham_dir(8,8) = elec*(a66_1d_he + a66_2d_he / ((aR(n+ndim)*1d9)**a66_3d_he * (aR(n)*1d9)**a66_4d_he)) 
-Ham_ex(8,8)  = elec*(a66_1e_he + a66_2e_he / ((aR(n+ndim)*1d9)**a66_3e_he * (aR(n)*1d9)**a66_4e_he))
+Ham_dir(8,8) = elec*(a66_1d_he + a66_2d_he / ((aR(n+ndim)*1e9_dp)**a66_3d_he * (aR(n)*1d9)**a66_4d_he)) 
+Ham_ex(8,8)  = elec*(a66_1e_he + a66_2e_he / ((aR(n+ndim)*1e9_dp)**a66_3e_he * (aR(n)*1d9)**a66_4e_he))
 
-Ham_dir(1,2) = elec*(a12_1d_ho + a12_2d_ho / ((aR(n)*1d9)**a12_3d_ho)) 
-Ham_ex(1,2)  = elec*(a12_1e_ho + a12_2e_ho / ((aR(n)*1d9)**a12_3e_ho))
+Ham_dir(1,2) = elec*(a12_1d_ho + a12_2d_ho / ((aR(n)*1e9_dp)**a12_3d_ho)) 
+Ham_ex(1,2)  = elec*(a12_1e_ho + a12_2e_ho / ((aR(n)*1e9_dp)**a12_3e_ho))
 
-Ham_dir(1,3) = elec*(a13_1d_he + a13_2d_he / ((aR(n)*1d9)**a13_3d_he * (aR(n+ndim)*1d9)**a13_4d_he))
-Ham_ex(1,3)  = elec*(a13_1e_he + a13_2e_he / ((aR(n)*1d9)**a13_3e_he * (aR(n+ndim)*1d9)**a13_4e_he))
+Ham_dir(1,3) = elec*(a13_1d_he + a13_2d_he / ((aR(n)*1e9_dp)**a13_3d_he * (aR(n+ndim)*1d9)**a13_4d_he))
+Ham_ex(1,3)  = elec*(a13_1e_he + a13_2e_he / ((aR(n)*1e9_dp)**a13_3e_he * (aR(n+ndim)*1d9)**a13_4e_he))
 
-Ham_dir(1,4) = elec*(a14_1d_he + a14_2d_he / ((aR(n)*1d9)**a14_3d_he * (aR(n+ndim)*1d9)**a14_4d_he))
-Ham_ex(1,4)  = elec*(a14_1e_he + a14_2e_he / ((aR(n)*1d9)**a14_3e_he * (aR(n+ndim)*1d9)**a14_4e_he))
+Ham_dir(1,4) = elec*(a14_1d_he + a14_2d_he / ((aR(n)*1e9_dp)**a14_3d_he * (aR(n+ndim)*1d9)**a14_4d_he))
+Ham_ex(1,4)  = elec*(a14_1e_he + a14_2e_he / ((aR(n)*1e9_dp)**a14_3e_he * (aR(n+ndim)*1d9)**a14_4e_he))
 
-Ham_dir(1,5) = elec*(a15_1d_he + a15_2d_he / ((aR(n)*1d9)**a15_3d_he * (aR(n+ndim)*1d9)**a15_4d_he))
-Ham_ex(1,5)  = elec*(a15_1e_he + a15_2e_he / ((aR(n)*1d9)**a15_3e_he * (aR(n+ndim)*1d9)**a15_4e_he))
+Ham_dir(1,5) = elec*(a15_1d_he + a15_2d_he / ((aR(n)*1e9_dp)**a15_3d_he * (aR(n+ndim)*1d9)**a15_4d_he))
+Ham_ex(1,5)  = elec*(a15_1e_he + a15_2e_he / ((aR(n)*1e9_dp)**a15_3e_he * (aR(n+ndim)*1d9)**a15_4e_he))
 
-Ham_dir(1,6) = elec*(a16_1d_he + a16_2d_he / ((aR(n)*1d9)**a16_3d_he * (aR(n+ndim)*1d9)**a16_4d_he))
-Ham_ex(1,6)  = elec*(a16_1e_he + a16_2e_he / ((aR(n)*1d9)**a16_3e_he * (aR(n+ndim)*1d9)**a16_4e_he))
+Ham_dir(1,6) = elec*(a16_1d_he + a16_2d_he / ((aR(n)*1e9_dp)**a16_3d_he * (aR(n+ndim)*1d9)**a16_4d_he))
+Ham_ex(1,6)  = elec*(a16_1e_he + a16_2e_he / ((aR(n)*1e9_dp)**a16_3e_he * (aR(n+ndim)*1d9)**a16_4e_he))
 
-Ham_dir(1,7) = elec*(a17_1d_he + a17_2d_he / ((aR(n)*1d9)**a17_3d_he * (aR(n+ndim)*1d9)**a17_4d_he))
-Ham_ex(1,7)  = elec*(a17_1e_he + a17_2e_he / ((aR(n)*1d9)**a17_3e_he * (aR(n+ndim)*1d9)**a17_4e_he))
+Ham_dir(1,7) = elec*(a17_1d_he + a17_2d_he / ((aR(n)*1e9_dp)**a17_3d_he * (aR(n+ndim)*1d9)**a17_4d_he))
+Ham_ex(1,7)  = elec*(a17_1e_he + a17_2e_he / ((aR(n)*1e9_dp)**a17_3e_he * (aR(n+ndim)*1d9)**a17_4e_he))
 
-Ham_dir(1,8) = elec*(a18_1d_he + a18_2d_he / ((aR(n)*1d9)**a18_3d_he * (aR(n+ndim)*1d9)**a18_4d_he))
-Ham_ex(1,8)  = elec*(a18_1e_he + a18_2e_he / ((aR(n)*1d9)**a18_3e_he * (aR(n+ndim)*1d9)**a18_4e_he))
+Ham_dir(1,8) = elec*(a18_1d_he + a18_2d_he / ((aR(n)*1e9_dp)**a18_3d_he * (aR(n+ndim)*1d9)**a18_4d_he))
+Ham_ex(1,8)  = elec*(a18_1e_he + a18_2e_he / ((aR(n)*1e9_dp)**a18_3e_he * (aR(n+ndim)*1d9)**a18_4e_he))
 
-Ham_dir(2,3) = elec*(a14_1d_he + a14_2d_he / ((aR(n+ndim)*1d9)**a14_3d_he * (aR(n)*1d9)**a14_4d_he))
-Ham_ex(2,3)  = elec*(a14_1e_he + a14_2e_he / ((aR(n+ndim)*1d9)**a14_3e_he * (aR(n)*1d9)**a14_4e_he))
+Ham_dir(2,3) = elec*(a14_1d_he + a14_2d_he / ((aR(n+ndim)*1e9_dp)**a14_3d_he * (aR(n)*1d9)**a14_4d_he))
+Ham_ex(2,3)  = elec*(a14_1e_he + a14_2e_he / ((aR(n+ndim)*1e9_dp)**a14_3e_he * (aR(n)*1d9)**a14_4e_he))
 
-Ham_dir(2,4) = elec*(a24_1d_he + a24_2d_he / ((aR(n)*1d9)**a24_3d_he * (aR(n+ndim)*1d9)**a24_4d_he))
-Ham_ex(2,4)  = elec*(a24_1e_he + a24_2e_he / ((aR(n)*1d9)**a24_3e_he * (aR(n+ndim)*1d9)**a24_4e_he))
+Ham_dir(2,4) = elec*(a24_1d_he + a24_2d_he / ((aR(n)*1e9_dp)**a24_3d_he * (aR(n+ndim)*1d9)**a24_4d_he))
+Ham_ex(2,4)  = elec*(a24_1e_he + a24_2e_he / ((aR(n)*1e9_dp)**a24_3e_he * (aR(n+ndim)*1d9)**a24_4e_he))
 
-Ham_dir(2,5) = elec*(a25_1d_he + a25_2d_he / ((aR(n)*1d9)**a25_3d_he * (aR(n+ndim)*1d9)**a25_4d_he))
-Ham_ex(2,5)  = elec*(a25_1e_he + a25_2e_he / ((aR(n)*1d9)**a25_3e_he * (aR(n+ndim)*1d9)**a25_4e_he))
+Ham_dir(2,5) = elec*(a25_1d_he + a25_2d_he / ((aR(n)*1e9_dp)**a25_3d_he * (aR(n+ndim)*1d9)**a25_4d_he))
+Ham_ex(2,5)  = elec*(a25_1e_he + a25_2e_he / ((aR(n)*1e9_dp)**a25_3e_he * (aR(n+ndim)*1d9)**a25_4e_he))
 
-Ham_dir(2,6) = elec*(a26_1d_he + a26_2d_he / ((aR(n)*1d9)**a26_3d_he * (aR(n+ndim)*1d9)**a26_4d_he))
-Ham_ex(2,6)  = elec*(a26_1e_he + a26_2e_he / ((aR(n)*1d9)**a26_3e_he * (aR(n+ndim)*1d9)**a26_4e_he))
+Ham_dir(2,6) = elec*(a26_1d_he + a26_2d_he / ((aR(n)*1e9_dp)**a26_3d_he * (aR(n+ndim)*1d9)**a26_4d_he))
+Ham_ex(2,6)  = elec*(a26_1e_he + a26_2e_he / ((aR(n)*1e9_dp)**a26_3e_he * (aR(n+ndim)*1d9)**a26_4e_he))
 
-Ham_dir(2,7) = elec*(a27_1d_he + a27_2d_he / ((aR(n)*1d9)**a27_3d_he * (aR(n+ndim)*1d9)**a27_4d_he))
-Ham_ex(2,7)  = elec*(a27_1e_he + a27_2e_he / ((aR(n)*1d9)**a27_3e_he * (aR(n+ndim)*1d9)**a27_4e_he))
+Ham_dir(2,7) = elec*(a27_1d_he + a27_2d_he / ((aR(n)*1e9_dp)**a27_3d_he * (aR(n+ndim)*1d9)**a27_4d_he))
+Ham_ex(2,7)  = elec*(a27_1e_he + a27_2e_he / ((aR(n)*1e9_dp)**a27_3e_he * (aR(n+ndim)*1d9)**a27_4e_he))
 
-Ham_dir(2,8) = elec*(a28_1d_he + a28_2d_he / ((aR(n)*1d9)**a28_3d_he * (aR(n+ndim)*1d9)**a28_4d_he))
-Ham_ex(2,8)  = elec*(a28_1e_he + a28_2e_he / ((aR(n)*1d9)**a28_3e_he * (aR(n+ndim)*1d9)**a28_4e_he))
+Ham_dir(2,8) = elec*(a28_1d_he + a28_2d_he / ((aR(n)*1e9_dp)**a28_3d_he * (aR(n+ndim)*1d9)**a28_4d_he))
+Ham_ex(2,8)  = elec*(a28_1e_he + a28_2e_he / ((aR(n)*1e9_dp)**a28_3e_he * (aR(n+ndim)*1d9)**a28_4e_he))
 
-Ham_dir(3,4) = elec*(a12_1d_ho + a12_2d_ho / ((aR(n+ndim)*1d9)**a12_3d_ho)) 
-Ham_ex(3,4)  = elec*(a12_1e_ho + a12_2e_ho / ((aR(n+ndim)*1d9)**a12_3e_ho))
+Ham_dir(3,4) = elec*(a12_1d_ho + a12_2d_ho / ((aR(n+ndim)*1e9_dp)**a12_3d_ho)) 
+Ham_ex(3,4)  = elec*(a12_1e_ho + a12_2e_ho / ((aR(n+ndim)*1e9_dp)**a12_3e_ho))
 
-Ham_dir(3,5) = elec*(a17_1d_he + a17_2d_he / ((aR(n+ndim)*1d9)**a17_3d_he * (aR(n)*1d9)**a17_4d_he)) 
-Ham_ex(3,5)  = elec*(a17_1e_he + a17_2e_he / ((aR(n+ndim)*1d9)**a17_3e_he * (aR(n)*1d9)**a17_4e_he))
+Ham_dir(3,5) = elec*(a17_1d_he + a17_2d_he / ((aR(n+ndim)*1e9_dp)**a17_3d_he * (aR(n)*1d9)**a17_4d_he)) 
+Ham_ex(3,5)  = elec*(a17_1e_he + a17_2e_he / ((aR(n+ndim)*1e9_dp)**a17_3e_he * (aR(n)*1d9)**a17_4e_he))
 
-Ham_dir(3,6) = elec*(a18_1d_he + a18_2d_he / ((aR(n+ndim)*1d9)**a18_3d_he * (aR(n)*1d9)**a18_4d_he)) 
-Ham_ex(3,6)  = elec*(a18_1e_he + a18_2e_he / ((aR(n+ndim)*1d9)**a18_3e_he * (aR(n)*1d9)**a18_4e_he))
+Ham_dir(3,6) = elec*(a18_1d_he + a18_2d_he / ((aR(n+ndim)*1e9_dp)**a18_3d_he * (aR(n)*1d9)**a18_4d_he)) 
+Ham_ex(3,6)  = elec*(a18_1e_he + a18_2e_he / ((aR(n+ndim)*1e9_dp)**a18_3e_he * (aR(n)*1d9)**a18_4e_he))
 
-Ham_dir(3,7) = elec*(a15_1d_he + a15_2d_he / ((aR(n+ndim)*1d9)**a15_3d_he * (aR(n)*1d9)**a15_4d_he)) 
-Ham_ex(3,7)  = elec*(a15_1e_he + a15_2e_he / ((aR(n+ndim)*1d9)**a15_3e_he * (aR(n)*1d9)**a15_4e_he))
+Ham_dir(3,7) = elec*(a15_1d_he + a15_2d_he / ((aR(n+ndim)*1e9_dp)**a15_3d_he * (aR(n)*1d9)**a15_4d_he)) 
+Ham_ex(3,7)  = elec*(a15_1e_he + a15_2e_he / ((aR(n+ndim)*1e9_dp)**a15_3e_he * (aR(n)*1d9)**a15_4e_he))
 
-Ham_dir(3,8) = elec*(a16_1d_he + a16_2d_he / ((aR(n+ndim)*1d9)**a16_3d_he * (aR(n)*1d9)**a16_4d_he)) 
-Ham_ex(3,8)  = elec*(a16_1e_he + a16_2e_he / ((aR(n+ndim)*1d9)**a16_3e_he * (aR(n)*1d9)**a16_4e_he))
+Ham_dir(3,8) = elec*(a16_1d_he + a16_2d_he / ((aR(n+ndim)*1e9_dp)**a16_3d_he * (aR(n)*1d9)**a16_4d_he)) 
+Ham_ex(3,8)  = elec*(a16_1e_he + a16_2e_he / ((aR(n+ndim)*1e9_dp)**a16_3e_he * (aR(n)*1d9)**a16_4e_he))
 
-Ham_dir(4,5) = elec*(a27_1d_he + a27_2d_he / ((aR(n+ndim)*1d9)**a27_3d_he * (aR(n)*1d9)**a27_4d_he)) 
-Ham_ex(4,5)  = elec*(a27_1e_he + a27_2e_he / ((aR(n+ndim)*1d9)**a27_3e_he * (aR(n)*1d9)**a27_4e_he))
+Ham_dir(4,5) = elec*(a27_1d_he + a27_2d_he / ((aR(n+ndim)*1e9_dp)**a27_3d_he * (aR(n)*1d9)**a27_4d_he)) 
+Ham_ex(4,5)  = elec*(a27_1e_he + a27_2e_he / ((aR(n+ndim)*1e9_dp)**a27_3e_he * (aR(n)*1d9)**a27_4e_he))
 
-Ham_dir(4,6) = elec*(a28_1d_he + a28_2d_he / ((aR(n+ndim)*1d9)**a28_3d_he * (aR(n)*1d9)**a28_4d_he)) 
-Ham_ex(4,6)  = elec*(a28_1e_he + a28_2e_he / ((aR(n+ndim)*1d9)**a28_3e_he * (aR(n)*1d9)**a28_4e_he))
+Ham_dir(4,6) = elec*(a28_1d_he + a28_2d_he / ((aR(n+ndim)*1e9_dp)**a28_3d_he * (aR(n)*1d9)**a28_4d_he)) 
+Ham_ex(4,6)  = elec*(a28_1e_he + a28_2e_he / ((aR(n+ndim)*1e9_dp)**a28_3e_he * (aR(n)*1d9)**a28_4e_he))
 
-Ham_dir(4,7) = elec*(a25_1d_he + a25_2d_he / ((aR(n+ndim)*1d9)**a25_3d_he * (aR(n)*1d9)**a25_4d_he)) 
-Ham_ex(4,7)  = elec*(a25_1e_he + a25_2e_he / ((aR(n+ndim)*1d9)**a25_3e_he * (aR(n)*1d9)**a25_4e_he))
+Ham_dir(4,7) = elec*(a25_1d_he + a25_2d_he / ((aR(n+ndim)*1e9_dp)**a25_3d_he * (aR(n)*1d9)**a25_4d_he)) 
+Ham_ex(4,7)  = elec*(a25_1e_he + a25_2e_he / ((aR(n+ndim)*1e9_dp)**a25_3e_he * (aR(n)*1d9)**a25_4e_he))
 
-Ham_dir(4,8) = elec*(a26_1d_he + a26_2d_he / ((aR(n+ndim)*1d9)**a26_3d_he * (aR(n)*1d9)**a26_4d_he)) 
-Ham_ex(4,8)  = elec*(a26_1e_he + a26_2e_he / ((aR(n+ndim)*1d9)**a26_3e_he * (aR(n)*1d9)**a26_4e_he))
+Ham_dir(4,8) = elec*(a26_1d_he + a26_2d_he / ((aR(n+ndim)*1e9_dp)**a26_3d_he * (aR(n)*1d9)**a26_4d_he)) 
+Ham_ex(4,8)  = elec*(a26_1e_he + a26_2e_he / ((aR(n+ndim)*1e9_dp)**a26_3e_he * (aR(n)*1d9)**a26_4e_he))
 
-Ham_dir(5,6) = elec*(a56_1d_he + a56_2d_he / ((aR(n)*1d9)**a56_3d_he * (aR(n+ndim)*1d9)**a56_4d_he)) 
-Ham_ex(5,6)  = elec*(a56_1e_he + a56_2e_he / ((aR(n)*1d9)**a56_3e_he * (aR(n+ndim)*1d9)**a56_4e_he))
+Ham_dir(5,6) = elec*(a56_1d_he + a56_2d_he / ((aR(n)*1e9_dp)**a56_3d_he * (aR(n+ndim)*1d9)**a56_4d_he)) 
+Ham_ex(5,6)  = elec*(a56_1e_he + a56_2e_he / ((aR(n)*1e9_dp)**a56_3e_he * (aR(n+ndim)*1d9)**a56_4e_he))
 
-Ham_dir(5,7) = elec*(a57_1d_he + a57_2d_he / ((aR(n)*1d9)**a57_3d_he * (aR(n+ndim)*1d9)**a57_4d_he))  
-Ham_ex(5,7)  = elec*(a57_1e_he + a57_2e_he / ((aR(n)*1d9)**a57_3e_he * (aR(n+ndim)*1d9)**a57_4e_he))   
+Ham_dir(5,7) = elec*(a57_1d_he + a57_2d_he / ((aR(n)*1e9_dp)**a57_3d_he * (aR(n+ndim)*1d9)**a57_4d_he))  
+Ham_ex(5,7)  = elec*(a57_1e_he + a57_2e_he / ((aR(n)*1e9_dp)**a57_3e_he * (aR(n+ndim)*1d9)**a57_4e_he))   
 
-Ham_dir(5,8) = elec*(a58_1d_he + a58_2d_he / ((aR(n)*1d9)**a58_3d_he * (aR(n+ndim)*1d9)**a58_4d_he))  
-Ham_ex(5,8)  = elec*(a58_1e_he + a58_2e_he / ((aR(n)*1d9)**a58_3e_he * (aR(n+ndim)*1d9)**a58_4e_he))   
+Ham_dir(5,8) = elec*(a58_1d_he + a58_2d_he / ((aR(n)*1e9_dp)**a58_3d_he * (aR(n+ndim)*1d9)**a58_4d_he))  
+Ham_ex(5,8)  = elec*(a58_1e_he + a58_2e_he / ((aR(n)*1e9_dp)**a58_3e_he * (aR(n+ndim)*1d9)**a58_4e_he))   
 
-Ham_dir(6,7) = elec*(a58_1d_he + a58_2d_he / ((aR(n+ndim)*1d9)**a58_3d_he * (aR(n)*1d9)**a58_4d_he))  
-Ham_ex(6,7)  = elec*(a58_1e_he + a58_2e_he / ((aR(n+ndim)*1d9)**a58_3e_he * (aR(n)*1d9)**a58_4e_he))   
+Ham_dir(6,7) = elec*(a58_1d_he + a58_2d_he / ((aR(n+ndim)*1e9_dp)**a58_3d_he * (aR(n)*1d9)**a58_4d_he))  
+Ham_ex(6,7)  = elec*(a58_1e_he + a58_2e_he / ((aR(n+ndim)*1e9_dp)**a58_3e_he * (aR(n)*1d9)**a58_4e_he))   
 
-Ham_dir(6,8) = elec*(a68_1d_he + a68_2d_he / ((aR(n)*1d9)**a68_3d_he * (aR(n+ndim)*1d9)**a68_4d_he)) 
-Ham_ex(6,8)  = elec*(a68_1e_he + a68_2e_he / ((aR(n)*1d9)**a68_3e_he * (aR(n+ndim)*1d9)**a68_4e_he))   
+Ham_dir(6,8) = elec*(a68_1d_he + a68_2d_he / ((aR(n)*1e9_dp)**a68_3d_he * (aR(n+ndim)*1d9)**a68_4d_he)) 
+Ham_ex(6,8)  = elec*(a68_1e_he + a68_2e_he / ((aR(n)*1e9_dp)**a68_3e_he * (aR(n+ndim)*1d9)**a68_4e_he))   
 
-Ham_dir(7,8) = elec*(a56_1d_he + a56_2d_he / ((aR(n+ndim)*1d9)**a56_3d_he * (aR(n)*1d9)**a56_4d_he)) 
-Ham_ex(7,8)  = elec*(a78_1e_he + a78_2e_he / ((aR(n+ndim)*1d9)**a78_3e_he * (aR(n)*1d9)**a78_4e_he))
+Ham_dir(7,8) = elec*(a56_1d_he + a56_2d_he / ((aR(n+ndim)*1e9_dp)**a56_3d_he * (aR(n)*1d9)**a56_4d_he)) 
+Ham_ex(7,8)  = elec*(a78_1e_he + a78_2e_he / ((aR(n+ndim)*1e9_dp)**a78_3e_he * (aR(n)*1d9)**a78_4e_he))
 
 do i=1,nstates-1
   do j=1,nstates-1
     if ( i .eq. j ) then
     Ham(i,j) = Ham_0(i) - Ham_dir(i,j) + Ham_ex(i,j)
     elseif ( i .ne. j ) then
-    Ham(i,j) = -1.d0 * Ham_dir(i,j) + Ham_ex(i,j)
+    Ham(i,j) = -1.e0_dp * Ham_dir(i,j) + Ham_ex(i,j)
     endif
   enddo
 enddo

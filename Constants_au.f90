@@ -5,7 +5,7 @@ use, intrinsic :: iso_fortran_env
 
 implicit none 
 
-   integer,  parameter :: dp = REAL64 !SELECTED_REAL_KIND(15,307)
+   integer,  parameter :: dp = SELECTED_REAL_KIND(15,307)
    real(dp), parameter :: pi = 4.0e0_dp*datan(1.0e0_dp)
    real(dp), parameter :: E_au = 5.1422065211e11_dp
    real(dp), parameter :: Dip_au = 8.4783532619e-30_dp

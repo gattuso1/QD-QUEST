@@ -207,7 +207,6 @@ include 'Core.f90'
 elseif ( (n .gt. nQDA+nQDB) .and. ( model .eq. "FO" ) ) then
 
 nstates=5
-nstates2=nstates**2
 
 print*, "Computing system number:    ", n, "which possesses", nstates, "states"
 include 'allocate_core.f90'

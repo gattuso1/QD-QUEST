@@ -8,12 +8,12 @@ contains
 real(kind=8) function r8_uniform_01(seed)
   implicit none
 
-  integer(kind=8) k
-  integer(kind=4) seed
+  integer :: k
+  integer :: seed
 
-  k = seed / 127773
+  k = seed / 127773.e0_dp
 
-  seed = 16807 * ( seed - k * 127773 ) - k * 2836
+  seed = 16807 * ( seed - k * 127773) - k * 2836
 
   if ( seed < 0 ) then
     seed = seed + 2147483647
@@ -32,7 +32,7 @@ real(kind=8) function r8_normal_ab(a,b,seed)
   real(kind=8) b
   real(kind=8) r1
   real(kind=8) r2
-  integer(kind = 4) seed
+  integer seed
   real(kind=8) x
 
   r1 = r8_uniform_01 ( seed )
