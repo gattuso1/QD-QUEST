@@ -1691,10 +1691,14 @@ do t=0,ntime
 
 time = t*timestep
 
-if ( ( MOD(t,10) .eq. 0 ) .and. ( n .eq. 1 ) ) then
-write(Pulse_f,*) time*t_au , pulse1 * Ed01 * cos(omega01*(time-t01)+phase01) * exp(-1.0d0*(time-t01)**2/(2.0d0*(width01**2))) , &
-                             pulse2 * Ed02 * cos(omega02*(time-t02)+phase02) * exp(-1.0d0*(time-t02)**2/(2.0d0*(width02**2))) , &
-                             pulse3 * Ed03 * cos(omega03*(time-t03)+phase03) * exp(-1.0d0*(time-t03)**2/(2.0d0*(width03**2)))
+if ( n .eq. 1 ) then
+
+pulses(t) = pulse1 * Ed01 * cos(omega01*(time-t01)+phase01) * exp(-1.0d0*((time-t01))**2/(2.0d0*(width01**2))) + &
+            pulse2 * Ed02 * cos(omega02*(time-t02)+phase02) * exp(-1.0d0*((time-t02))**2/(2.0d0*(width02**2))) + &
+            pulse3 * Ed03 * cos(omega03*(time-t03)+phase03) * exp(-1.0d0*((time-t03))**2/(2.0d0*(width03**2)))
+
+write(Pulse_f,*) time*t_au/1.e-15_dp , pulses(t)
+
 endif
 
 if ( Dyn_0 .eq. 'y' ) then
@@ -1999,14 +2003,6 @@ endif
 
 if ( Dyn_L .eq. 'y' ) then
 
-!tp1 = e0 * cos(wc*(time                     -t0f)+cep) * exp(-1.0d0*((time                     -t0f)/sig)**2.d0)
-!tp2 = e0 * cos(wc*(time+(timestep/9.d0)     -t0f)+cep) * exp(-1.0d0*((time+(timestep/9.d0)     -t0f)/sig)**2.d0)
-!tp3 = e0 * cos(wc*(time+(timestep/6.d0)     -t0f)+cep) * exp(-1.0d0*((time+(timestep/6.d0)     -t0f)/sig)**2.d0)
-!tp4 = e0 * cos(wc*(time+(timestep/3.d0)     -t0f)+cep) * exp(-1.0d0*((time+(timestep/3.d0)     -t0f)/sig)**2.d0)
-!tp5 = e0 * cos(wc*(time+(timestep/2.d0)     -t0f)+cep) * exp(-1.0d0*((time+(timestep/2.d0)     -t0f)/sig)**2.d0)
-!tp6 = e0 * cos(wc*(time+(2.d0*timestep/3.d0)-t0f)+cep) * exp(-1.0d0*((time+(2.d0*timestep/3.d0)-t0f)/sig)**2.d0)
-!tp7 = e0 * cos(wc*(time+(5.d0*timestep/6.d0)-t0f)+cep) * exp(-1.0d0*((time+(5.d0*timestep/6.d0)-t0f)/sig)**2.d0)
-!tp8 = e0 * cos(wc*(time+timestep            -t0f)+cep) * exp(-1.0d0*((time+timestep            -t0f)/sig)**2.d0)
 tp1 = pulse(time)
 tp2 = pulse(time+(timestep/9.e0_dp))
 tp3 = pulse(time+(timestep/6.e0_dp))

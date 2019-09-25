@@ -196,6 +196,22 @@ call RK_0_ei
 
 endif
 
+if ( doFT .eq. 'y' ) then
+
+do t=0,ntime
+
+time = t*timestep
+
+do j=0,nstates-1
+do k=0,nstates-1
+pow(t) = pow(t) + 2._dp * TransHam_ei(j,k) * dreal(dconjg(xc_ei(j,t))*xc_ei(k,t))
+enddo
+enddo
+
+enddo
+
+endif
+
 deallocate(TransHam,TransHam_ei_l,TransHam_l,TransHam_d,TransHam_ei,Mat,Matx,Maty,Matz,Ham,Ham_l,Ham_0,Ham_dir,Ham_ex,Ham_ei,haml)
 deallocate(Transvec,TransMat_ei,lambda,xc,k1,k2,k3,k4,k5,k6,k7,k8,c0,xc_ei,xc_L,xc0)
 deallocate(k1_L,k2_L,k3_L,k4_L,k5_L,k6_L,k7_L,k8_L)

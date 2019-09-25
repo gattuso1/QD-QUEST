@@ -60,6 +60,14 @@ allocate(kouth2(totsys))
 allocate(TransDip_Ana_h1e(totsys))
 allocate(TransDip_Ana_h2e(totsys))
 allocate(TransDip_Ana_h1h2(totsys))
+allocate(pow(0:ntime+1))
+allocate(pow_gaus(0:ntime+1))
+allocate(xpow_gaus(0:ntime+1))
+allocate(xpulse(0:ntime+1))
+allocate(pulses(0:ntime+1))
+allocate(wft(0:ntime+1))
+allocate(wftp(0:ntime+1))
+allocate(wftf(0:ntime+1))
 
 k=1
 
@@ -177,6 +185,8 @@ open(newunit=Etr_ei_f ,file='Etransitions-he_ei.dat')
 open(newunit=TDip_ei_f,file='TransDip_ei.dat')       
 open(newunit=Abs_imp_f,file='Absorption-imp.dat')    
 open(newunit=Liou_f   ,file='Liou.dat')
+open(newunit=TransAbs ,file='TransAbs.dat')
+open(newunit=DipSpec  ,file='DipSpec.dat')
 
 matrices = (/ Tmat_0_f,Tmat_ei_f,Tmat_x_f,Tmat_y_f,Tmat_z_f,H_0_f,H_dir_f,H_ex_f,H_JK_f,H_ei_f /)
 
@@ -232,21 +242,52 @@ include 'Core.f90'
 
 endif
 
-!
-!!call cpu_time(finish)
-!
-!write(6,*) finish - start
-
 enddo !end loop number of systems
 
 call Convolution
 
+if ( doFT .eq. 'y' ) then
+
+timestep  = timestep  * t_au
+totaltime = totaltime * t_au
+
+do t=0,ntime
+
+time = t*timestep
+
+pow_gaus(t)=exp(-1.d0*((time-totaltime/2.d0)*timestep)**2.d0/(2.d0*(totaltime*timestep/15.d0)**2.d0))*(pow(t)/totsys)
+
+write(DipSpec,*) time, pow(t), pow_gaus(t), pulses(t)
+
+enddo 
+
+wstep = (w2-w1)/ntime
+xpow_gaus  = dcmplx(pow_gaus,0.d0)
+xpulse  = dcmplx(pulses,0.d0)
+
+w = w1 
+
+do t=0,ntime
+do t2=0,ntime
+wft(t)  = wft(t)  + exp(-2.d0*pi*im*w*t2*timestep) * xpow_gaus(t2) 
+wftp(t) = wftp(t) + exp(-1.d0*im*w*t2*timestep) * xpulse(t2) 
+enddo
+w = w + wstep
+enddo
+
+w = w1
+
+do t=0,ntime
+wftf(t) = -2.d0 * dimag(sqrt(dreal(wft(t))**2+dimag(wft(t))**2) * dconjg(wftp(t)))
+write(TransAbs,*) w*h/elec, dreal(wft(t)), dimag(wft(t)),sqrt(dreal(wft(t))**2 + aimag(wft(t))**2), &
+                            sqrt(dreal(wftp(t))**2 + aimag(wftp(t))**2), dreal(wftf(t))
+w = w + wstep
+enddo
+
+endif
+
 !!$OMP END DO
 
 !$OMP END PARALLEL DO
-
-!call cpu_time(finish)
-
-!write(6,*) finish - start
 
 end
