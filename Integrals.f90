@@ -1838,6 +1838,7 @@ enddo
 
 endif 
 
+if ( nofiles .eq. 'n' ) then
 if ( MOD(t,10) .eq. 0 ) then
 cnorm2 = 0.d0
 do i=0,nstates-1
@@ -1846,6 +1847,7 @@ enddo
 write(popc_0_f,form_pop) time*t_au, (dreal(xc(i,t))**2+dimag(xc(i,t))**2, i=0,nstates-1), cnorm2
 write(Re_c_0_f,form_com) time*t_au, (dreal(xc(i,t)), i=0,nstates-1)
 write(Im_c_0_f,form_com) time*t_au, (dimag(xc(i,t)), i=0,nstates-1)
+endif
 endif
 
 endif
@@ -1992,11 +1994,13 @@ xc_ei(:,t+1)=xc_ei(:,t)+(41.e0_dp*(k1(:)+k8(:))+216.e0_dp*(k3(:)+k7(:))+27.e0_dp
 
 endif 
 
+if ( nofiles .eq. 'n' ) then
 if ( MOD(t,10) .eq. 0 ) then
 cnorm2 = sum(dreal(xc_ei(:,t))**2 + dimag(xc_ei(:,t))**2)
 write(popc_ei_f,form_pop) time*t_au, (dreal(xc_ei(i,t))**2+dimag(xc_ei(i,t))**2, i=0,nstates-1), cnorm2
 write(Re_c_ei_f,form_com) time*t_au, (dreal(xc_ei(i,t)), i=0,nstates-1)
 write(Im_c_ei_f,form_com) time*t_au, (dimag(xc_ei(i,t)), i=0,nstates-1)
+endif
 endif
 
 endif
@@ -2059,9 +2063,11 @@ enddo
 xc_L(:,t+1)=xc_L(:,t)+(41.e0_dp*(k1_L(:)+k8_L(:))+216.e0_dp*(k3_L(:)+k7_L(:))+27.e0_dp*(k4_L(:)+k6_L(:))+272.e0_dp*k5_L(:))&
               /840.e0_dp
 
+if ( nofiles .eq. 'n' ) then
 if ( MOD(t,10) .eq. 0 ) then
 write(Re_c_L_f,form_com_L) time*t_au, (dreal(xc_L(i,t)), i=0,nstates2)
 write(Im_c_L_f,form_com_L) time*t_au, (dimag(xc_L(i,t)), i=0,nstates2)
+endif
 endif
 
 endif

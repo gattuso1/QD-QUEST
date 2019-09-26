@@ -163,8 +163,6 @@ if ( ( Dyn_0 .eq. 'y' ) .or. ( Dyn_ei .eq. 'y' ) ) then
 
 !!!Opens output files
 write(popc,'(a5,i5.5,a4)') 'Popc-', n, '.dat'
-write(norm,'(a5,i5.5,a4)') 'Norm-', n, '.dat'
-write(norm_ei,'(a8,i5.5,a4)') 'Norm_ei-', n, '.dat'
 write(popc_ei,'(a8,i5.5,a4)') 'Popc_ei-', n, '.dat'
 write(Re_c,'(a5,i5.5,a4)') 'Re_c-', n, '.dat'
 write(Im_c,'(a5,i5.5,a4)') 'Im_c-', n, '.dat'
@@ -174,8 +172,6 @@ write(Re_c_L,'(a7,i5.5,a4)') 'Re_c_L-', n, '.dat'
 write(Im_c_L,'(a7,i5.5,a4)') 'Im_c_L-', n, '.dat'
 open(newunit=popc_0_f   ,file=popc)    !; popc_0_f = 44
 open(newunit=popc_ei_f  ,file=popc_ei) !; popc_ei_f = 49
-open(newunit=norm_0_f   ,file=norm)    !; norm_0_f = 46
-open(newunit=norm_ei_f  ,file=norm_ei) !; norm_ei_f = 50
 open(newunit=Re_c_ei_f  ,file=Re_c_ei) !; Re_c_ei_f = 52
 open(newunit=Im_c_ei_f  ,file=Im_c_ei) !; Im_c_ei_f = 53
 open(newunit=Re_c_0_f   ,file=Re_c)    !; Re_c_0_f = 54
