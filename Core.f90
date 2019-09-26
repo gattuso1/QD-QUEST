@@ -222,14 +222,12 @@ do t=0,ntime
 time = t*timestep
 
 do j=0,nstates-1
-powtemp = 2._dp * sum(TransHam_ei(j,:) * dreal(dconjg(xc_ei(j,t))*xc_ei(:,t)))
+pow(t) = pow(t) + 2._dp * sum(TransHam_ei(j,:) * dreal(dconjg(xc_ei(j,t))*xc_ei(:,t)))
 enddo
 
-pow(t) = pow(t) + powtemp
-
-if (singleFT .eq. 'y' ) then
-write(DipSpec_s,form_DipSpec) time, powtemp 
-endif
+!if (singleFT .eq. 'y' ) then
+!write(DipSpec_s,form_DipSpec) time, powtemp 
+!endif
 
 enddo
 

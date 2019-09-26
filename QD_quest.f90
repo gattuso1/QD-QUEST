@@ -279,8 +279,7 @@ w = w1
 
 do t=0,ntime
 wftf(t) = -2.d0 * dimag(sqrt(dreal(wft(t))**2+dimag(wft(t))**2) * dconjg(wftp(t)))
-write(TransAbs,*) w*h/elec, dreal(wft(t)), dimag(wft(t)),sqrt(dreal(wft(t))**2 + dimag(wft(t))**2), &
-                            sqrt(dreal(wftp(t))**2 + aimag(wftp(t))**2), dreal(wftf(t))
+write(TransAbs,*) w*h/elec, dreal(wftf(t))
 w = w + wstep
 enddo
 
