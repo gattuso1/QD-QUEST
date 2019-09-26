@@ -1,14 +1,15 @@
 &outputs !Select output and computation modules, yes ("y") or ("no") 
-inbox   = "n" !For phase matching directions, read coordinates in space, orient mus ... 
-get_sp  = "n" !recover sampling from a previous Etransitions_0.dat
-get_ei  = "y" !Generates eigenstate vectors and TDM 
-Dyn_0   = "n" !Should I perform dynamics in 0 order basis?
-Dyn_ei  = "y" !Should I perform dynamics in eigenstate basis?
-Dyn_L   = "n" !Should I perform Liouville quantum dynamics?
-hamilt  = "n" !Should I print the time dependent Hamiltonian (very heavy and time consuming)
-fineSt  = "n" !Request fine structure 
-TDM_ee  = "y" !Request interexciton TDM or not
-doFT    = "n" !Perform FT of coherences for all systems
+inbox    = "n" !For phase matching directions, read coordinates in space, orient mus ... 
+get_sp   = "n" !recover sampling from a previous Etransitions_0.dat
+get_ei   = "y" !Generates eigenstate vectors and TDM 
+Dyn_0    = "n" !Should I perform dynamics in 0 order basis?
+Dyn_ei   = "y" !Should I perform dynamics in eigenstate basis?
+Dyn_L    = "n" !Should I perform Liouville quantum dynamics?
+hamilt   = "n" !Should I print the time dependent Hamiltonian (very heavy and time consuming)
+fineSt   = "n" !Request fine structure 
+TDM_ee   = "y" !Request interexciton TDM or not
+doFT     = "y" !Perform FT of coherences for all systems
+singleFT = "n" !Create single Dipole Spectrum files for each system, doFT must be yes
 /
 
 &elecSt !Parameters of CdSe QD and the model
@@ -62,7 +63,7 @@ nQDA      = 0          !Number of dimers
 nQDB      = 0          !Number of dimers
 nhomoA    = 0          !Number of dimers
 nhomoB    = 0          !Number of dimers
-nhetero   = 100          !Number of dimers
+nhetero   = 10          !Number of dimers
 dispQD    = 0.05d0      !Dispersion of QD radius
 idlink    = 20         !Linker length
 aA        = 1.1d-9      !Radius of QDA

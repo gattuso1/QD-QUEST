@@ -9,6 +9,7 @@ write(form_abs,'("(2f16.8,2x,i0)")')
 write(form_pop,'("(",i0,"ES17.8E3,ES25.16E3)")') nstates+1
 write(form_com,'("(ES12.5E3,",i0,"ES18.8E3)")') nstates+1
 write(form_com_L,'("(ES12.5E3,",i0,"ES18.8E3)")') nstates2+2
+write(form_DipSpec,'("(ES12.5E3,",i0,"ES18.8E3)")') nstates+1
 
 if ( get_ei .eq. 'y' ) then
 Ham_ei = Ham
@@ -198,17 +199,30 @@ endif
 
 if ( doFT .eq. 'y' ) then
 
+if (singleFT .eq. 'y' ) then
+write(cov,'(a8,i0,a4)') 'DipSpec-', n, '.dat'
+open(DipSpec_s,file=cov) 
+endif
+
 do t=0,ntime
 
 time = t*timestep
 
 do j=0,nstates-1
-do k=0,nstates-1
-pow(t) = pow(t) + 2._dp * TransHam_ei(j,k) * dreal(dconjg(xc_ei(j,t))*xc_ei(k,t))
-enddo
+powtemp = 2._dp * sum(TransHam_ei(j,:) * dreal(dconjg(xc_ei(j,t))*xc_ei(:,t)))
 enddo
 
+pow(t) = pow(t) + powtemp
+
+if (singleFT .eq. 'y' ) then
+write(DipSpec_s,form_DipSpec) time, powtemp 
+endif
+
 enddo
+
+if (singleFT .eq. 'y' ) then
+close(DipSpec_s)
+endif
 
 endif
 
