@@ -11,7 +11,7 @@ implicit none
    character*64 :: popc, hmti, norm, tdmM, hmt0, outputdir, norm_ei, popc_ei, Re_c_ei, Im_c_ei, integ,model, line, dummy
    character*64 :: Re_c, Im_c, syst_n, Re_c_l, Im_c_L
    character*1 :: o_Norm, o_Over, o_Coul, o_DipS, o_Osci, o_Exti, o_DipD, dyn, hamilt, get_ei, finest, get_sp
-   character*1 :: TDM_ee, Dyn_0, Dyn_ei, inbox, Dyn_L,doFT
+   character*1 :: TDM_ee, Dyn_0, Dyn_ei, inbox, Dyn_L,doFT,CEP1,CEP2,CEP3
    integer :: Pulse_f,Tmat_0_f,Tmat_ei_f,Tmat_x_f,Tmat_y_f,Tmat_z_f,H_0_f,H_dir_f,H_ex_f,H_JK_f,TransAbs
    integer :: popc_0_f,popc_ei_f,norm_0_f,norm_ei_f,Re_c_ei_f,Im_c_ei_f,Re_c_0_f,Im_c_0_f,TDip_ei_f,tmp, nbands,Liou_f
    integer :: Re_c_L_f,Im_c_L_f,H_ei_f,Etr_0_f,Etr_ei_f,Abs_imp_f, t2, DipSpec
@@ -78,7 +78,7 @@ NAMELIST /outputs/    inbox,get_sp,get_ei,Dyn_0,Dyn_ei,Dyn_L,hamilt,fineSt,TDM_e
 NAMELIST /elecSt/     model,me,mh,eps,epsout,V0eV,omegaLO,slope,side
 NAMELIST /fineStruc/  Kas,Kbs,Kcs,Kpp,Dso1,Dso2,Dxf
 NAMELIST /pulses/     integ,npulses,t01,t02,t03,timestep,totaltime,omega01,omega02,omega03,phase01,phase02,phase03,&
-                      width01,width02,width03,Ed01,Ed02,Ed03,pgeom,vertex
+                      width01,width02,width03,Ed01,Ed02,Ed03,CEP1,CEP2,CEP3,pgeom,vertex
 NAMELIST /syst/       nQDA,nQDB,nhomoA,nhomoB,nhetero,dispQD,idlink,aA,aB     
 NAMELIST /FT/         w1,w2
 
@@ -104,20 +104,36 @@ totaltime  =  totaltime*1.e-15_dp/t_au !totaltime*1.d-15/t_au
 t01        =  t01*1.e-15_dp/t_au       !t01*1.d-15/t_au
 t02        =  t02*1.e-15_dp/t_au       !t02*1.d-15/t_au
 t03        =  t03*1.e-15_dp/t_au       !t03*1.d-15/t_au
-width01      =  width01*1.e-15_dp/t_au     !width*1.d-15/t_au
-width02      =  width02*1.e-15_dp/t_au     !width*1.d-15/t_au
-width03      =  width03*1.e-15_dp/t_au     !width*1.d-15/t_au
-omega01      =  omega01*t_au      !omega*1.d15*t_au
-omega02      =  omega02*t_au      !omega*1.d15*t_au
-omega03      =  omega03*t_au      !omega*1.d15*t_au
-Ed01         =  Ed01/E_au        !0.024 !Ed/E_au
-Ed02         =  Ed02/E_au        !0.024 !Ed/E_au
-Ed03         =  Ed03/E_au        !0.024 !Ed/E_au
+width01    =  width01*1.e-15_dp/t_au     !width*1.d-15/t_au
+width02    =  width02*1.e-15_dp/t_au     !width*1.d-15/t_au
+width03    =  width03*1.e-15_dp/t_au     !width*1.d-15/t_au
+omega01    =  omega01*t_au      !omega*1.d15*t_au
+omega02    =  omega02*t_au      !omega*1.d15*t_au
+omega03    =  omega03*t_au      !omega*1.d15*t_au
+Ed01       =  Ed01/E_au        !0.024 !Ed/E_au
+Ed02       =  Ed02/E_au        !0.024 !Ed/E_au
+Ed03       =  Ed03/E_au        !0.024 !Ed/E_au
 xh         =  dcmplx(timestep,0.0e0_dp)
 ntime      =  nint(totaltime/timestep)
+
+if ( CEP1 .eq. 'r' ) then 
+call random_number(phase01) 
+phase01      =  phase01 * pi
+elseif ( CEP1 .eq. 'p' ) then
 phase01      =  pi
+endif
+if ( CEP2 .eq. 'r' ) then 
+call random_number(phase02) 
+phase02      =  phase02 * pi
+elseif ( CEP2 .eq. 'p' ) then
 phase02      =  pi
+endif
+if ( CEP3 .eq. 'r' ) then 
+call random_number(phase03) 
+phase03      =  phase03 * pi
+elseif ( CEP3 .eq. 'p' ) then
 phase03      =  pi
+endif
 
 allocate(k_1(3),k_2(3),k_3(3),Pe1(3),Pe2(3),Pe3(3),source=0.e0_dp)
 
