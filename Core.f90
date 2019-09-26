@@ -195,6 +195,19 @@ xc_L(:,0) = xc0(:)
 
 call RK_0_ei
 
+if ( nofiles .eq. 'y' ) then
+close(popc_0_f   ,status="delete")
+close(popc_ei_f  ,status="delete")
+close(norm_0_f   ,status="delete")
+close(norm_ei_f  ,status="delete")
+close(Re_c_ei_f  ,status="delete")
+close(Im_c_ei_f  ,status="delete")
+close(Re_c_0_f   ,status="delete")
+close(Im_c_0_f   ,status="delete")
+close(Re_c_L_f   ,status="delete")
+close(Im_c_L_f   ,status="delete")
+endif
+
 endif
 
 if ( doFT .eq. 'y' ) then
