@@ -285,6 +285,8 @@ enddo
 
 endif
 
+call system('find . -size 0 -delete')
+
 !!$OMP END DO
 
 !$OMP END PARALLEL DO

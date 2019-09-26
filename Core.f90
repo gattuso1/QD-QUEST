@@ -162,6 +162,7 @@ endif
 if ( ( Dyn_0 .eq. 'y' ) .or. ( Dyn_ei .eq. 'y' ) ) then
 
 !!!Opens output files
+if ( nofiles .eq. 'n' ) then
 write(popc,'(a5,i5.5,a4)') 'Popc-', n, '.dat'
 write(popc_ei,'(a8,i5.5,a4)') 'Popc_ei-', n, '.dat'
 write(Re_c,'(a5,i5.5,a4)') 'Re_c-', n, '.dat'
@@ -178,6 +179,7 @@ open(newunit=Re_c_0_f   ,file=Re_c)    !; Re_c_0_f = 54
 open(newunit=Im_c_0_f   ,file=Im_c)    !; Im_c_0_f = 55
 open(newunit=Re_c_L_f   ,file=Re_c_L)    !; Im_c_0_f = 55
 open(newunit=Im_c_L_f   ,file=Im_c_L)    !; Im_c_0_f = 55
+endif
 
 !!!!!INITIAL POPULATIONS
 c0    = 0.e0_dp
@@ -217,8 +219,10 @@ do t=0,ntime
 
 time = t*timestep
 
+powtemp = 0.e0_dp
+
 do j=0,nstates-1
-powtemp = 2._dp * sum(TransHam_ei(j,:) * dreal(dconjg(xc_ei(j,t))*xc_ei(:,t)))
+powtemp = powtemp + 2_dp * sum(TransHam_ei(j,:) * dreal(dconjg(xc_ei(j,t))*xc_ei(:,t)))
 enddo
 
 pow(t) = pow(t) + powtemp
