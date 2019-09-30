@@ -68,6 +68,14 @@ allocate(pulses(0:ntime+1))
 allocate(wft(0:ntime+1))
 allocate(wftp(0:ntime+1))
 allocate(wftf(0:ntime+1))
+allocate(pow_pol(npol,0:ntime+1))
+allocate(l1(npol))
+allocate(l2(npol))
+allocate(l3(npol))
+
+if ( inbox .eq. 'y' ) then
+call get_phases
+endif
 
 k=1
 
@@ -187,6 +195,7 @@ open(newunit=Abs_imp_f,file='Absorption-imp.dat')
 open(newunit=Liou_f   ,file='Liou.dat')
 open(newunit=TransAbs ,file='TransAbs.dat')
 open(newunit=DipSpec  ,file='DipSpec.dat')
+open(newunit=P_Match_f,file='Phase_Match.dat')
 
 matrices = (/ Tmat_0_f,Tmat_ei_f,Tmat_x_f,Tmat_y_f,Tmat_z_f,H_0_f,H_dir_f,H_ex_f,H_JK_f,H_ei_f /)
 
@@ -260,6 +269,21 @@ pow_gaus(t)=exp(-1.d0*((time-totaltime/2.d0)*timestep)**2.d0/(2.d0*(totaltime*ti
 write(DipSpec,*) time, pow(t), pow_gaus(t), pulses(t)
 
 enddo 
+
+if ( inbox .eq. 'y' ) then
+
+do pol=1,npol
+integPol = dcmplx(0.d0,0.d0)
+do t=0,ntime
+time = t*timestep
+integPol = integPol + abs(dcmplx(timestep,0.e0_dp)*(pow_pol(pol,t) + pow_pol(pol,t+1))/2.e0_dp)
+enddo
+
+!write(P_Match_f,'(i4,2x,3f6.2,es18.7e3)') pol, l1(pol), l2(pol), l3(pol), integPol
+write(P_Match_f,*) pol, l1(pol), l2(pol), l3(pol), dreal(integPol)
+enddo
+
+endif
 
 wstep = (w2-w1)/ntime
 xpow_gaus  = dcmplx(pow_gaus,0.d0)

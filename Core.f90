@@ -226,6 +226,12 @@ enddo
 
 pow(t) = pow(t) + powtemp
 
+if ( inbox .eq. 'y' ) then
+do pol=1,npol
+pow_pol(pol,t) = pow_pol(pol,t) + pow(t)*exp(im*dot_product(l1(pol)*k_1(:)+l2(pol)*k_2(:)+l3(pol)*k_3(:),Dcenter(n,:)))/totsys
+enddo
+endif
+
 if (singleFT .eq. 'y' ) then
 write(DipSpec_s,form_DipSpec) time, powtemp 
 endif
