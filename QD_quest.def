@@ -1,14 +1,14 @@
 &outputs !Select output and computation modules, yes ("y") or ("no") 
-inbox    = "n" !For phase matching directions, read coordinates in space, orient mus ... 
+inbox    = "y" !For phase matching directions, read coordinates in space, orient mus ... 
 get_sp   = "n" !recover sampling from a previous Etransitions_0.dat
 get_ei   = "y" !Generates eigenstate vectors and TDM 
 Dyn_0    = "n" !Should I perform dynamics in 0 order basis?
 Dyn_ei   = "y" !Should I perform dynamics in eigenstate basis?
 Dyn_L    = "n" !Should I perform Liouville quantum dynamics?
 TDM_ee   = "y" !Request interexciton TDM or not
-doFT     = "n" !Perform FT of coherences for all systems
+doFT     = "y" !Perform FT of coherences for all systems
 singleFT = "n" !Create single Dipole Spectrum files for each system, doFT must be yes
-nofiles  = "n" !deletes all individual files
+nofiles  = "y" !deletes all individual files
 /
 
 &elecSt !Parameters of CdSe QD and the model

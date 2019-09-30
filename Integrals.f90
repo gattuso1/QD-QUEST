@@ -2111,7 +2111,6 @@ allocate(spec(EmaxID))
 do j=EminID,EmaxID
 do i=1,k
 spec(j) = spec(j) + (dipole(2,i))**2 * exp(-1.d0*((j/1000.d0)-dipole(1,i))**2/(2*sigma_conv**2))
-!print*, (j/1000.d0),dipole(1,i)*Energ_au/elec, (-1.d0*((j/1000.d0)-dipole(1,i)*Energ_au/elec)**2/(2*sigma_conv**2))
 enddo
 write(abso,*) j/1000.d0, spec(j), j
 enddo

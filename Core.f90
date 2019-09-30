@@ -33,6 +33,7 @@ Matz(:,:) = matmul(TransHam_l(:,:,3),Ham_ei(:,:))
 TransHam_ei_l(:,:,1) = matmul(transpose(Ham_ei(:,:)),Matx(:,:))
 TransHam_ei_l(:,:,2) = matmul(transpose(Ham_ei(:,:)),Maty(:,:))
 TransHam_ei_l(:,:,3) = matmul(transpose(Ham_ei(:,:)),Matz(:,:))
+TransHam_ei = sqrt(TransHam_ei_l(:,:,1)**2 + TransHam_ei_l(:,:,2)**2 + TransHam_ei_l(:,:,1)**2)
 endif
 
 call make_Ham_l
@@ -63,8 +64,6 @@ elseif ( inbox .eq. "n" ) then
 write(Abs_imp_f,form_abs) lambda(i)*Energ_au/elec, (TransHam_ei(0,i))**2 ,i
 endif
 enddo
-
-!call Convolution
 
 do i=1,size(matrices)
 write(matrices(i),*)
