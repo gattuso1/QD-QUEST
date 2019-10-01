@@ -1646,6 +1646,25 @@ pulse3*Pe3(3)*TransHamz*Ed03 * cos(k_3(3)*Dcenter(n,3)+omega03*(t-t03)+phase03) 
 
 end function RK_k_inbox
 
+complex(8) function RK_k_nophase(t,Ham,TransHamx,TransHamy,TransHamz,xc)
+implicit none
+
+real(dp) :: t,Ham,TransHamx,TransHamy,TransHamz
+complex(8) :: xc
+
+RK_k_nophase = -im * (Ham - &
+pulse1*Pe1(1)*TransHamx*Ed01 * cos(omega01*(t-t01)+phase01) * exp(-1.0d0*(t-t01)**2.d0/(2.0d0*(width01**2))) - &
+pulse1*Pe1(2)*TransHamy*Ed01 * cos(omega01*(t-t01)+phase01) * exp(-1.0d0*(t-t01)**2.d0/(2.0d0*(width01**2))) - &
+pulse1*Pe1(3)*TransHamz*Ed01 * cos(omega01*(t-t01)+phase01) * exp(-1.0d0*(t-t01)**2.d0/(2.0d0*(width01**2))) - &
+pulse2*Pe2(1)*TransHamx*Ed02 * cos(omega02*(t-t02)+phase02) * exp(-1.0d0*(t-t02)**2.d0/(2.0d0*(width02**2))) - &
+pulse2*Pe2(2)*TransHamy*Ed02 * cos(omega02*(t-t02)+phase02) * exp(-1.0d0*(t-t02)**2.d0/(2.0d0*(width02**2))) - &
+pulse2*Pe2(3)*TransHamz*Ed02 * cos(omega02*(t-t02)+phase02) * exp(-1.0d0*(t-t02)**2.d0/(2.0d0*(width02**2))) - &
+pulse3*Pe3(1)*TransHamx*Ed03 * cos(omega03*(t-t03)+phase03) * exp(-1.0d0*(t-t03)**2.d0/(2.0d0*(width03**2))) - &
+pulse3*Pe3(2)*TransHamy*Ed03 * cos(omega03*(t-t03)+phase03) * exp(-1.0d0*(t-t03)**2.d0/(2.0d0*(width03**2))) - &
+pulse3*Pe3(3)*TransHamz*Ed03 * cos(omega03*(t-t03)+phase03) * exp(-1.0d0*(t-t03)**2.d0/(2.0d0*(width03**2))))*xc
+
+end function RK_k_nophase
+
 real(dp) function pulse(t)
 real(dp) :: t
 
