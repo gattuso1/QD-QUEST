@@ -227,9 +227,10 @@ enddo
 pow(t) = pow(t) + powtemp
 
 if ( inbox .eq. 'y' ) then
-do pol=1,npol
-pow_pol(pol,t) = pow_pol(pol,t) + pow(t)*exp(im*dot_product(l1(pol)*k_1(:)+l2(pol)*k_2(:)+l3(pol)*k_3(:),Dcenter(n,:)))/totsys
-enddo
+!do pol=1,npol
+pow_pol(39,t) = pow_pol(39,t) + pow(t)*exp(im*dot_product(l1(39)*k_1(:)+l2(39)*k_2(:)+l3(39)*k_3(:),Dcenter(n,:)))/totsys
+pow_pol(41,t) = pow_pol(41,t) + pow(t)*exp(im*dot_product(l1(41)*k_1(:)+l2(41)*k_2(:)+l3(41)*k_3(:),Dcenter(n,:)))/totsys
+!enddo
 endif
 
 if (singleFT .eq. 'y' ) then

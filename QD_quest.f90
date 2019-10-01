@@ -66,9 +66,12 @@ allocate(xpow_gaus(0:ntime+1))
 allocate(xpulse(0:ntime+1))
 allocate(pulses(0:ntime+1))
 allocate(wft(0:ntime+1))
+allocate(wft_pol(npol,0:ntime+1))
 allocate(wftp(0:ntime+1))
 allocate(wftf(0:ntime+1))
+allocate(wftf_pol(npol,0:ntime+1))
 allocate(pow_pol(npol,0:ntime+1))
+allocate(pow_pol_gaus(npol,0:ntime+1))
 allocate(l1(npol))
 allocate(l2(npol))
 allocate(l3(npol))
@@ -177,25 +180,29 @@ TransDip_Ana_h2e(n) = abs(TransDip_Ana(Ae(n),Ah2(n),Be(n),Bh2(n),kine(n),kinh2(n
 
 enddo
 
-open(newunit=Pulse_f  ,file='Pulse.dat')             
-open(newunit=Tmat_0_f ,file='TransMat.dat')          
-open(newunit=Tmat_ei_f,file='TransMat_ei.dat')       
-open(newunit=Tmat_x_f ,file='TransMat_ei_x.dat')     
-open(newunit=Tmat_y_f ,file='TransMat_ei_y.dat')     
-open(newunit=Tmat_z_f ,file='TransMat_ei_z.dat')     
-open(newunit=H_0_f    ,file='Ham0.dat')          
-open(newunit=H_dir_f  ,file='Ham_dir.dat')           
-open(newunit=H_ex_f   ,file='Ham_ex.dat')            
-open(newunit=H_JK_f   ,file='Ham_JK.dat')            
-open(newunit=H_ei_f   ,file='Ham_ei.dat')            
-open(newunit=Etr_0_f  ,file='Etransitions-he_0.dat') 
-open(newunit=Etr_ei_f ,file='Etransitions-he_ei.dat')
-open(newunit=TDip_ei_f,file='TransDip_ei.dat')       
-open(newunit=Abs_imp_f,file='Absorption-imp.dat')    
-open(newunit=Liou_f   ,file='Liou.dat')
-open(newunit=TransAbs ,file='TransAbs.dat')
-open(newunit=DipSpec  ,file='DipSpec.dat')
-open(newunit=P_Match_f,file='Phase_Match.dat')
+open(newunit=Pulse_f     ,file='Pulse.dat')             
+open(newunit=Tmat_0_f    ,file='TransMat.dat')          
+open(newunit=Tmat_ei_f   ,file='TransMat_ei.dat')       
+open(newunit=Tmat_x_f    ,file='TransMat_ei_x.dat')     
+open(newunit=Tmat_y_f    ,file='TransMat_ei_y.dat')     
+open(newunit=Tmat_z_f    ,file='TransMat_ei_z.dat')     
+open(newunit=H_0_f       ,file='Ham0.dat')          
+open(newunit=H_dir_f     ,file='Ham_dir.dat')           
+open(newunit=H_ex_f      ,file='Ham_ex.dat')            
+open(newunit=H_JK_f      ,file='Ham_JK.dat')            
+open(newunit=H_ei_f      ,file='Ham_ei.dat')            
+open(newunit=Etr_0_f     ,file='Etransitions-he_0.dat') 
+open(newunit=Etr_ei_f    ,file='Etransitions-he_ei.dat')
+open(newunit=TDip_ei_f   ,file='TransDip_ei.dat')       
+open(newunit=Abs_imp_f   ,file='Absorption-imp.dat')    
+open(newunit=Liou_f      ,file='Liou.dat')
+open(newunit=TransAbs    ,file='TransAbs.dat')
+open(newunit=TransAbs_NR ,file='TransAbs_NR.dat')
+open(newunit=TransAbs_R  ,file='TransAbs_R.dat')
+open(newunit=DipSpec     ,file='DipSpec.dat')
+open(newunit=P_Match_f   ,file='Phase_Match.dat')
+open(newunit=DipSpec_NR_f,file='DipSpec-NR.dat')
+open(newunit=DipSpec_R_f ,file='DipSpec-R.dat')
 
 matrices = (/ Tmat_0_f,Tmat_ei_f,Tmat_x_f,Tmat_y_f,Tmat_z_f,H_0_f,H_dir_f,H_ex_f,H_JK_f,H_ei_f /)
 
@@ -266,6 +273,18 @@ time = t*timestep
 
 pow_gaus(t)=exp(-1.d0*((time-totaltime/2.d0)*timestep)**2.d0/(2.d0*(totaltime*timestep/15.d0)**2.d0))*(pow(t)/totsys)
 
+if ( inbox .eq. 'y' ) then
+
+pow_pol_gaus(39,t)=&
+   exp(-1.d0*((time-totaltime/2.d0)*timestep)**2.d0/(2.d0*(totaltime*timestep/15.d0)**2.d0))*(pow_pol(39,t)/totsys)
+pow_pol_gaus(41,t)=&
+   exp(-1.d0*((time-totaltime/2.d0)*timestep)**2.d0/(2.d0*(totaltime*timestep/15.d0)**2.d0))*(pow_pol(41,t)/totsys)
+
+write(DipSpec_NR_f,*) time, dreal(pow_pol_gaus(39,t))
+write(DipSpec_R_f,*) time, dreal(pow_pol_gaus(41,t))
+
+endif
+
 write(DipSpec,*) time, pow(t), pow_gaus(t), pulses(t)
 
 enddo 
@@ -293,6 +312,10 @@ w = w1
 
 do t=0,ntime
 do t2=0,ntime
+if ( inbox .eq. 'y' ) then
+wft_pol(39,t)  = wft_pol(39,t)  + exp(-2.d0*pi*im*w*t2*timestep) * pow_pol_gaus(39,t2) 
+wft_pol(41,t)  = wft_pol(41,t)  + exp(-2.d0*pi*im*w*t2*timestep) * pow_pol_gaus(41,t2) 
+endif
 wft(t)  = wft(t)  + exp(-2.d0*pi*im*w*t2*timestep) * xpow_gaus(t2) 
 wftp(t) = wftp(t) + exp(-1.d0*im*w*t2*timestep) * xpulse(t2) 
 enddo
@@ -302,8 +325,14 @@ enddo
 w = w1
 
 do t=0,ntime
-wftf(t) = -2.d0 * dimag(sqrt(dreal(wft(t))**2+dimag(wft(t))**2) * dconjg(wftp(t)))
-write(TransAbs,*) w*h/elec, dreal(wftf(t))
+wftf(t)= -2.e0_dp * dimag(sqrt(dreal(wft(t))**2+dimag(wft(t))**2) * dconjg(wftp(t)))
+write(TransAbs,*)    w*h/elec, dreal(wftf(t))
+if ( inbox .eq. 'y' ) then
+!wftf_pol(39,t) = -2.d0 * dimag(sqrt(dreal(wft_pol(39,t))**2+dimag(wft_pol(39,t))**2) * dconjg(wftp(t)))
+!wftf_pol(41,t) = -2.d0 * dimag(sqrt(dreal(wft_pol(41,t))**2+dimag(wft_pol(41,t))**2) * dconjg(wftp(t)))
+write(TransAbs_NR,*) w*h/elec, dreal(wft_pol(39,t)), dimag(wft_pol(39,t)) !dreal(wftf_pol(39,t))
+write(TransAbs_R,*)  w*h/elec, dreal(wft_pol(41,t)), dimag(wft_pol(41,t)) !dreal(wftf_pol(41,t))
+enddo
 w = w + wstep
 enddo
 

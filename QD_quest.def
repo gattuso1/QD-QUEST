@@ -65,8 +65,8 @@ nhomoB    = 0          !Number of dimers
 nhetero   = 10         !Number of dimers
 dispQD    = 0.05d0      !Dispersion of QD radius
 idlink    = 20         !Linker length
-aA        = 1.1d-9      !Radius of QDA
-aB        = 2.2d-9      !Radius of QDA
+aA        = 1.175d-9      !Radius of QDA
+aB        = 1.925d-9      !Radius of QDA
 /
 
 &FT !Parameters of the FT
