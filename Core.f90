@@ -221,20 +221,25 @@ time = t*timestep
 powtemp = 0.e0_dp
 
 do j=0,nstates-1
-powtemp = powtemp + 2_dp * sum(TransHam_ei(j,:) * dreal(dconjg(xc_ei(j,t))*xc_ei(:,t)))
+pow_s(n,t) = pow_s(n,t) + 2_dp * sum(TransHam_ei(j,:) * dreal(dconjg(xc_ei(j,t))*xc_ei(:,t)))
 enddo
 
-pow(t) = pow(t) + powtemp
+pow(t) = pow(t) + pow_s(n,t)
 
-if ( inbox .eq. 'y' ) then
+!if ( inbox .eq. 'y' ) then
 !do pol=1,npol
-pow_pol(39,t) = pow_pol(39,t) + pow(t)*exp(im*dot_product(l1(39)*k_1(:)+l2(39)*k_2(:)+l3(39)*k_3(:),Dcenter(n,:)))/totsys
-pow_pol(41,t) = pow_pol(41,t) + pow(t)*exp(im*dot_product(l1(41)*k_1(:)+l2(41)*k_2(:)+l3(41)*k_3(:),Dcenter(n,:)))/totsys
+!pow_pol(pol,t) = pow_pol(pol,t) + pow(t)*exp(im*dot_product(l1(pol)*k_1(:)+l2(pol)*k_2(:)+l3(pol)*k_3(:),Dcenter(n,:)))/totsys
+!if ( pol .ne. 39 ) then
+!pow_pol_diff(t) = pow_pol_diff(t) + pow(t)*exp(im*dot_product((l1(39)*k_1(:)+l2(39)*k_2(:)+l3(39)*k_3(:)) - &
+!(l1(pol)*k_1(:)+l2(pol)*k_2(:)+l3(pol)*k_3(:)),Dcenter(n,:)))/totsys
+!endif
 !enddo
-endif
+!pow_pol(pol,t) = pow_pol(pol,t) + pow(t)*exp(im*dot_product(l1(pol)*k_1(:)+l2(pol)*k_2(:)+l3(pol)*k_3(:),Dcenter(n,:)))/totsys
+!pow_pol(41,t) = pow_pol(41,t) + pow(t)*exp(im*dot_product(l1(41)*k_1(:)+l2(41)*k_2(:)+l3(41)*k_3(:),Dcenter(n,:)))/totsys
+!endif
 
 if (singleFT .eq. 'y' ) then
-write(DipSpec_s,form_DipSpec) time, powtemp 
+write(DipSpec_s,form_DipSpec) time, pow_s(n,t) 
 endif
 
 enddo

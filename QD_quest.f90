@@ -63,14 +63,19 @@ allocate(TransDip_Ana_h1h2(totsys))
 allocate(pow(0:ntime+1))
 allocate(pow_gaus(0:ntime+1))
 allocate(xpow_gaus(0:ntime+1))
+allocate(pow_gaus_s(totsys,0:ntime+1))
+allocate(xpow_gaus_s(totsys,0:ntime+1))
 allocate(xpulse(0:ntime+1))
 allocate(pulses(0:ntime+1))
 allocate(wft(0:ntime+1))
+allocate(wft_s(totsys,0:ntime+1))
 allocate(wft_pol(npol,0:ntime+1))
 allocate(wftp(0:ntime+1))
-allocate(wftf(0:ntime+1))
+allocate(wftf_s(totsys,0:ntime+1))
 allocate(wftf_pol(npol,0:ntime+1))
 allocate(pow_pol(npol,0:ntime+1))
+allocate(pow_s(totsys,0:ntime+1))
+allocate(pow_pol_diff(0:ntime+1))
 allocate(pow_pol_gaus(npol,0:ntime+1))
 allocate(l1(npol))
 allocate(l2(npol))
@@ -273,17 +278,25 @@ time = t*timestep
 
 pow_gaus(t)=exp(-1.d0*((time-totaltime/2.d0)*timestep)**2.d0/(2.d0*(totaltime*timestep/15.d0)**2.d0))*(pow(t)/totsys)
 
-if ( inbox .eq. 'y' ) then
+do n=1,totsys
+pow_gaus_s(n,t)=exp(-1.d0*((time-totaltime/2.d0)*timestep)**2.d0/(2.d0*(totaltime*timestep/15.d0)**2.d0))*(pow_s(n,t)/totsys)
+enddo
 
-pow_pol_gaus(39,t)=&
-   exp(-1.d0*((time-totaltime/2.d0)*timestep)**2.d0/(2.d0*(totaltime*timestep/15.d0)**2.d0))*(pow_pol(39,t)/totsys)
-pow_pol_gaus(41,t)=&
-   exp(-1.d0*((time-totaltime/2.d0)*timestep)**2.d0/(2.d0*(totaltime*timestep/15.d0)**2.d0))*(pow_pol(41,t)/totsys)
+!if ( inbox .eq. 'y' ) then
 
-write(DipSpec_NR_f,*) time, dreal(pow_pol_gaus(39,t))
-write(DipSpec_R_f,*) time, dreal(pow_pol_gaus(41,t))
+!pow_pol_gaus(39,t)=&
+!   exp(-1.d0*((time-totaltime/2.d0)*timestep)**2.d0/(2.d0*(totaltime*timestep/15.d0)**2.d0))*(pow_pol(39,t)/totsys)
+!pow_pol_gaus(41,t)=&
+!   exp(-1.d0*((time-totaltime/2.d0)*timestep)**2.d0/(2.d0*(totaltime*timestep/15.d0)**2.d0))*(pow_pol(41,t)/totsys)
+!do pol=1,npol
+!pow_pol_gaus(pol,t)=&
+!   exp(-1.d0*((time-totaltime/2.d0)*timestep)**2.d0/(2.d0*(totaltime*timestep/15.d0)**2.d0))*(pow_pol(pol,t)/totsys)
+!enddo
 
-endif
+!write(DipSpec_NR_f,*) time, dreal(pow_pol_gaus(39,t))
+!write(DipSpec_R_f,*) time, dreal(pow_pol_gaus(41,t))
+
+!endif
 
 write(DipSpec,*) time, pow(t), pow_gaus(t), pulses(t)
 
@@ -300,11 +313,24 @@ enddo
 
 !write(P_Match_f,'(i4,2x,3f6.2,es18.7e3)') pol, l1(pol), l2(pol), l3(pol), integPol
 write(P_Match_f,*) pol, l1(pol), l2(pol), l3(pol), dreal(integPol)
+!if ( pol .eq. 39 ) then
+!write(6,*) pol, dreal(integPol)
+!endif
 enddo
+
+!integPol_diff = dcmplx(0.d0,0.d0)
+
+!do t=0,ntime
+!time = t*timestep
+!integPol_diff = integPol_diff + abs(dcmplx(timestep,0.e0_dp)*(pow_pol_diff(t) + pow_pol_diff(t+1))/2.e0_dp)
+!enddo
+!
+!write(6,*) pol, dreal(integPol_diff)
 
 endif
 
 wstep = (w2-w1)/ntime
+xpow_gaus_s  = dcmplx(pow_gaus_s,0.d0)
 xpow_gaus  = dcmplx(pow_gaus,0.d0)
 xpulse  = dcmplx(pulses,0.d0)
 
@@ -312,10 +338,16 @@ w = w1
 
 do t=0,ntime
 do t2=0,ntime
-if ( inbox .eq. 'y' ) then
-wft_pol(39,t)  = wft_pol(39,t)  + exp(-2.d0*pi*im*w*t2*timestep) * pow_pol_gaus(39,t2) 
-wft_pol(41,t)  = wft_pol(41,t)  + exp(-2.d0*pi*im*w*t2*timestep) * pow_pol_gaus(41,t2) 
-endif
+!if ( inbox .eq. 'y' ) then
+!wft_pol(39,t)  = wft_pol(39,t)  + exp(-2.d0*pi*im*w*t2*timestep) * pow_pol_gaus(39,t2) 
+!wft_pol(41,t)  = wft_pol(41,t)  + exp(-2.d0*pi*im*w*t2*timestep) * pow_pol_gaus(41,t2) 
+!do pol=30,40
+!wft_pol(pol,t)  = wft_pol(pol,t)  + exp(-2.d0*pi*im*w*t2*timestep) * pow_pol_gaus(pol,t2) 
+!enddo
+!endif
+do n=1,totsys
+wft_s(n,t)  = wft_s(n,t)  + exp(-2.d0*pi*im*w*t2*timestep) * xpow_gaus_s(n,t2)
+enddo
 wft(t)  = wft(t)  + exp(-2.d0*pi*im*w*t2*timestep) * xpow_gaus(t2) 
 wftp(t) = wftp(t) + exp(-1.d0*im*w*t2*timestep) * xpulse(t2) 
 enddo
@@ -327,12 +359,23 @@ w = w1
 do t=0,ntime
 wftf(t)= -2.e0_dp * dimag(sqrt(dreal(wft(t))**2+dimag(wft(t))**2) * dconjg(wftp(t)))
 write(TransAbs,*)    w*h/elec, dreal(wftf(t))
-if ( inbox .eq. 'y' ) then
+
+if (singleFT .eq. 'y' ) then
+do n=1,totsys
+open(TransAbs_s,file=cov2)
+write(cov2,'(a9,i0,a4)') 'TransAbs-', n, '.dat'
+wftf_s(n,t)= -2.e0_dp * dimag(sqrt(dreal(wft_s(n,t))**2+dimag(wft_s(n,t))**2) * dconjg(wftp(t)))
+write(TransAbs_s,*)    w*h/elec, dreal(wftf_s(n,t))
+close(TransAbs_s)
+enddo
+endif
+
+!if ( inbox .eq. 'y' ) then
 !wftf_pol(39,t) = -2.d0 * dimag(sqrt(dreal(wft_pol(39,t))**2+dimag(wft_pol(39,t))**2) * dconjg(wftp(t)))
 !wftf_pol(41,t) = -2.d0 * dimag(sqrt(dreal(wft_pol(41,t))**2+dimag(wft_pol(41,t))**2) * dconjg(wftp(t)))
-write(TransAbs_NR,*) w*h/elec, dreal(wft_pol(39,t)), dimag(wft_pol(39,t)) !dreal(wftf_pol(39,t))
-write(TransAbs_R,*)  w*h/elec, dreal(wft_pol(41,t)), dimag(wft_pol(41,t)) !dreal(wftf_pol(41,t))
-enddo
+!write(TransAbs_NR,*) w*h/elec, (abs(wft_pol(pol,t)), pol=30,40) !dreal(wftf_pol(39,t))
+!write(TransAbs_R,*)  w*h/elec, dreal(wft_pol(41,t)), dimag(wft_pol(41,t)) !dreal(wftf_pol(41,t))
+!endif
 w = w + wstep
 enddo
 

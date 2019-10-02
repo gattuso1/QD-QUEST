@@ -9,7 +9,7 @@ implicit none
    character*5 :: vers
    character*6 :: pgeom
    character*64 :: popc, hmti, norm, tdmM, hmt0, outputdir, norm_ei, popc_ei, Re_c_ei, Im_c_ei, integ,model, line, dummy
-   character*64 :: Re_c, Im_c, syst_n, Re_c_l, Im_c_L, cov
+   character*64 :: Re_c, Im_c, syst_n, Re_c_l, Im_c_L, cov, cov2
    character*1 :: o_Norm, o_Over, o_Coul, o_DipS, o_Osci, o_Exti, o_DipD, dyn, hamilt, get_ei, finest, get_sp
    character*1 :: TDM_ee, Dyn_0, Dyn_ei, inbox, Dyn_L,doFT,CEP1,CEP2,CEP3,singleFT,nofiles
    integer :: Pulse_f,Tmat_0_f,Tmat_ei_f,Tmat_x_f,Tmat_y_f,Tmat_z_f,H_0_f,H_dir_f,H_ex_f,H_JK_f,TransAbs
@@ -18,7 +18,7 @@ implicit none
    character*64 :: form_mat,form_arr,form_abs,form_pop,form_com,form_TDM,form1,form_com_L, form_DipSpec
    integer :: syst, ndots, n, rmin, rmax, nsys, npulses, nstates, ntime,i,j,k,l,t,lwork, info, idlink, threads, nQDA, nQDB
    integer :: nhomoA,nhomoB,nhetero,totsys,ndim,nQD, EminID,EmaxID,Estep,nmax,io,abso, kc, kl, nstates2, DipSpec_s
-   integer :: TransAbs_NR, TransAbs_R
+   integer :: TransAbs_NR, TransAbs_R, TransAbs_s
    integer,allocatable :: seed(:),merge_diag(:,:),merge_odiag(:,:)
    real(dp) :: a13_1d_he,a13_2d_he,a13_3d_he,a13_4d_he,a15_1d_he,a15_2d_he,a15_3d_he,a15_4d_he,a17_1d_he,a17_2d_he,a17_3d_he,&
                a17_4d_he,a24_1d_he,a24_2d_he,a24_3d_he,a24_4d_he,a26_1d_he,a26_2d_he,a26_3d_he,a26_4d_he,a28_1d_he,a28_2d_he,&
@@ -63,15 +63,15 @@ implicit none
    real(dp),allocatable :: TransDip_Ana_h1h2(:), TransHam_ei(:,:), Mat(:,:), QDcoor(:,:), Dcenter(:,:), Pe1(:), Pe2(:), Pe3(:)
    real(dp),allocatable :: TransHam_d(:,:,:), TransHam_l(:,:,:), TransHam_ei_l(:,:,:), k_1(:), k_2(:), k_3(:)
    real(dp),allocatable :: Matx(:,:), Maty(:,:), Matz(:,:),spec(:),dipole(:,:), lfield(:,:),xliou(:,:,:,:),icol(:,:),irow(:,:)
-   real(dp),allocatable :: pow(:),pow_gaus(:),pulses(:)
+   real(dp),allocatable :: pow(:),pow_gaus(:),pulses(:), pow_s(:,:), pow_gaus_s(:,:)
    complex(8) :: ct1, ct2, ct3, ct4, xt01, xt02, xt03, xhbar, im, xwidth, xomega , xEd, xh, xphase, xtime, xhbar_au
-   complex(8) :: integPol
+   complex(8) :: integPol, integPol_diff
    complex(8),allocatable :: xHam(:,:) , xHamt(:,:,:), xTransHam(:,:), xE0(:), xHamtk2(:,:,:), xHamtk3(:,:,:), xHamtk4(:,:,:)
    complex(8),allocatable :: xc0(:), xc(:,:), xc_ei(:,:), xcnew(:,:), k1(:), k2(:), k3(:) , k4(:), xHam_ei(:,:)
    complex(8),allocatable :: k1_L(:), k2_L(:), k3_L(:) , k4_L(:),  k5_L(:), k6_L(:), k7_L(:) , k8_L(:)
    complex(8),allocatable :: dk1(:), dk2(:), dk3(:) , dk4(:), k5(:), k6(:), k7(:) , k8(:), pow_pol(:,:), pow_pol_gaus(:,:)
    complex(8),allocatable :: xc_ei_av(:,:), xctemp(:),xlfield(:,:),xc_L(:,:), xpow_gaus(:),xpulse(:),wft(:),wftp(:),wftf(:)
-   complex(8),allocatable :: wft_pol(:,:),wftf_pol(:,:)
+   complex(8),allocatable :: wft_pol(:,:),wftf_pol(:,:), pow_pol_diff(:), wft_s(:,:), wftf_s(:,:), xpow_gaus_s(:,:)
 
 contains 
 
