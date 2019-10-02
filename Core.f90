@@ -23,10 +23,10 @@ call dsyev('V', 'U', nstates, Ham_ei(0:nstates-1,0:nstates-1), nstates, lambda, 
 deallocate (work)
 
 !!!Make eigenstate TDM
-if ( inbox .eq. "n" ) then
-Mat(:,:) = matmul(TransHam(:,:),Ham_ei(:,:))
-TransHam_ei(:,:) = matmul(transpose(Ham_ei(:,:)),Mat(:,:))
-elseif ( inbox .eq. "y" ) then
+!if ( inbox .eq. "n" ) then
+!Mat(:,:) = matmul(TransHam(:,:),Ham_ei(:,:))
+!TransHam_ei(:,:) = matmul(transpose(Ham_ei(:,:)),Mat(:,:))
+!elseif ( inbox .eq. "y" ) then
 Matx(:,:) = matmul(TransHam_l(:,:,1),Ham_ei(:,:))
 Maty(:,:) = matmul(TransHam_l(:,:,2),Ham_ei(:,:))
 Matz(:,:) = matmul(TransHam_l(:,:,3),Ham_ei(:,:))
@@ -34,7 +34,7 @@ TransHam_ei_l(:,:,1) = matmul(transpose(Ham_ei(:,:)),Matx(:,:))
 TransHam_ei_l(:,:,2) = matmul(transpose(Ham_ei(:,:)),Maty(:,:))
 TransHam_ei_l(:,:,3) = matmul(transpose(Ham_ei(:,:)),Matz(:,:))
 TransHam_ei = sqrt(TransHam_ei_l(:,:,1)**2 + TransHam_ei_l(:,:,2)**2 + TransHam_ei_l(:,:,1)**2)
-endif
+!endif
 
 call make_Ham_l
 
@@ -207,9 +207,7 @@ endif
 
 endif
 
-if ( doFT .eq. 'y' ) then
-
-if (singleFT .eq. 'y' ) then
+if (singleDS .eq. 'y' ) then
 write(cov,'(a8,i0,a4)') 'DipSpec-', n, '.dat'
 open(DipSpec_s,file=cov) 
 endif
@@ -226,6 +224,7 @@ enddo
 
 pow(t) = pow(t) + pow_s(n,t)
 
+
 !if ( inbox .eq. 'y' ) then
 !do pol=1,npol
 !pow_pol(pol,t) = pow_pol(pol,t) + pow(t)*exp(im*dot_product(l1(pol)*k_1(:)+l2(pol)*k_2(:)+l3(pol)*k_3(:),Dcenter(n,:)))/totsys
@@ -238,16 +237,14 @@ pow(t) = pow(t) + pow_s(n,t)
 !pow_pol(41,t) = pow_pol(41,t) + pow(t)*exp(im*dot_product(l1(41)*k_1(:)+l2(41)*k_2(:)+l3(41)*k_3(:),Dcenter(n,:)))/totsys
 !endif
 
-if (singleFT .eq. 'y' ) then
-write(DipSpec_s,form_DipSpec) time, pow_s(n,t) 
+if (singleDS .eq. 'y' ) then
+write(DipSpec_s,form_DipSpec) time*t_au, pow_s(n,t) 
 endif
 
 enddo
 
-if (singleFT .eq. 'y' ) then
+if (singleDS .eq. 'y' ) then
 close(DipSpec_s)
-endif
-
 endif
 
 deallocate(TransHam,TransHam_ei_l,TransHam_l,TransHam_d,TransHam_ei,Mat,Matx,Maty,Matz,Ham,Ham_l,Ham_0,Ham_dir,Ham_ex,Ham_ei,haml)

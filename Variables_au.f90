@@ -11,7 +11,7 @@ implicit none
    character*64 :: popc, hmti, norm, tdmM, hmt0, outputdir, norm_ei, popc_ei, Re_c_ei, Im_c_ei, integ,model, line, dummy
    character*64 :: Re_c, Im_c, syst_n, Re_c_l, Im_c_L, cov, cov2
    character*1 :: o_Norm, o_Over, o_Coul, o_DipS, o_Osci, o_Exti, o_DipD, dyn, hamilt, get_ei, finest, get_sp
-   character*1 :: TDM_ee, Dyn_0, Dyn_ei, inbox, Dyn_L,doFT,CEP1,CEP2,CEP3,singleFT,nofiles
+   character*1 :: TDM_ee, Dyn_0, Dyn_ei, inbox, Dyn_L,doFT,CEP1,CEP2,CEP3,singleFT,nofiles, singleDS
    integer :: Pulse_f,Tmat_0_f,Tmat_ei_f,Tmat_x_f,Tmat_y_f,Tmat_z_f,H_0_f,H_dir_f,H_ex_f,H_JK_f,TransAbs
    integer :: popc_0_f,popc_ei_f,norm_0_f,norm_ei_f,Re_c_ei_f,Im_c_ei_f,Re_c_0_f,Im_c_0_f,TDip_ei_f,tmp, nbands,Liou_f
    integer :: Re_c_L_f,Im_c_L_f,H_ei_f,Etr_0_f,Etr_ei_f,Abs_imp_f, t2, DipSpec, pol, npol, P_Match_f, DipSpec_R_f,DipSpec_NR_f
@@ -77,7 +77,7 @@ contains
 
 subroutine getVariables
 
-NAMELIST /outputs/    inbox,get_sp,get_ei,Dyn_0,Dyn_ei,Dyn_L,TDM_ee,doFT,singleFT,nofiles
+NAMELIST /outputs/    inbox,get_sp,get_ei,Dyn_0,Dyn_ei,Dyn_L,TDM_ee,doFT,singleDS,singleFT,nofiles
 NAMELIST /elecSt/     model,me,mh,eps,epsout,V0eV,omegaLO,slope,side
 NAMELIST /fineStruc/  Kas,Kbs,Kcs,Kpp,Dso1,Dso2,Dxf
 NAMELIST /pulses/     integ,npulses,t01,t02,t03,timestep,totaltime,omega01,omega02,omega03,phase01,phase02,phase03,&
@@ -223,14 +223,34 @@ Pe3(1) =  0.e0_dp
 Pe3(2) =  ( 1000.e0_dp      ) /        (sqrt((1000.e0_dp)**2+(zbase/(2.e0_dp*sqrt(3.e0_dp)))**2))
 Pe3(3) =  ( zbase/(2.e0_dp*sqrt(3.e0_dp)))/(sqrt((1000.e0_dp)**2+(zbase/(2.e0_dp*sqrt(3.e0_dp)))**2))
 
-endif
+elseif ( pgeom .eq. 'straig' ) then
+
+k_1(1) = 0.e0_dp 
+k_1(2) = 0.e0_dp
+k_1(3) = 0.e0_dp
+k_2(1) = 0.e0_dp
+k_2(2) = 0.e0_dp
+k_2(3) = 0.e0_dp
+k_3(1) = 0.e0_dp
+k_3(2) = 0.e0_dp
+k_3(3) = 0.e0_dp
+
+Pe1(1) = 1.e0_dp/sqrt(3.e0_dp) 
+Pe1(2) = 1.e0_dp/sqrt(3.e0_dp)
+Pe1(3) = 1.e0_dp/sqrt(3.e0_dp)
+Pe2(1) = 1.e0_dp/sqrt(3.e0_dp)
+Pe2(2) = 1.e0_dp/sqrt(3.e0_dp)
+Pe2(3) = 1.e0_dp/sqrt(3.e0_dp)
+Pe3(1) = 1.e0_dp/sqrt(3.e0_dp)
+Pe3(2) = 1.e0_dp/sqrt(3.e0_dp)
+Pe3(3) = 1.e0_dp/sqrt(3.e0_dp)
 
 endif
 
 endif
 
-!write(6,*) "You are requesting me to tackle a random set of heterodimer QD"
- 
+endif
+
 nQD    = nQDA+nQDB
 ndim   = nhomoA+nhomoB+nhetero
 nsys   = nQDA+nQDB+nhomoA+nhomoB+nhetero     

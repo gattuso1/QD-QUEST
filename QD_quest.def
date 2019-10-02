@@ -7,7 +7,8 @@ Dyn_ei   = "y" !Should I perform dynamics in eigenstate basis?
 Dyn_L    = "n" !Should I perform Liouville quantum dynamics?
 TDM_ee   = "y" !Request interexciton TDM or not
 doFT     = "y" !Perform FT of coherences for all systems
-singleFT = "y" !Create single Dipole Spectrum files for each system, doFT must be yes
+singleDS = "y" !Create single Dipole Spectrum files for each system, doFT must be yes
+singleFT = "n" !Do Fourier Transform for each system, extra costly
 nofiles  = "y" !deletes all individual files
 /
 
@@ -53,7 +54,7 @@ Ed03       = 5.0d9     !Field strength (V/m so far)
 CEP1       = 'p'       !CEP, r for random, p for pi  
 CEP2       = 'p'       !CEP, r for random, p for pi
 CEP3       = 'p'       !CEP, r for random, p for pi
-pgeom      = "boxcar" !useless so far (boxcar / triang)
+pgeom      = "straig" !useless so far (boxcar / triang / straig)
 vertex     = 8.d0     !vertex angle of beam crossing (inbox=y and 3 pulses)
 /
 
@@ -62,7 +63,7 @@ nQDA      = 0          !Number of dimers
 nQDB      = 0          !Number of dimers
 nhomoA    = 0          !Number of dimers
 nhomoB    = 0          !Number of dimers
-nhetero   = 2         !Number of dimers
+nhetero   = 20         !Number of dimers
 dispQD    = 0.05d0      !Dispersion of QD radius
 idlink    = 20         !Linker length
 aA        = 1.175d-9      !Radius of QDA

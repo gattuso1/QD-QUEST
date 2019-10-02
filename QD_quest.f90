@@ -72,6 +72,7 @@ allocate(wft_s(totsys,0:ntime+1))
 allocate(wft_pol(npol,0:ntime+1))
 allocate(wftp(0:ntime+1))
 allocate(wftf_s(totsys,0:ntime+1))
+allocate(wftf(0:ntime+1))
 allocate(wftf_pol(npol,0:ntime+1))
 allocate(pow_pol(npol,0:ntime+1))
 allocate(pow_s(totsys,0:ntime+1))
@@ -267,8 +268,7 @@ enddo !end loop number of systems
 
 call Convolution
 
-if ( doFT .eq. 'y' ) then
-
+!Write DipSpec sum of all systems + multiplied by a gaussian 
 timestep  = timestep  * t_au
 totaltime = totaltime * t_au
 
@@ -278,9 +278,11 @@ time = t*timestep
 
 pow_gaus(t)=exp(-1.d0*((time-totaltime/2.d0)*timestep)**2.d0/(2.d0*(totaltime*timestep/15.d0)**2.d0))*(pow(t)/totsys)
 
+if ( singleFT .eq. "y" ) then
 do n=1,totsys
 pow_gaus_s(n,t)=exp(-1.d0*((time-totaltime/2.d0)*timestep)**2.d0/(2.d0*(totaltime*timestep/15.d0)**2.d0))*(pow_s(n,t)/totsys)
 enddo
+endif
 
 !if ( inbox .eq. 'y' ) then
 
@@ -329,6 +331,8 @@ enddo
 
 endif
 
+if ( doFT .eq. 'y' ) then
+
 wstep = (w2-w1)/ntime
 xpow_gaus_s  = dcmplx(pow_gaus_s,0.d0)
 xpow_gaus  = dcmplx(pow_gaus,0.d0)
@@ -345,9 +349,12 @@ do t2=0,ntime
 !wft_pol(pol,t)  = wft_pol(pol,t)  + exp(-2.d0*pi*im*w*t2*timestep) * pow_pol_gaus(pol,t2) 
 !enddo
 !endif
+if ( singleFT .eq. "y" ) then
 do n=1,totsys
 wft_s(n,t)  = wft_s(n,t)  + exp(-2.d0*pi*im*w*t2*timestep) * xpow_gaus_s(n,t2)
 enddo
+endif
+
 wft(t)  = wft(t)  + exp(-2.d0*pi*im*w*t2*timestep) * xpow_gaus(t2) 
 wftp(t) = wftp(t) + exp(-1.d0*im*w*t2*timestep) * xpulse(t2) 
 enddo
@@ -357,18 +364,9 @@ enddo
 w = w1
 
 do t=0,ntime
+
 wftf(t)= -2.e0_dp * dimag(sqrt(dreal(wft(t))**2+dimag(wft(t))**2) * dconjg(wftp(t)))
 write(TransAbs,*)    w*h/elec, dreal(wftf(t))
-
-if (singleFT .eq. 'y' ) then
-do n=1,totsys
-open(TransAbs_s,file=cov2)
-write(cov2,'(a9,i0,a4)') 'TransAbs-', n, '.dat'
-wftf_s(n,t)= -2.e0_dp * dimag(sqrt(dreal(wft_s(n,t))**2+dimag(wft_s(n,t))**2) * dconjg(wftp(t)))
-write(TransAbs_s,*)    w*h/elec, dreal(wftf_s(n,t))
-close(TransAbs_s)
-enddo
-endif
 
 !if ( inbox .eq. 'y' ) then
 !wftf_pol(39,t) = -2.d0 * dimag(sqrt(dreal(wft_pol(39,t))**2+dimag(wft_pol(39,t))**2) * dconjg(wftp(t)))
@@ -378,6 +376,27 @@ endif
 !endif
 w = w + wstep
 enddo
+
+if ( singleFT .eq. "y" ) then 
+
+do n=1,totsys
+
+write(cov2,'(a9,i0,a4)') 'TransAbs-', n, '.dat'
+open(TransAbs_s,file=cov2)
+
+w = w1
+
+do t=0,ntime
+wftf_s(n,t)= -2.e0_dp * dimag(sqrt(dreal(wft_s(n,t))**2+dimag(wft_s(n,t))**2) * dconjg(wftp(t)))
+write(TransAbs_s,*)    w*h/elec, dreal(wftf_s(n,t))
+w = w + wstep
+enddo
+
+close(TransAbs_s)
+
+enddo
+
+endif
 
 endif
 
