@@ -7,9 +7,11 @@ Dyn_ei   = "y" !Should I perform dynamics in eigenstate basis?
 Dyn_L    = "n" !Should I perform Liouville quantum dynamics?
 TDM_ee   = "y" !Request interexciton TDM or not
 doFT     = "y" !Perform FT of coherences for all systems
-singleDS = "y" !Create single Dipole Spectrum files for each system, doFT must be yes
-singleFT = "y" !Do Fourier Transform for each system, extra costly
+singleDS = "n" !Create single Dipole Spectrum files for each system, doFT must be yes
+singleFT = "n" !Create single FT files for each system
+doFT_s   = "y" !Do Fourier Transform for each system
 nofiles  = "y" !deletes all individual files
+doCovar  = "y" !make covar from single FT vectors
 /
 
 &elecSt !Parameters of CdSe QD and the model
@@ -36,12 +38,13 @@ Dxf  = 0.025d0
 
 &pulses !Parameters of quantum dynamic and pulses
 integ      = "RK6"       !Choose between integrator RK4 or RK6
-npulses    = 1           !Number of pulses (up to 3)
+npulses    = 2           !Number of pulses (up to 3)
 t01        = 100.d0     !Pulse 1 centered at (s)
 t02        = 200.d0     !Pulse 2 centered at (s)
 t03        = 300.d0     !Pulse 3 centered at (s)
 timestep   = 0.010d0      !Time step of quantum dynamic
-totaltime  = 2000.d0     !Total time simulated (s)
+totaltime  = 1000.d0     !Total time simulated (s)
+!totaltime  = 1310.72d0     !Total time simulated (s)
 omega01    = 0.55d15      !Frequency (s-1)
 omega02    = 0.55d15      !Frequency (s-1)
 omega03    = 0.193d15      !Frequency (s-1)
@@ -63,7 +66,7 @@ nQDA      = 0          !Number of dimers
 nQDB      = 0          !Number of dimers
 nhomoA    = 0          !Number of dimers
 nhomoB    = 0          !Number of dimers
-nhetero   = 2         !Number of dimers
+nhetero   = 5         !Number of dimers
 dispQD    = 0.05d0      !Dispersion of QD radius
 idlink    = 20         !Linker length
 aA        = 1.175d-9      !Radius of QDA
@@ -72,6 +75,6 @@ aB        = 1.925d-9      !Radius of QDA
 
 &FT !Parameters of the FT
 w1 = 0.01d12   !start frequency
-w2 = 1000.d12  !end frequency
+w2 = 10000.d12  !end frequency
 /
 

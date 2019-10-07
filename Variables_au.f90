@@ -11,7 +11,7 @@ implicit none
    character*64 :: popc, hmti, norm, tdmM, hmt0, outputdir, norm_ei, popc_ei, Re_c_ei, Im_c_ei, integ,model, line, dummy
    character*64 :: Re_c, Im_c, syst_n, Re_c_l, Im_c_L, cov, cov2
    character*1 :: o_Norm, o_Over, o_Coul, o_DipS, o_Osci, o_Exti, o_DipD, dyn, hamilt, get_ei, finest, get_sp
-   character*1 :: TDM_ee, Dyn_0, Dyn_ei, inbox, Dyn_L,doFT,CEP1,CEP2,CEP3,singleFT,nofiles, singleDS
+   character*1 :: TDM_ee, Dyn_0, Dyn_ei, inbox, Dyn_L,doFT,CEP1,CEP2,CEP3,singleFT,nofiles, singleDS, doCovar,doFT_s
    integer :: Pulse_f,Tmat_0_f,Tmat_ei_f,Tmat_x_f,Tmat_y_f,Tmat_z_f,H_0_f,H_dir_f,H_ex_f,H_JK_f,TransAbs
    integer :: popc_0_f,popc_ei_f,norm_0_f,norm_ei_f,Re_c_ei_f,Im_c_ei_f,Re_c_0_f,Im_c_0_f,TDip_ei_f,tmp, nbands,Liou_f
    integer :: Re_c_L_f,Im_c_L_f,H_ei_f,Etr_0_f,Etr_ei_f,Abs_imp_f, t2, DipSpec, pol, npol, P_Match_f, DipSpec_R_f,DipSpec_NR_f
@@ -61,23 +61,24 @@ implicit none
    real(dp),allocatable :: ExctCoef_h1e(:), ExctCoef_h2e(:), Ham(:,:), E0(:), c0(:), TransHam(:,:), Hamt(:,:,:), c(:,:)
    real(dp),allocatable :: TransMat_ei(:,:), TransHam0(:,:), Ham_0(:), Ham_dir(:,:), Ham_ex(:,:), Ham_ei(:,:), Ham_l(:,:), haml(:,:)
    real(dp),allocatable :: TransDip_Ana_h1h2(:), TransHam_ei(:,:), Mat(:,:), QDcoor(:,:), Dcenter(:,:), Pe1(:), Pe2(:), Pe3(:)
-   real(dp),allocatable :: TransHam_d(:,:,:), TransHam_l(:,:,:), TransHam_ei_l(:,:,:), k_1(:), k_2(:), k_3(:)
+   real(dp),allocatable :: TransHam_d(:,:,:), TransHam_l(:,:,:), TransHam_ei_l(:,:,:), k_1(:), k_2(:), k_3(:) 
    real(dp),allocatable :: Matx(:,:), Maty(:,:), Matz(:,:),spec(:),dipole(:,:), lfield(:,:),xliou(:,:,:,:),icol(:,:),irow(:,:)
-   real(dp),allocatable :: pow(:),pow_gaus(:),pulses(:), pow_s(:,:), pow_gaus_s(:,:)
+   real(dp),allocatable :: pow(:),pow_gaus(:),pulses(:), pow_s(:,:), pow_gaus_s(:,:), hugo(:)
+   real(dp),allocatable :: Scov(:,:)
    complex(8) :: ct1, ct2, ct3, ct4, xt01, xt02, xt03, xhbar, im, xwidth, xomega , xEd, xh, xphase, xtime, xhbar_au
    complex(8) :: integPol, integPol_diff
    complex(8),allocatable :: xHam(:,:) , xHamt(:,:,:), xTransHam(:,:), xE0(:), xHamtk2(:,:,:), xHamtk3(:,:,:), xHamtk4(:,:,:)
    complex(8),allocatable :: xc0(:), xc(:,:), xc_ei(:,:), xcnew(:,:), k1(:), k2(:), k3(:) , k4(:), xHam_ei(:,:)
    complex(8),allocatable :: k1_L(:), k2_L(:), k3_L(:) , k4_L(:),  k5_L(:), k6_L(:), k7_L(:) , k8_L(:)
    complex(8),allocatable :: dk1(:), dk2(:), dk3(:) , dk4(:), k5(:), k6(:), k7(:) , k8(:), pow_pol(:,:), pow_pol_gaus(:,:)
-   complex(8),allocatable :: xc_ei_av(:,:), xctemp(:),xlfield(:,:),xc_L(:,:), xpow_gaus(:),xpulse(:),wft(:),wftp(:),wftf(:)
-   complex(8),allocatable :: wft_pol(:,:),wftf_pol(:,:), pow_pol_diff(:), wft_s(:,:), wftf_s(:,:), xpow_gaus_s(:,:)
+   complex(8),allocatable :: xc_ei_av(:,:), xctemp(:),xlfield(:,:),xc_L(:,:), xpow_gaus(:),xpulse(:),wft(:),wftp(:),wftf(:),xhugo(:)
+   complex(8),allocatable :: wft_pol(:,:),wftf_pol(:,:), pow_pol_diff(:), wft_s(:,:), wftf_s(:,:), xpow_gaus_s(:,:), xpulse2(:)
 
 contains 
 
 subroutine getVariables
 
-NAMELIST /outputs/    inbox,get_sp,get_ei,Dyn_0,Dyn_ei,Dyn_L,TDM_ee,doFT,singleDS,singleFT,nofiles
+NAMELIST /outputs/    inbox,get_sp,get_ei,Dyn_0,Dyn_ei,Dyn_L,TDM_ee,doFT,singleDS,doFT_s,singleFT,nofiles,doCovar
 NAMELIST /elecSt/     model,me,mh,eps,epsout,V0eV,omegaLO,slope,side
 NAMELIST /fineStruc/  Kas,Kbs,Kcs,Kpp,Dso1,Dso2,Dxf
 NAMELIST /pulses/     integ,npulses,t01,t02,t03,timestep,totaltime,omega01,omega02,omega03,phase01,phase02,phase03,&
@@ -122,19 +123,19 @@ ntime      =  nint(totaltime/timestep)
 
 if ( CEP1 .eq. 'r' ) then 
 call random_number(phase01) 
-phase01      =  phase01 * pi
+phase01      =  phase01 * 2.e0_dp * pi
 elseif ( CEP1 .eq. 'p' ) then
 phase01      =  pi
 endif
 if ( CEP2 .eq. 'r' ) then 
 call random_number(phase02) 
-phase02      =  phase02 * pi
+phase02      =  phase02 * 2.e0_dp * pi
 elseif ( CEP2 .eq. 'p' ) then
 phase02      =  pi
 endif
 if ( CEP3 .eq. 'r' ) then 
 call random_number(phase03) 
-phase03      =  phase03 * pi
+phase03      =  phase03 * 2.e0_dp * pi
 elseif ( CEP3 .eq. 'p' ) then
 phase03      =  pi
 endif
