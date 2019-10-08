@@ -62,19 +62,8 @@ allocate(TransDip_Ana_h2e(totsys))
 allocate(TransDip_Ana_h1h2(totsys))
 allocate(pow(0:ntime+1))
 allocate(pow_gaus(0:ntime+1))
-allocate(xpow_gaus(0:nint(2.e0_dp**19)))
 allocate(pow_gaus_s(totsys,0:ntime+1))
-allocate(xpow_gaus_s(totsys,0:nint(2.e0_dp**19)))
-allocate(xpulse(0:nint(2.e0_dp**19)))
-allocate(xpulse2(0:nint(2.e0_dp**19)))
-allocate(pulses(0:nint(2.e0_dp**19)))
-allocate(wft(0:ntime+1))
-allocate(wft_s(totsys,0:ntime+1))
-allocate(wft_pol(npol,0:ntime+1))
-allocate(wftp(0:ntime+1))
-allocate(wftf_s(totsys,0:nint(2.e0_dp**19)))
-allocate(wftf(0:nint(2.e0_dp**19)))
-allocate(wftf_pol(npol,0:ntime+1))
+allocate(pulses(0:ntime+1))
 allocate(pow_pol(npol,0:ntime+1))
 allocate(pow_s(totsys,0:ntime+1))
 allocate(pow_pol_diff(0:ntime+1))
@@ -273,17 +262,6 @@ TransDip_Ana_h2e,TransDip_Ana_h1h2)
 
 call Convolution
 
-open(60,file='hugo.dat')
-
-!timestep=0.05e-15_dp
-!totaltime=200.e-15_dp
-!do t=1,4001
-!time = t*timestep
-!read(60,*) dummy, hugo(t)
-!hugo(t)=exp(-1.d0*((time-totaltime/2.d0)*timestep)**2.d0/(2.d0*(totaltime*timestep/10.d0)**2.d0))*hugo(t)
-!!write(6,*) time, exp(-1.d0*((time-totaltime/2.d0)*timestep)**2.d0/(2.d0*(totaltime*timestep/15.d0)**2.d0)), hugo(t)
-!enddo
-
 !Write DipSpec sum of all systems + multiplied by a gaussian 
 timestep  = timestep  * t_au
 totaltime = totaltime * t_au
@@ -293,7 +271,6 @@ do t=0,ntime
 time = t*timestep
 
 pow_gaus(t)=exp(-1.d0*((time-totaltime/2.d0)*timestep)**2.d0/(2.d0*(totaltime*timestep/15.d0)**2.d0))*(pow(t)/nsys)
-!pulses(t)=exp(-1.d0*((time-totaltime/2.d0)*timestep)**2.d0/(2.d0*(totaltime*timestep/15.d0)**2.d0))*(pulses(t))
 
 if ( doFT_s .eq. "y" ) then
 pow_gaus_s(:,t)=exp(-1.d0*((time-totaltime/2.d0)*timestep)**2.d0/(2.d0*(totaltime*timestep/15.d0)**2.d0))*pow_s(:,t)
@@ -350,6 +327,17 @@ endif
 
 if ( doFT .eq. 'y' ) then
 
+allocate(wft(0:ntime+1))
+allocate(wft_s(totsys,0:ntime+1))
+allocate(wft_pol(npol,0:ntime+1))
+allocate(wftp(0:ntime+1))
+allocate(wftf_s(totsys,0:ntime+1))
+allocate(wftf(0:ntime+1))
+allocate(wftf_pol(npol,0:ntime+1))
+allocate(xpulse(0:nint(2.e0_dp**19)))
+allocate(xpow_gaus(0:nint(2.e0_dp**19)))
+allocate(xpow_gaus_s(totsys,0:nint(2.e0_dp**19)))
+
 xpulse  = dcmplx(0.d0,0.d0)
 
 do t=0,ntime
@@ -358,17 +346,9 @@ xpow_gaus_s(:,t)  = dcmplx(pow_gaus_s(:,t),0.d0)
 xpulse(t)  = dcmplx(pulses(nint(t*2.e0_dp*pi)),0.d0)
 enddo
 
-!do t=0,4000
-!xhugo(t) = dcmplx(hugo(t),0.d0)
-!enddo
-!do t=4000+1,nint(2.d0**16)
-!xhugo(t) = dcmplx(0.d0,0.d0)
-!enddo
-
 do t=ntime+1,nint(2.d0**19)
 xpow_gaus(t) = dcmplx(0.d0,0.d0)
 xpow_gaus_s(:,t)  = dcmplx(0.d0,0.d0)
-!xpulse(t)  = dcmplx(0.d0,0.d0)
 enddo
 
 do n=1,nsys
@@ -376,11 +356,6 @@ call fft(xpow_gaus_s(n,:))
 enddo
 call fft(xpulse)
 call fft(xpow_gaus)
-!call fft(xhugo)
-
-!do t=0,2**16
-!write(6,*) t*h*2*pi/(0.05*elec*200.e-15_dp), abs(xhugo(t))
-!enddo
 
 t=0
 do while ( t*h/(elec*5.24288d-12) .le. 4.d0 ) 
@@ -399,7 +374,7 @@ t = t + 1
 enddo
 enddo
 
-
+if ( nofiles .eq. 'n' ) then
 do n=1,nsys
 write(cov2,'(a9,i0,a4)') 'TransAbs-', n, '.dat'
 open(TransAbs_s,file=cov2)
@@ -410,6 +385,7 @@ t = t + 1
 enddo
 close(TransAbs_s)
 enddo
+endif
 
 endif
 
@@ -474,13 +450,19 @@ endif
 !
 !endif
 
-deallocate(pow,pow_gaus,xpow_gaus,pow_gaus_s,xpow_gaus_s,xpulse,xpulse2,pulses,wft,wft_s,wft_pol,wftp)
+deallocate(pow,pow_gaus,xpow_gaus,pow_gaus_s,xpow_gaus_s,xpulse,pulses,wft,wft_s,wft_pol,wftp)
 
 endif
 
+t=0
+do while ( t*h/(elec*5.24288d-12) .le. 4.d0 )
+t=t+1
+enddo
+ntime=t
+
 if ( doCovar .eq. 'y' ) then
 
-allocate(Scov(0:nint(ntime/10.)+1,0:nint(ntime/10.)+1))
+allocate(Scov(0:ntime+1,0:ntime+1))
 
 open(61,file='Allcov.dat')
 
