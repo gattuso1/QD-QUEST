@@ -1690,6 +1690,7 @@ subroutine RK_0_ei
 do t=0,ntime
 
 time = t*timestep
+time_FFT = t*timestep*2.e0_dp*pi
 
 if ( n .eq. 1 ) then
 
@@ -1697,8 +1698,12 @@ pulses(t) = pulse1 * Ed01 * cos(omega01*(time-t01)+phase01) * exp(-1.0e0_dp*((ti
             pulse2 * Ed02 * cos(omega02*(time-t02)+phase02) * exp(-1.0e0_dp*((time-t02))**2/(2.0e0_dp*(width02**2.e0_dp))) + &
             pulse3 * Ed03 * cos(omega03*(time-t03)+phase03) * exp(-1.0e0_dp*((time-t03))**2/(2.0e0_dp*(width03**2.e0_dp)))
 
+pulses_FFT(t)=pulse1*Ed01 * cos(omega01*(time_FFT-t01)+phase01) * exp(-1.0e0_dp*((time_FFT-t01))**2/(2.0e0_dp*(width01**2.e0_dp)))+&
+              pulse2*Ed02 * cos(omega02*(time_FFT-t02)+phase02) * exp(-1.0e0_dp*((time_FFT-t02))**2/(2.0e0_dp*(width02**2.e0_dp)))+&
+              pulse3*Ed03 * cos(omega03*(time_FFT-t03)+phase03) * exp(-1.0e0_dp*((time_FFT-t03))**2/(2.0e0_dp*(width03**2.e0_dp)))
+
 if ( nofiles .eq. 'n' ) then
-write(Pulse_f,*) time*t_au , pulses(t)
+write(Pulse_f,*) time*t_au , pulses(t), pulses_FFT(t)
 endif
 
 endif
