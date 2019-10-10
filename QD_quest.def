@@ -2,7 +2,7 @@
 inbox    = "n" !For phase matching directions, read coordinates in space, orient mus ... 
 get_sp   = "n" !recover sampling from a previous Etransitions_0.dat
 get_ei   = "y" !Generates eigenstate vectors and TDM 
-Dyn_0    = "y" !Should I perform dynamics in 0 order basis?
+Dyn_0    = "n" !Should I perform dynamics in 0 order basis?
 Dyn_ei   = "y" !Should I perform dynamics in eigenstate basis?
 Dyn_L    = "n" !Should I perform Liouville quantum dynamics?
 TDM_ee   = "y" !Request interexciton TDM or not
@@ -11,7 +11,7 @@ doFT     = "y" !Perform FT of coherences for all systems
 singleDS = "n" !Create single Dipole Spectrum files for each system, doFT must be yes
 singleFT = "n" !Create single FT files for each system
 doFT_s   = "y" !Do Fourier Transform for each system
-nofiles  = "n" !deletes all individual files
+nofiles  = "y" !deletes all individual files
 doCovar  = "y" !make covar from single FT vectors
 /
 

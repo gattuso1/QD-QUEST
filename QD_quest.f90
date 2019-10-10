@@ -344,7 +344,6 @@ allocate(wftf_s(totsys,0:nFT+1))
 allocate(wftf(0:nFT+1))
 allocate(wftf_pol(npol,0:nFT+1))
 allocate(xpow_gaus(0:nint(2.e0_dp**19)))
-allocate(xpow_gaus_s(totsys,0:nint(2.e0_dp**19)))
 allocate(xpulse(0:nint(2.e0_dp**19)))
 
 
@@ -372,23 +371,27 @@ enddo
 
 if ( doFT_s .eq. "y" ) then
 
+do n=1,nsys
+
+allocate(xpow_gaus_s(0:nint(2.e0_dp**19)))
+
 do t=0,ntime
-xpow_gaus_s(:,t)  = dcmplx(pow_gaus_s(:,t),0.d0)
+xpow_gaus_s(t)  = dcmplx(pow_gaus_s(n,t),0.d0)
 enddo
 do t=ntime+1,nint(2.d0**19)
-xpow_gaus_s(:,t)  = dcmplx(0.d0,0.d0)
+xpow_gaus_s(t)  = dcmplx(0.d0,0.d0)
 enddo
 
-do n=1,nsys
-call fft(xpow_gaus_s(n,:))
-enddo
+call fft(xpow_gaus_s)
 
-do n=1,nsys
 t=0
 do while ( t*h/(elec*5.24288d-12) .le. 4.d0 )
-wftf_s(n,t)= -2.e0_dp * dimag(sqrt(dreal(xpow_gaus_s(n,t))**2+dimag(xpow_gaus_s(n,t))**2) * dconjg(xpulse(t)))
+wftf_s(n,t)= -2.e0_dp * dimag(sqrt(dreal(xpow_gaus_s(t))**2+dimag(xpow_gaus_s(t))**2) * dconjg(xpulse(t)))
 t = t + 1
 enddo
+
+deallocate(xpow_gaus_s)
+
 enddo
 
 if ( singleFT .eq. 'y' ) then
@@ -467,7 +470,7 @@ endif
 !
 !endif
 
-deallocate(pow,pow_gaus,xpow_gaus,pow_gaus_s,xpow_gaus_s,xpulse,pulses,wft,wft_s,wft_pol,wftp)
+deallocate(pow,pow_gaus,xpow_gaus,pow_gaus_s,xpulse,pulses,wft,wft_s,wft_pol,wftp)
 
 endif
 
