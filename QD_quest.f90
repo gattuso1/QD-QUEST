@@ -294,9 +294,9 @@ endif
 
 !endif
 
-if ( nofiles .eq. 'n' ) then
+!if ( nofiles .eq. 'n' ) then
 write(DipSpec,*) time, pow(t), pow_gaus(t), pulses(t)
-endif
+!endif
 
 enddo 
 
@@ -327,12 +327,14 @@ enddo
 
 endif
 
+FTscale = h/(elec*(2.e0_dp**FTpow)*timestep)
 !gives the scale of FT vectors
 t=0
-do while ( t*h/(elec*5.24288d-12) .le. 4.d0 )
+do while ( t*FTscale .le. 4.d0 )
 t=t+1
 enddo
 nFT=t
+FTscale = h/(elec*(2.e0_dp**FTpow)*timestep)
 
 if ( doFT .eq. 'y' ) then
 
@@ -343,8 +345,8 @@ allocate(wftp(0:nFT+1))
 allocate(wftf_s(totsys,0:nFT+1))
 allocate(wftf(0:nFT+1))
 allocate(wftf_pol(npol,0:nFT+1))
-allocate(xpow_gaus(0:nint(2.e0_dp**19)))
-allocate(xpulse(0:nint(2.e0_dp**19)))
+allocate(xpow_gaus(0:nint(2.e0_dp**FTpow)))
+allocate(xpulse(0:nint(2.e0_dp**FTpow)))
 
 
 do t=0,ntime
@@ -352,7 +354,7 @@ xpow_gaus(t) = dcmplx(pow_gaus(t),0.d0)
 xpulse(t)  = dcmplx(pulses_FFT(t),0.d0)
 enddo
 
-do t=ntime+1,nint(2.d0**19)
+do t=ntime+1,nint(2.d0**FTpow)
 xpow_gaus(t) = dcmplx(0.d0,0.d0)
 xpulse(t)  = dcmplx(0.d0,0.d0)
 enddo
@@ -361,11 +363,11 @@ call fft(xpulse)
 call fft(xpow_gaus)
 
 t=0
-do while ( t*h/(elec*5.24288d-12) .le. 4.d0 ) 
+do while ( t*FTscale .le. 4.d0 ) 
 wftf(t)= -2.e0_dp * dimag(sqrt(dreal(xpow_gaus(t))**2+dimag(xpow_gaus(t))**2) * dconjg(xpulse(t)))
-if ( nofiles .eq. 'n' ) then
-write(TransAbs,*) t*h/(elec*5.24288d-12), dreal(wftf(t))
-endif
+!if ( nofiles .eq. 'n' ) then
+write(TransAbs,*) t*FTscale, dreal(wftf(t))
+!endif
 t = t + 1 
 enddo
 
@@ -373,19 +375,19 @@ if ( doFT_s .eq. "y" ) then
 
 do n=1,nsys
 
-allocate(xpow_gaus_s(0:nint(2.e0_dp**19)))
+allocate(xpow_gaus_s(0:nint(2.e0_dp**FTpow)))
 
 do t=0,ntime
 xpow_gaus_s(t)  = dcmplx(pow_gaus_s(n,t),0.d0)
 enddo
-do t=ntime+1,nint(2.d0**19)
+do t=ntime+1,nint(2.d0**FTpow)
 xpow_gaus_s(t)  = dcmplx(0.d0,0.d0)
 enddo
 
 call fft(xpow_gaus_s)
 
 t=0
-do while ( t*h/(elec*5.24288d-12) .le. 4.d0 )
+do while ( t*FTscale .le. 4.d0 )
 wftf_s(n,t)= -2.e0_dp * dimag(sqrt(dreal(xpow_gaus_s(t))**2+dimag(xpow_gaus_s(t))**2) * dconjg(xpulse(t)))
 t = t + 1
 enddo
@@ -399,8 +401,8 @@ do n=1,nsys
 write(cov2,'(a9,i0,a4)') 'TransAbs-', n, '.dat'
 open(TransAbs_s,file=cov2)
 t=0
-do while ( t*h/(elec*5.24288d-12) .le. 4.d0 )
-write(TransAbs_s,*) t*h/(elec*5.24288d-12),  dreal(wftf_s(n,t))
+do while ( t*FTscale .le. 4.d0 )
+write(TransAbs_s,*) t*FTscale,  dreal(wftf_s(n,t))
 t = t + 1
 enddo
 close(TransAbs_s)
@@ -408,37 +410,6 @@ enddo
 endif
 
 endif
-
-
-
-!do t=0,ntime,10
-!do t2=0,ntime,10
-!if ( inbox .eq. 'y' ) then
-!wft_pol(39,t)  = wft_pol(39,t)  + exp(-2.d0*pi*im*w*t2*timestep) * pow_pol_gaus(39,t2) 
-!wft_pol(41,t)  = wft_pol(41,t)  + exp(-2.d0*pi*im*w*t2*timestep) * pow_pol_gaus(41,t2) 
-!do pol=30,40
-!wft_pol(pol,t)  = wft_pol(pol,t)  + exp(-2.d0*pi*im*w*t2*timestep) * pow_pol_gaus(pol,t2) 
-!enddo
-!endif
-!if ( singleFT .eq. "y" ) then
-!do n=1,nsys
-!wft_s(n,t)  = wft_s(n,t)  + exp(-2.d0*pi*im*w*t2*timestep) * xpow_gaus_s(n,t2)
-!enddo
-!endif
-
-!wft(t)  = wft(t)  + exp(-2.d0*pi*im*w*t2*timestep) * xpow_gaus(t2) 
-!wftp(t) = wftp(t) + exp(-1.d0*im*w*t2*timestep) * xpulse(t2) 
-!wftp(t) = wftp(t) + exp(-1.d0*im*w*t2*timestep) * xpulse(t2) 
-!enddo
-!w = w + wstep
-!enddo
-
-!w = w1
-!
-!do t=0,ntime,10
-!write(6,*)   w*h/elec, dreal(wftp(t)), dimag(wftp(t))
-!w = w + wstep
-!enddo
 
 !if ( inbox .eq. 'y' ) then
 !wftf_pol(39,t) = -2.d0 * dimag(sqrt(dreal(wft_pol(39,t))**2+dimag(wft_pol(39,t))**2) * dconjg(wftp(t)))
@@ -481,9 +452,9 @@ allocate(Scov(0:nFT+1,0:nFT+1))
 open(61,file='Allcov.dat')
 
 t=0
-do while ( t*h/(elec*5.24288d-12) .le. 4.d0 )
+do while ( t*FTscale .le. 4.d0 )
 t2=0
-do while ( t2*h/(elec*5.24288d-12) .le. 4.d0 )
+do while ( t2*FTscale .le. 4.d0 )
 
 do k=1,nsys
 Scov(t,t2) = Scov(t,t2) + sum(dreal(wftf_s(k,t))*dreal(wftf_s(:,t2)))
@@ -495,9 +466,9 @@ t = t + 5
 enddo
 
 t=0
-do while ( t*h/(elec*5.24288d-12) .le. 4.d0 )
+do while ( t*FTscale .le. 4.d0 )
 t2=0
-do while ( t2*h/(elec*5.24288d-12) .le. 4.d0 )
+do while ( t2*FTscale .le. 4.d0 )
 write(61,'(2f10.6,ES15.6E3)') t*h/(elec*5.24288d-12), t2*h/(elec*5.24288d-12), Scov(t,t2)
 t2 = t2 + 5
 enddo
