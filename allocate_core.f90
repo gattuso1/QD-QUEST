@@ -14,6 +14,7 @@ allocate(TransHam(0:nstates-1,0:nstates-1),&
          Ham(0:nstates-1,0:nstates-1),&
          Ham_l(0:nstates-1,0:nstates-1),&
          haml(0:nstates-1,0:nstates-1),&
+         pop(0:nstates-1,0:ntime+1),&
          Ham_0(0:nstates-1),&
          Ham_dir(0:nstates-1,0:nstates-1),&
          Ham_ex(0:nstates-1,0:nstates-1),&
@@ -23,10 +24,10 @@ allocate(xc(0:nstates-1,0:ntime+1),&
          xc0(0:nstates-1),&
          xc_ei(0:nstates-1,0:ntime+1),&
          xc_L(0:nstates2-1,0:ntime+1),&
-         c0(0:nstates-1),k1(0:nstates2-1),&
-         k2(0:nstates-1),k3(0:nstates2-1),&
-         k4(0:nstates-1),k5(0:nstates2-1),&
-         k6(0:nstates-1),k7(0:nstates2-1),&
+         c0(0:nstates-1),k1(0:nstates-1),&
+         k2(0:nstates-1),k3(0:nstates-1),&
+         k4(0:nstates-1),k5(0:nstates-1),&
+         k6(0:nstates-1),k7(0:nstates-1),&
          k8(0:nstates-1),&
          k1_L(0:nstates2-1),&
          k2_L(0:nstates2-1),k3_L(0:nstates2-1),&

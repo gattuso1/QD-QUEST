@@ -9,8 +9,8 @@ contains
 function vector(d)
 
       implicit none
-      real(kind=8), dimension(3) :: vector
-      real(kind=8) :: d, phi, teta, rand1, rand2
+      real(kind=dp), dimension(3) :: vector
+      real(kind=dp) :: d, phi, teta, rand1, rand2
 
       call random_number(rand1)
       call random_number(rand2)

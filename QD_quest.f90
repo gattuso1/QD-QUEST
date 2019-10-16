@@ -348,7 +348,6 @@ allocate(wftf_pol(npol,0:nFT+1))
 allocate(xpow_gaus(0:nint(2.e0_dp**FTpow)))
 allocate(xpulse(0:nint(2.e0_dp**FTpow)))
 
-
 do t=0,ntime
 xpow_gaus(t) = dcmplx(pow_gaus(t),0.d0)
 xpulse(t)  = dcmplx(pulses_FFT(t),0.d0)

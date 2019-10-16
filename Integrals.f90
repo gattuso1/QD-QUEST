@@ -1687,6 +1687,8 @@ end function pulsez
 
 subroutine RK_0_ei
 
+f_ana = 0
+
 do t=0,ntime
 
 time = t*timestep
@@ -1801,7 +1803,7 @@ endif
 
 endif
 
-if ( Dyn_ei .eq. 'y' ) then
+if ( ( Dyn_ei .eq. 'y' ) .and. ( f_ana .eq. 0 ) ) then
 
 tpx1 = pulsex(time)
 tpx2 = pulsex(time+(timestep/9.e0_dp))
@@ -1882,6 +1884,25 @@ TransHam_ei_l(i,:,2)*tpy8 - TransHam_ei_l(i,:,3)*tpz8) * &
 enddo
 
 xc_ei(:,t+1)=xc_ei(:,t)+(41.e0_dp*(k1(:)+k8(:))+216.e0_dp*(k3(:)+k7(:))+27.e0_dp*(k4(:)+k6(:))+272.e0_dp*k5(:))/840.e0_dp
+
+if ( ( xc_ei(0,t+1) .eq. xc_ei(0,t) ) .and. ( time .gt. max(pulse1*t01,pulse2*t02,pulse3*t03) ) .and. ( f_ana .eq. 0 ) ) then
+f_ana = 1
+t_ana = t
+time_ana = time
+endif
+
+if ( nofiles .eq. 'n' ) then
+if ( MOD(t,10) .eq. 0 ) then
+cnorm2 = sum(dreal(xc_ei(:,t))**2 + dimag(xc_ei(:,t))**2)
+write(popc_ei_f,form_pop) time*t_au, (dreal(xc_ei(i,t))**2+dimag(xc_ei(i,t))**2, i=0,nstates-1), cnorm2
+write(Re_c_ei_f,form_com) time*t_au, (dreal(xc_ei(i,t)), i=0,nstates-1)
+write(Im_c_ei_f,form_com) time*t_au, (dimag(xc_ei(i,t)), i=0,nstates-1)
+endif
+endif
+
+elseif ( ( Dyn_ei .eq. 'y' ) .and. ( f_ana .eq. 1) ) then
+
+xc_ei(:,t) = xc_ei(:,t_ana)*exp(-1.e0_dp*im*lambda(:)*(time-time_ana))
 
 if ( nofiles .eq. 'n' ) then
 if ( MOD(t,10) .eq. 0 ) then

@@ -248,6 +248,6 @@ close(DipSpec_s)
 endif
 
 deallocate(TransHam,TransHam_ei_l,TransHam_l,TransHam_d,TransHam_ei,Mat,Matx,Maty,Matz,Ham,Ham_l,Ham_0,Ham_dir,Ham_ex,Ham_ei,haml)
-deallocate(Transvec,TransMat_ei,lambda,xc,k1,k2,k3,k4,k5,k6,k7,k8,c0,xc_ei,xc_L,xc0)
+deallocate(Transvec,TransMat_ei,lambda,xc,k1,k2,k3,k4,k5,k6,k7,k8,c0,xc_ei,xc_L,xc0,pop)
 deallocate(k1_L,k2_L,k3_L,k4_L,k5_L,k6_L,k7_L,k8_L)
 deallocate(merge_diag,merge_odiag,icol,irow,xliou,lfield,xlfield)
