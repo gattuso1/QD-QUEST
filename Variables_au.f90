@@ -12,6 +12,7 @@ implicit none
    character*64 :: Re_c, Im_c, syst_n, Re_c_l, Im_c_L, cov, cov2
    character*1 :: o_Norm, o_Over, o_Coul, o_DipS, o_Osci, o_Exti, o_DipD, dyn, hamilt, get_ei, finest, get_sp
    character*1 :: TDM_ee, Dyn_0, Dyn_ei, inbox, Dyn_L,doFT,CEP1,CEP2,CEP3,singleFT,nofiles, singleDS, doCovar,doFT_s,doAbs
+   character*1 :: rdm_ori
    integer :: Pulse_f,Tmat_0_f,Tmat_ei_f,Tmat_x_f,Tmat_y_f,Tmat_z_f,H_0_f,H_dir_f,H_ex_f,H_JK_f,TransAbs
    integer :: popc_0_f,popc_ei_f,norm_0_f,norm_ei_f,Re_c_ei_f,Im_c_ei_f,Re_c_0_f,Im_c_0_f,TDip_ei_f,tmp, nbands,Liou_f
    integer :: Re_c_L_f,Im_c_L_f,H_ei_f,Etr_0_f,Etr_ei_f,Abs_imp_f, t2, DipSpec, pol, npol, P_Match_f, DipSpec_R_f,DipSpec_NR_f
@@ -78,7 +79,7 @@ contains
 
 subroutine getVariables
 
-NAMELIST /outputs/    inbox,get_sp,get_ei,Dyn_0,Dyn_ei,Dyn_L,TDM_ee,doAbs,doFT,singleDS,doFT_s,singleFT,nofiles,doCovar
+NAMELIST /outputs/    inbox,rdm_ori,get_sp,get_ei,Dyn_0,Dyn_ei,Dyn_L,TDM_ee,doAbs,doFT,singleDS,doFT_s,singleFT,nofiles,doCovar
 NAMELIST /elecSt/     model,me,mh,eps,epsout,V0eV,omegaLO,slope,side
 NAMELIST /fineStruc/  Kas,Kbs,Kcs,Kpp,Dso1,Dso2,Dxf
 NAMELIST /pulses/     integ,npulses,t01,t02,t03,timestep,totaltime,omega01,omega02,omega03,phase01,phase02,phase03,&

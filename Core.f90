@@ -23,10 +23,10 @@ call dsyev('V', 'U', nstates, Ham_ei(0:nstates-1,0:nstates-1), nstates, lambda, 
 deallocate (work)
 
 !!!Make eigenstate TDM
-!if ( inbox .eq. "n" ) then
-!Mat(:,:) = matmul(TransHam(:,:),Ham_ei(:,:))
-!TransHam_ei(:,:) = matmul(transpose(Ham_ei(:,:)),Mat(:,:))
-!elseif ( inbox .eq. "y" ) then
+if ( rdm_ori .eq. "n" ) then
+Mat(:,:) = matmul(TransHam(:,:),Ham_ei(:,:))
+TransHam_ei(:,:) = matmul(transpose(Ham_ei(:,:)),Mat(:,:))
+elseif ( rdm_ori .eq. "y" ) then
 Matx(:,:) = matmul(TransHam_l(:,:,1),Ham_ei(:,:))
 Maty(:,:) = matmul(TransHam_l(:,:,2),Ham_ei(:,:))
 Matz(:,:) = matmul(TransHam_l(:,:,3),Ham_ei(:,:))
@@ -34,7 +34,7 @@ TransHam_ei_l(:,:,1) = matmul(transpose(Ham_ei(:,:)),Matx(:,:))
 TransHam_ei_l(:,:,2) = matmul(transpose(Ham_ei(:,:)),Maty(:,:))
 TransHam_ei_l(:,:,3) = matmul(transpose(Ham_ei(:,:)),Matz(:,:))
 TransHam_ei = sqrt(TransHam_ei_l(:,:,1)**2 + TransHam_ei_l(:,:,2)**2 + TransHam_ei_l(:,:,1)**2)
-!endif
+endif
 
 call make_Ham_l
 
@@ -93,13 +93,13 @@ enddo
 
 do i=0,nstates-1
 do j=i+1,nstates-1
-haml(i,j)=TransHam_ei(i,j)
+haml(i,j)=TransHam_ei(i,j) 
 haml(j,i)=TransHam_ei(j,i)
 enddo
 enddo
 
 do i=0,nstates-1
-haml(i,i)=lambda(i) 
+haml(i,i)=lambda(i)
 enddo
 
 !!!!!Liouvillian
@@ -154,11 +154,11 @@ enddo
 enddo
 enddo
 
-xlfield(:,:) = dcmplx(lfield,0.e0_dp)
+xlfield = dcmplx(lfield,0.e0_dp)
 
 endif
 
-if ( ( Dyn_0 .eq. 'y' ) .or. ( Dyn_ei .eq. 'y' ) ) then
+if ( ( Dyn_0 .eq. 'y' ) .or. ( Dyn_ei .eq. 'y' ) .or. ( Dyn_L .eq. 'y' ) ) then
 
 !!!Opens output files
 if ( nofiles .eq. 'n' ) then
@@ -203,6 +203,17 @@ close(Re_c_0_f   ,status="delete")
 close(Im_c_0_f   ,status="delete")
 close(Re_c_L_f   ,status="delete")
 close(Im_c_L_f   ,status="delete")
+elseif ( nofiles .eq. 'n' ) then
+close(popc_0_f )
+close(popc_ei_f)
+close(norm_0_f )
+close(norm_ei_f)
+close(Re_c_ei_f)
+close(Im_c_ei_f)
+close(Re_c_0_f )
+close(Im_c_0_f )
+close(Re_c_L_f )
+close(Im_c_L_f )
 endif
 
 endif
