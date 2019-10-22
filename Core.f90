@@ -8,12 +8,13 @@ endif
 write(form_abs,'("(2f16.8,2x,i0)")') 
 write(form_pop,'("(",i0,"ES17.8E3,ES25.16E3)")') nstates+1
 write(form_com,'("(ES12.5E3,",i0,"ES18.8E3)")') nstates+1
-write(form_com_L,'("(ES12.5E3,",i0,"ES18.8E3)")') nstates2+2
-write(form_DipSpec,'("(ES12.5E3,",i0,"ES18.8E3)")') nstates+1
+write(form_com_L,'("(ES12.5E3,",i0,"ES18.8E3,ES28.15)")') nstates2+1
+write(form_pop_L,'("(ES12.5E3,",i0,"ES18.8E3,f28.15)")') nstates
+write(form_DipSpec,'("(ES12.5E3,",i0,"ES18.8E3)")') nstates+2
 
 if ( get_ei .eq. 'y' ) then
 Ham_ei = Ham
-allocate(lambda(0:nstates-1))
+allocate(lambda(0:nstates-1),source = 0.e0_dp)
 allocate(work(1))
 call dsyev('V','U', nstates, Ham_ei(0:nstates-1,0:nstates-1), nstates, lambda, Work, -1, info)
 lwork=nint(work(1))
@@ -86,8 +87,8 @@ write(form1,'("(i4,i4,i4,i4,1x,100(e24.16,1x))")')
 
 do i=0,nstates2-1
 do j=0,nstates2-1
-merge_diag(i,j)  = merge(1,0,i.eq.j)
-merge_odiag(i,j) = merge(0,1,i.eq.j)
+merge_diag(i,j)  = real(merge(1,0,i.eq.j),kind=dp)
+merge_odiag(i,j) = real(merge(0,1,i.eq.j),kind=dp)
 enddo
 enddo
 
@@ -135,6 +136,8 @@ enddo
 !enddo
 !enddo
 
+kl=0;kc=0
+
 !!!!Renumber xLiou
 kl=-1
 do i=0,nstates-1
@@ -154,7 +157,11 @@ enddo
 enddo
 enddo
 
-xlfield = dcmplx(lfield,0.e0_dp)
+!do l=0,nstates2-1
+!write(6,'(81f5.2)') (lfield(l,k), k=0,nstates2-1)
+!enddo
+
+!xlfield = dcmplx(lfield,0.e0_dp)
 
 endif
 
@@ -170,6 +177,7 @@ write(Re_c_ei,'(a8,i5.5,a4)') 'Re_c_ei-', n, '.dat'
 write(Im_c_ei,'(a8,i5.5,a4)') 'Im_c_ei-', n, '.dat'
 write(Re_c_L,'(a7,i5.5,a4)') 'Re_c_L-', n, '.dat'
 write(Im_c_L,'(a7,i5.5,a4)') 'Im_c_L-', n, '.dat'
+write(Pop_c_L,'(a8,i5.5,a4)') 'Pop_c_L-', n, '.dat'
 open(newunit=popc_0_f   ,file=popc)    !; popc_0_f = 44
 open(newunit=popc_ei_f  ,file=popc_ei) !; popc_ei_f = 49
 open(newunit=Re_c_ei_f  ,file=Re_c_ei) !; Re_c_ei_f = 52
@@ -178,6 +186,7 @@ open(newunit=Re_c_0_f   ,file=Re_c)    !; Re_c_0_f = 54
 open(newunit=Im_c_0_f   ,file=Im_c)    !; Im_c_0_f = 55
 open(newunit=Re_c_L_f   ,file=Re_c_L)    !; Im_c_0_f = 55
 open(newunit=Im_c_L_f   ,file=Im_c_L)    !; Im_c_0_f = 55
+open(newunit=Pop_c_L_f  ,file=Pop_c_L)    !; Im_c_0_f = 55
 endif
 
 !!!!!INITIAL POPULATIONS
@@ -186,6 +195,7 @@ c0(0) = 1.e0_dp
 xc0 = dcmplx(c0,0.0e0_dp)
 xc = dcmplx(0.e0_dp,0.0e0_dp)
 xc_ei = dcmplx(0.e0_dp,0.0e0_dp)
+xc_L = dcmplx(0.e0_dp,0.0e0_dp)
 xc(:,0) = xc0(:)
 xc_ei(:,0) = xc0(:)
 xc_L(:,0) = xc0(:)
@@ -236,17 +246,12 @@ enddo
 pow(t) = pow(t) + pow_s(n,t)
 
 
-!if ( inbox .eq. 'y' ) then
-!do pol=1,npol
-!pow_pol(pol,t) = pow_pol(pol,t) + pow(t)*exp(im*dot_product(l1(pol)*k_1(:)+l2(pol)*k_2(:)+l3(pol)*k_3(:),Dcenter(n,:)))/totsys
-!if ( pol .ne. 39 ) then
-!pow_pol_diff(t) = pow_pol_diff(t) + pow(t)*exp(im*dot_product((l1(39)*k_1(:)+l2(39)*k_2(:)+l3(39)*k_3(:)) - &
-!(l1(pol)*k_1(:)+l2(pol)*k_2(:)+l3(pol)*k_3(:)),Dcenter(n,:)))/totsys
-!endif
-!enddo
-!pow_pol(pol,t) = pow_pol(pol,t) + pow(t)*exp(im*dot_product(l1(pol)*k_1(:)+l2(pol)*k_2(:)+l3(pol)*k_3(:),Dcenter(n,:)))/totsys
-!pow_pol(41,t) = pow_pol(41,t) + pow(t)*exp(im*dot_product(l1(41)*k_1(:)+l2(41)*k_2(:)+l3(41)*k_3(:),Dcenter(n,:)))/totsys
-!endif
+if ( inbox .eq. 'y' ) then
+do pol=1,npol
+pow_pol(pol,t) = pow_pol(pol,t) + dcmplx(pow_s(n,t)/nsys,0.d0)*&
+                  exp(im*dot_product(l1(pol)*k_1(:)+l2(pol)*k_2(:)+l3(pol)*k_3(:),Dcenter(pol,:)))
+enddo
+endif
 
 if (singleDS .eq. 'y' ) then
 write(DipSpec_s,form_DipSpec) time*t_au, pow_s(n,t) 

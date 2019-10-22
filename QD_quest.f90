@@ -196,6 +196,7 @@ open(newunit=Liou_f      ,file='Liou.dat')
 open(newunit=TransAbs    ,file='TransAbs.dat')
 open(newunit=TransAbs_NR ,file='TransAbs_NR.dat')
 open(newunit=TransAbs_R  ,file='TransAbs_R.dat')
+open(newunit=TransAbs_P  ,file='TransAbs_P.dat')
 open(newunit=DipSpec     ,file='DipSpec.dat')
 open(newunit=P_Match_f   ,file='Phase_Match.dat')
 open(newunit=DipSpec_NR_f,file='DipSpec-NR.dat')
@@ -278,19 +279,13 @@ if ( doFT_s .eq. "y" ) then
 pow_gaus_s(:,t)=exp(-1.d0*((time-totaltime/2.d0)*timestep)**2.d0/(2.d0*(totaltime*timestep/15.d0)**2.d0))*pow_s(:,t)
 endif
 
-!if ( inbox .eq. 'y' ) then
+if ( inbox .eq. 'y' ) then
+pow_pol_gaus(:,t)=&
+   exp(-1.d0*((time-totaltime/2.d0)*timestep)**2.d0/(2.d0*(totaltime*timestep/15.d0)**2.d0))*(pow_pol(:,t)/nsys)
+endif
 
-!pow_pol_gaus(39,t)=&
-!   exp(-1.d0*((time-totaltime/2.d0)*timestep)**2.d0/(2.d0*(totaltime*timestep/15.d0)**2.d0))*(pow_pol(39,t)/totsys)
-!pow_pol_gaus(41,t)=&
-!   exp(-1.d0*((time-totaltime/2.d0)*timestep)**2.d0/(2.d0*(totaltime*timestep/15.d0)**2.d0))*(pow_pol(41,t)/totsys)
-!do pol=1,npol
-!pow_pol_gaus(pol,t)=&
-!   exp(-1.d0*((time-totaltime/2.d0)*timestep)**2.d0/(2.d0*(totaltime*timestep/15.d0)**2.d0))*(pow_pol(pol,t)/totsys)
-!enddo
-
-!write(DipSpec_NR_f,*) time, dreal(pow_pol_gaus(39,t))
-!write(DipSpec_R_f,*) time, dreal(pow_pol_gaus(41,t))
+write(DipSpec_NR_f,*) time, dreal(pow_pol(39,t)), dreal(pow_pol_gaus(39,t))
+write(DipSpec_R_f,*) time, dreal(pow_pol(41,t)), dreal(pow_pol_gaus(41,t))
 
 !endif
 
@@ -306,14 +301,9 @@ do pol=1,npol
 integPol = dcmplx(0.d0,0.d0)
 do t=0,ntime
 time = t*timestep
-integPol = integPol + abs(dcmplx(timestep,0.e0_dp)*(pow_pol(pol,t) + pow_pol(pol,t+1))/2.e0_dp)
+integPol = integPol + dcmplx(timestep,0.e0_dp)*(pow_pol(pol,t) + pow_pol(pol,t+1))/2.e0_dp
 enddo
-
-!write(P_Match_f,'(i4,2x,3f6.2,es18.7e3)') pol, l1(pol), l2(pol), l3(pol), integPol
 write(P_Match_f,*) pol, l1(pol), l2(pol), l3(pol), dreal(integPol)
-!if ( pol .eq. 39 ) then
-!write(6,*) pol, dreal(integPol)
-!endif
 enddo
 
 !integPol_diff = dcmplx(0.d0,0.d0)
@@ -344,7 +334,7 @@ allocate(wft_pol(npol,0:nFT+1))
 allocate(wftp(0:nFT+1))
 allocate(wftf_s(totsys,0:nFT+1))
 allocate(wftf(0:nFT+1))
-allocate(wftf_pol(npol,0:nFT+1))
+!allocate(wftf_pol(npol,0:nFT+1))
 allocate(xpow_gaus(0:nint(2.e0_dp**FTpow)))
 allocate(xpulse(0:nint(2.e0_dp**FTpow)))
 
@@ -410,37 +400,36 @@ endif
 
 endif
 
-!if ( inbox .eq. 'y' ) then
-!wftf_pol(39,t) = -2.d0 * dimag(sqrt(dreal(wft_pol(39,t))**2+dimag(wft_pol(39,t))**2) * dconjg(wftp(t)))
-!wftf_pol(41,t) = -2.d0 * dimag(sqrt(dreal(wft_pol(41,t))**2+dimag(wft_pol(41,t))**2) * dconjg(wftp(t)))
-!write(TransAbs_NR,*) w*h/elec, (abs(wft_pol(pol,t)), pol=30,40) !dreal(wftf_pol(39,t))
-!write(TransAbs_R,*)  w*h/elec, dreal(wft_pol(41,t)), dimag(wft_pol(41,t)) !dreal(wftf_pol(41,t))
-!endif
-!w = w + wstep
-!enddo
-!
-!if ( singleFT .eq. "y" ) then 
-!
-!do n=1,nsys
-!
-!write(cov2,'(a9,i0,a4)') 'TransAbs-', n, '.dat'
-!open(TransAbs_s,file=cov2)
-!
-!w = w1
-!
-!do t=0,ntime,10
-!wftf_s(n,t)= -2.e0_dp * dimag(sqrt(dreal(wft_s(n,t))**2+dimag(wft_s(n,t))**2) * dconjg(wftp(t)))
-!write(TransAbs_s,*) w*h/elec, dreal(wftf_s(n,t))
-!w = w + wstep
-!enddo
-!
-!close(TransAbs_s)
-!
-!enddo
-!
-!endif
+if ( inbox .eq. 'y' ) then
 
-deallocate(pow,pow_gaus,xpow_gaus,pow_gaus_s,xpulse,pulses,wft,wft_s,wft_pol,wftp)
+allocate(xpow_pol(44,0:nint(2.e0_dp**FTpow)))
+allocate(wftf_pol(44,0:nFT+1))
+
+do t=0,ntime
+xpow_pol(:,t)  = pow_pol_gaus(:,t)
+enddo
+do t=ntime+1,nint(2.d0**FTpow)
+xpow_pol(:,t)  = dcmplx(0.d0,0.d0)
+enddo
+
+do pol=1,npol
+call fft(xpow_pol(pol,:))
+enddo
+
+t=0
+do while ( t*FTscale .le. 4.d0 )
+wftf_pol(:,t) = -2.d0 * dimag(sqrt(dreal(xpow_pol(:,t))**2+dimag(xpow_pol(:,t))**2) * dconjg(xpulse(t)))
+write(TransAbs_P,*)  t*FTscale, dreal(wftf_pol(25,t))
+write(TransAbs_NR,*)  t*FTscale, dreal(wftf_pol(39,t))
+write(TransAbs_R,*)  t*FTscale, dreal(wftf_pol(41,t))
+t = t + 1
+enddo
+
+deallocate(xpow_pol,wftf_pol)
+
+endif
+
+deallocate(pow,pow_gaus,xpow_gaus,pow_gaus_s,xpulse,pulses,wft,wft_s,wftp)
 
 endif
 
