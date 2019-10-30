@@ -68,6 +68,7 @@ allocate(pulses_FFT(0:ntime+1))
 allocate(pow_pol(npol,0:ntime+1))
 allocate(pow_s(totsys,0:ntime+1))
 allocate(pow_pol_diff(0:ntime+1))
+allocate(pow_pol_conv(0:ntime+1))
 allocate(pow_pol_gaus(npol,0:ntime+1))
 allocate(l1(npol))
 allocate(l2(npol))
@@ -201,6 +202,7 @@ open(newunit=DipSpec     ,file='DipSpec.dat')
 open(newunit=P_Match_f   ,file='Phase_Match.dat')
 open(newunit=DipSpec_NR_f,file='DipSpec-NR.dat')
 open(newunit=DipSpec_R_f ,file='DipSpec-R.dat')
+open(60,file='CoheTEST.dat')
 
 matrices = (/ Tmat_0_f,Tmat_ei_f,Tmat_x_f,Tmat_y_f,Tmat_z_f,H_0_f,H_dir_f,H_ex_f,H_JK_f,H_ei_f /)
 
@@ -282,12 +284,9 @@ endif
 if ( inbox .eq. 'y' ) then
 pow_pol_gaus(:,t)=&
    exp(-1.d0*((time-totaltime/2.d0)*timestep)**2.d0/(2.d0*(totaltime*timestep/15.d0)**2.d0))*(pow_pol(:,t)/nsys)
-endif
-
-write(DipSpec_NR_f,*) time, dreal(pow_pol(39,t)), dreal(pow_pol_gaus(39,t))
+write(DipSpec_NR_f,*) time, dreal(pow_pol(25,t)), dreal(pow_pol_gaus(25,t))
 write(DipSpec_R_f,*) time, dreal(pow_pol(41,t)), dreal(pow_pol_gaus(41,t))
-
-!endif
+endif
 
 !if ( nofiles .eq. 'n' ) then
 write(DipSpec,*) time, pow(t), pow_gaus(t), pulses(t)
@@ -299,11 +298,14 @@ if ( inbox .eq. 'y' ) then
 
 do pol=1,npol
 integPol = dcmplx(0.d0,0.d0)
+integPolconv = dcmplx(0.d0,0.d0)
 do t=0,ntime
 time = t*timestep
-integPol = integPol + dcmplx(timestep,0.e0_dp)*(pow_pol(pol,t) + pow_pol(pol,t+1))/2.e0_dp
+integPol = integPol + (dcmplx(timestep,0.e0_dp)*(pow_pol(pol,t) + pow_pol(pol,t+1)))/2.e0_dp
+integPolconv = integPolconv + (dcmplx(timestep,0.e0_dp)*(pow_pol_conv(t) + pow_pol_conv(t+1)))/2.e0_dp
 enddo
-write(P_Match_f,*) pol, l1(pol), l2(pol), l3(pol), dreal(integPol)
+write(P_Match_f,*) pol, l1(pol), l2(pol), l3(pol), dreal(integPol), dimag(integPol), dreal(integPolconv), &
+                       dimag(integPolconv)
 enddo
 
 !integPol_diff = dcmplx(0.d0,0.d0)
@@ -334,7 +336,6 @@ allocate(wft_pol(npol,0:nFT+1))
 allocate(wftp(0:nFT+1))
 allocate(wftf_s(totsys,0:nFT+1))
 allocate(wftf(0:nFT+1))
-!allocate(wftf_pol(npol,0:nFT+1))
 allocate(xpow_gaus(0:nint(2.e0_dp**FTpow)))
 allocate(xpulse(0:nint(2.e0_dp**FTpow)))
 

@@ -35,13 +35,23 @@ allocate(xc(0:nstates-1,0:ntime+1),&
          k6_L(0:nstates2-1),k7_L(0:nstates2-1),&
          k8_L(0:nstates2-1))
 
+allocate(xc_rho(0:nstates-1,0:nstates-1,0:ntime+1),&
+         k1_rho(0:nstates-1,0:nstates-1),&
+         k2_rho(0:nstates-1,0:nstates-1),k3_rho(0:nstates-1,0:nstates-1),&
+         k4_rho(0:nstates-1,0:nstates-1),k5_rho(0:nstates-1,0:nstates-1),&
+         k6_rho(0:nstates-1,0:nstates-1),k7_rho(0:nstates-1,0:nstates-1),&
+         k8_rho(0:nstates-1,0:nstates-1))
+
 allocate(merge_diag(0:nstates2-1,0:nstates2-1),&
          merge_odiag(0:nstates2-1,0:nstates2-1), source = 0.e0_dp )
 
-allocate(xliou(0:nstates-1,0:nstates-1,0:nstates-1,0:nstates-1),&
-         lfield(0:nstates2-1,0:nstates2-1), source = 0.e0_dp)
+allocate(xliou(0:nstates-1,0:nstates-1,0:nstates-1,0:nstates-1),lfield(0:nstates2-1,0:nstates2-1),&
+         lfield2(0:nstates2-1,0:nstates2-1))
+
+xliou = dcmplx(0.e0_dp,0.e0_dp)
+lfield = dcmplx(0.e0_dp,0.e0_dp)
+lfield2 = dcmplx(0.e0_dp,0.e0_dp)
+
 
 allocate(irow(0:nstates2-1,2),icol(0:nstates2-1,2),source=0)
-
-allocate(xlfield(0:nstates2-1,0:nstates2-1))
 

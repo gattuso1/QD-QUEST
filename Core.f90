@@ -15,13 +15,23 @@ write(form_DipSpec,'("(ES12.5E3,",i0,"ES18.8E3)")') nstates+2
 if ( get_ei .eq. 'y' ) then
 Ham_ei = Ham
 allocate(lambda(0:nstates-1),source = 0.e0_dp)
-allocate(work(1))
-call dsyev('V','U', nstates, Ham_ei(0:nstates-1,0:nstates-1), nstates, lambda, Work, -1, info)
-lwork=nint(work(1))
-deallocate (work)
-allocate(work(0:lwork))
-call dsyev('V', 'U', nstates, Ham_ei(0:nstates-1,0:nstates-1), nstates, lambda, Work, lwork, info)
-deallocate (work)
+allocate(iwork2(3+5*nstates),source=0)
+allocate(work1(6*nstates),work2(1+6*nstates+2*nstates*nstates),source=0.e0_dp)
+!allocate(work(1))
+!call dsyev('V','U', nstates, Ham_ei(0:nstates-1,0:nstates-1), nstates, lambda, Work, -1, info)
+!lwork=nint(work(1))
+!deallocate (work)
+!allocate(work(0:lwork))
+!call dsyev('V', 'U', nstates, Ham_ei(0:nstates-1,0:nstates-1), nstates, lambda, Work, lwork, info)
+!deallocate (work)
+
+lworku=1+6*nstates+2*nstates*nstates
+liworku=3+5*nstates
+ierr=0
+call dsyevd('v','u',nstates, Ham_ei(0:nstates-1,0:nstates-1),nstates,lambda,work2,lworku,iwork2,liworku,ierr)
+deallocate(work1)
+deallocate(work2)
+deallocate(iwork2)
 
 !!!Make eigenstate TDM
 if ( rdm_ori .eq. "n" ) then
@@ -39,6 +49,7 @@ endif
 
 call make_Ham_l
 
+if ( noMat .eq. "n" ) then
 do i=1,size(matrices)
 if (n .le. nQDA+nQDB) then
 write(matrices(i),'(i0,f16.8)') n , aR(n)*1.d9
@@ -46,8 +57,10 @@ elseif (n .gt. nQDA+nQDB) then
 write(matrices(i),'(i0,2f16.8)') n , aR(n)*1.d9, aR(n+ndim)*1.d9
 endif
 enddo
+endif
 
 do i=0,nstates-1
+if ( noMat .eq. "n" ) then
 write(H_0_f    ,form_mat) (Ham(i,j)*Energ_au/elec, j=0,nstates-1)
 write(H_dir_f  ,form_mat) (Ham_dir(i,j)*Energ_au/elec, j=0,nstates-1)
 write(H_ex_f   ,form_mat) (Ham_ex(i,j)*Energ_au/elec, j=0,nstates-1)
@@ -59,6 +72,7 @@ write(Tmat_ei_f,form_TDM) (TransHam_ei(i,j), j=0,nstates-1)
 write(Tmat_x_f,form_TDM) (TransHam_ei_l(i,j,1), j=0,nstates-1)
 write(Tmat_y_f,form_TDM) (TransHam_ei_l(i,j,2), j=0,nstates-1)
 write(Tmat_z_f,form_TDM) (TransHam_ei_l(i,j,3), j=0,nstates-1)
+endif
 write(Abs_imp_f,form_abs) lambda(i)*Energ_au/elec, &
                          sqrt((TransHam_ei_l(0,i,1))**2+(TransHam_ei_l(0,i,2))**2+(TransHam_ei_l(0,i,3))**2) ,i
 !elseif ( inbox .eq. "n" ) then
@@ -66,9 +80,11 @@ write(Abs_imp_f,form_abs) lambda(i)*Energ_au/elec, &
 !endif
 enddo
 
+if ( noMat .eq. "n" ) then
 do i=1,size(matrices)
 write(matrices(i),*)
 enddo
+endif
 
 if (n .le. nQDA+nQDB) then
 write(Etr_0_f,form_arr) aR(n)*1.d9, (Ham(i,i)*Energ_au/elec, i=0,nstates-1)
@@ -94,13 +110,14 @@ enddo
 
 do i=0,nstates-1
 do j=i+1,nstates-1
-haml(i,j)=TransHam_ei(i,j) 
-haml(j,i)=TransHam_ei(j,i)
+haml(i,j)=TransHam_ei(i,j)
+haml(j,i)=haml(i,j)
 enddo
 enddo
 
 do i=0,nstates-1
 haml(i,i)=lambda(i)
+!write(6,*) i, (haml(i,j),j=0,nstates-1)
 enddo
 
 !!!!!Liouvillian
@@ -108,11 +125,11 @@ do k=0,nstates-1
 do l=0,nstates-1
 do i=0,nstates-1
 !!!!!Commutator [H,Eij]
-xliou(k,l,i,l) = xliou(k,l,i,l) + haml(i,k)
+xliou(k,l,i,l) = xliou(k,l,i,l) + dcmplx(haml(i,k),0._dp)
 !print*, k,l,i,l,Ham_l(i,k),xliou(k,l,i,l)
 enddo
 do j=0,nstates-1
-xliou(k,l,k,j) = xliou(k,l,k,j) - haml(l,j)
+xliou(k,l,k,j) = xliou(k,l,k,j) - dcmplx(haml(l,j),0._dp)
 enddo
 enddo
 enddo
@@ -157,8 +174,11 @@ enddo
 enddo
 enddo
 
+!lfield(0,6) = -1.e0_dp*lfield(0,6)
+!lfield(6,0) = lfield(0,6)
+
 !do l=0,nstates2-1
-!write(6,'(81f5.2)') (lfield(l,k), k=0,nstates2-1)
+!write(6,'(i2, 9f18.12)') i, (lfield(l,j), j=0,nstates2-1)
 !enddo
 
 !xlfield = dcmplx(lfield,0.e0_dp)
@@ -198,7 +218,12 @@ xc_ei = dcmplx(0.e0_dp,0.0e0_dp)
 xc_L = dcmplx(0.e0_dp,0.0e0_dp)
 xc(:,0) = xc0(:)
 xc_ei(:,0) = xc0(:)
-xc_L(:,0) = xc0(:)
+xc_L(0,0) = dcmplx(1.e0_dp,0.0e0_dp)
+
+!do i=0,nstates2-1
+!write(6,*) i, xc_L(i,0), xc_L(i,1)
+!enddo
+!xc_rho(0,0,0) = 1.e0_dp
 
 call RK_0_ei
 
@@ -240,7 +265,7 @@ time = t*timestep
 powtemp = 0.e0_dp
 
 do j=0,nstates-1
-pow_s(n,t) = pow_s(n,t) + 2_dp * sum(TransHam_ei(j,:) * dreal(dconjg(xc_ei(j,t))*xc_ei(:,t)))
+pow_s(n,t) = pow_s(n,t) + 2._dp * sum(TransHam_ei(j,:) * dreal(dconjg(xc_ei(j,t))*xc_ei(:,t)))
 enddo
 
 pow(t) = pow(t) + pow_s(n,t)
@@ -248,9 +273,20 @@ pow(t) = pow(t) + pow_s(n,t)
 
 if ( inbox .eq. 'y' ) then
 do pol=1,npol
-pow_pol(pol,t) = pow_pol(pol,t) + dcmplx(pow_s(n,t)/nsys,0.d0)*&
-                  exp(im*dot_product(l1(pol)*k_1(:)+l2(pol)*k_2(:)+l3(pol)*k_3(:),Dcenter(pol,:)))
+pow_pol(pol,t) = pow_pol(pol,t) + dcmplx(pow_s(n,t),0.d0)*&
+                  exp(-im*dcmplx(dot_product(l1(pol)*k_1(:)+l2(pol)*k_2(:)+l3(pol)*k_3(:),Dcenter(n,:)),0.e0_dp))
 enddo
+
+!off diagonal convergence of PM signal
+do pol=1,npol
+if ( pol .ne. 41) then
+pow_pol_conv(t) = pow_pol_conv(t) + dcmplx(pow_s(n,t),0.d0)*&
+                     exp(-im*dcmplx(dot_product(l1(pol)*k_1(:)+l2(pol)*k_2(:)+l3(pol)*k_3(:),Dcenter(n,:)),0.e0_dp))* &
+                  exp(-im*dcmplx(dot_product((l1(pol)*k_1(:)+l2(pol)*k_2(:)+l3(pol)*k_3(:))-&
+                                             (l1(41) *k_1(:)+l2(41) *k_2(:)+l3(41) *k_3(:)),Dcenter(n,:)),0.e0_dp))
+endif
+enddo
+
 endif
 
 if (singleDS .eq. 'y' ) then
@@ -266,4 +302,5 @@ endif
 deallocate(TransHam,TransHam_ei_l,TransHam_l,TransHam_d,TransHam_ei,Mat,Matx,Maty,Matz,Ham,Ham_l,Ham_0,Ham_dir,Ham_ex,Ham_ei,haml)
 deallocate(Transvec,TransMat_ei,lambda,xc,k1,k2,k3,k4,k5,k6,k7,k8,c0,xc_ei,xc_L,xc0,pop)
 deallocate(k1_L,k2_L,k3_L,k4_L,k5_L,k6_L,k7_L,k8_L)
-deallocate(merge_diag,merge_odiag,icol,irow,xliou,lfield,xlfield)
+deallocate(merge_diag,merge_odiag,icol,irow,xliou,lfield,lfield2)
+deallocate(xc_rho,k1_rho,k2_rho,k3_rho,k4_rho,k5_rho,k6_rho,k7_rho,k8_rho)

@@ -12,15 +12,15 @@ implicit none
    character*64 :: Re_c, Im_c, syst_n, Re_c_l, Im_c_L, cov, cov2, Pop_c_L
    character*1 :: o_Norm, o_Over, o_Coul, o_DipS, o_Osci, o_Exti, o_DipD, dyn, hamilt, get_ei, finest, get_sp
    character*1 :: TDM_ee, Dyn_0, Dyn_ei, inbox, Dyn_L,doFT,CEP1,CEP2,CEP3,singleFT,nofiles, singleDS, doCovar,doFT_s,doAbs
-   character*1 :: rdm_ori
+   character*1 :: rdm_ori, noMat
    integer :: Pulse_f,Tmat_0_f,Tmat_ei_f,Tmat_x_f,Tmat_y_f,Tmat_z_f,H_0_f,H_dir_f,H_ex_f,H_JK_f,TransAbs
    integer :: popc_0_f,popc_ei_f,norm_0_f,norm_ei_f,Re_c_ei_f,Im_c_ei_f,Re_c_0_f,Im_c_0_f,TDip_ei_f,tmp, nbands,Liou_f
    integer :: Re_c_L_f,Im_c_L_f,H_ei_f,Etr_0_f,Etr_ei_f,Abs_imp_f, t2, DipSpec, pol, npol, P_Match_f, DipSpec_R_f,DipSpec_NR_f
    character*64 :: form_mat,form_arr,form_abs,form_pop,form_com,form_TDM,form1,form_com_L, form_DipSpec, form_pop_L
    integer :: syst, ndots, n, rmin, rmax, nsys, npulses, nstates, ntime,i,j,k,l,t,lwork, info, idlink, threads, nQDA, nQDB
    integer :: nhomoA,nhomoB,nhetero,totsys,ndim,nQD, EminID,EmaxID,Estep,nmax,io,abso, kc, kl, nstates2, DipSpec_s
-   integer :: TransAbs_NR, TransAbs_R, TransAbs_s, nFT, FTpow, t_ana, f_ana, Pop_c_L_f, TransAbs_P
-   integer,allocatable :: seed(:),icol(:,:),irow(:,:)
+   integer :: TransAbs_NR, TransAbs_R, TransAbs_s, nFT, FTpow, t_ana, f_ana, Pop_c_L_f, TransAbs_P, ierr, liworku, lworku
+   integer,allocatable :: seed(:),icol(:,:),irow(:,:),iwork2(:)
    real(dp) :: a13_1d_he,a13_2d_he,a13_3d_he,a13_4d_he,a15_1d_he,a15_2d_he,a15_3d_he,a15_4d_he,a17_1d_he,a17_2d_he,a17_3d_he,&
                a17_4d_he,a24_1d_he,a24_2d_he,a24_3d_he,a24_4d_he,a26_1d_he,a26_2d_he,a26_3d_he,a26_4d_he,a28_1d_he,a28_2d_he,&
                a28_3d_he,a28_4d_he,a35_1d_he,a35_2d_he,a35_3d_he,a35_4d_he,a37_1d_he,a37_2d_he,a37_3d_he,a37_4d_he,a46_1d_he,&
@@ -49,7 +49,7 @@ implicit none
    real(dp) :: tpz1,tpz2,tpz3,tpz4,tpz5,tpz6,tpz7,tpz8
    real(dp) :: aA, aB, me, mh, eps, epsout, V0, omegaLO, rhoe, rhoh, slope, V0eV, minr, maxr, rsteps, side, link
    real(dp) :: sigma_conv,Emin,Emax,x,w1,w2,w,wstep,powtemp,time_FFT, FTscale
-   real(dp) :: vertex, zbase, alphae, alphah1, alphah2, betae, betah1, betah2
+   real(dp) :: vertex, zbase, alphae, alphah1, alphah2, betae, betah1, betah2, rdm1, rdm2
    real(dp) :: dispQD, displink, rdmlinker, rdmQDA, rdmQDB, t01, t02, t03, timestep, totaltime, distQD, Kpp, Dsop, Kp
    real(dp) :: omega01, omega02, omega03, phase01, phase02, phase03, width01, width02, width03, Ed01, Ed02, Ed03
    real(dp) :: pulse1, pulse2, pulse3, test, time, cnorm, cnormabs, cnormconj, cnorm2, cnorm2_ei, Kas, Kbs, Kcs, Dso1, Dso2, Dxf
@@ -62,30 +62,32 @@ implicit none
    real(dp),allocatable :: ExctCoef_h1e(:), ExctCoef_h2e(:), Ham(:,:), E0(:), c0(:), TransHam(:,:), Hamt(:,:,:), c(:,:)
    real(dp),allocatable :: TransMat_ei(:,:), TransHam0(:,:), Ham_0(:), Ham_dir(:,:), Ham_ex(:,:), Ham_ei(:,:), Ham_l(:,:), haml(:,:)
    real(dp),allocatable :: TransDip_Ana_h1h2(:), TransHam_ei(:,:), Mat(:,:), QDcoor(:,:), Dcenter(:,:), Pe1(:), Pe2(:), Pe3(:)
-   real(dp),allocatable :: TransHam_d(:,:,:), TransHam_l(:,:,:), TransHam_ei_l(:,:,:), k_1(:), k_2(:), k_3(:) 
-   real(dp),allocatable :: Matx(:,:), Maty(:,:), Matz(:,:),spec(:),dipole(:,:), lfield(:,:),xliou(:,:,:,:)
+   real(dp),allocatable :: TransHam_d(:,:,:), TransHam_l(:,:,:), TransHam_ei_l(:,:,:), k_1(:), k_2(:), k_3(:), work1(:), work2(:)
+   real(dp),allocatable :: Matx(:,:), Maty(:,:), Matz(:,:),spec(:),dipole(:,:)
    real(dp),allocatable :: pow(:),pow_gaus(:),pulses(:), pow_s(:,:), pow_gaus_s(:,:), pulses_FFT(:)
-   real(dp),allocatable :: Scov(:,:), pop(:,:),merge_diag(:,:),merge_odiag(:,:)
-   complex(8) :: ct1, ct2, ct3, ct4, xt01, xt02, xt03, xhbar, im, xwidth, xomega , xEd, xh, xphase, xtime, xhbar_au
-   complex(8) :: integPol, integPol_diff
-   complex(8),allocatable :: xHam(:,:) , xHamt(:,:,:), xTransHam(:,:), xE0(:), xHamtk2(:,:,:), xHamtk3(:,:,:), xHamtk4(:,:,:)
-   complex(8),allocatable :: xc0(:), xc(:,:), xc_ei(:,:), xcnew(:,:), k1(:), k2(:), k3(:) , k4(:), xHam_ei(:,:)
-   complex(8),allocatable :: k1_L(:), k2_L(:), k3_L(:) , k4_L(:),  k5_L(:), k6_L(:), k7_L(:) , k8_L(:), xpow_pol(:,:)
-   complex(8),allocatable :: dk1(:), dk2(:), dk3(:) , dk4(:), k5(:), k6(:), k7(:) , k8(:), pow_pol(:,:), pow_pol_gaus(:,:)
-   complex(8),allocatable :: xc_ei_av(:,:), xctemp(:),xlfield(:,:),xc_L(:,:), xpow_gaus(:),xpulse(:),wft(:),wftp(:),wftf(:),xhugo(:)
-   complex(8),allocatable :: wft_pol(:,:),wftf_pol(:,:), pow_pol_diff(:), wft_s(:,:), wftf_s(:,:), xpow_gaus_s(:), xpulse2(:)
+   real(dp),allocatable :: Scov(:,:), pop(:,:),merge_diag(:,:),merge_odiag(:,:), lfield(:,:), lfield2(:,:)
+ complex(8) :: ct1, ct2, ct3, ct4, xt01, xt02, xt03, xhbar, im, xwidth, xomega , xEd, xh, xphase, xtime, xhbar_au
+ complex(8) :: integPol, integPol_diff, integPolconv
+ complex(8),allocatable :: xHam(:,:) , xHamt(:,:,:), xTransHam(:,:), xE0(:), xHamtk2(:,:,:), xHamtk3(:,:,:), xHamtk4(:,:,:)
+ complex(8),allocatable :: xc0(:), xc(:,:), xc_ei(:,:), xcnew(:,:), k1(:), k2(:), k3(:) , k4(:), xHam_ei(:,:), pow_pol_conv(:)
+ complex(8),allocatable :: k1_L(:), k2_L(:), k3_L(:) , k4_L(:),  k5_L(:), k6_L(:), k7_L(:) , k8_L(:), xpow_pol(:,:),xliou(:,:,:,:)
+ complex(8),allocatable :: dk1(:), dk2(:), dk3(:) , dk4(:), k5(:), k6(:), k7(:) , k8(:), pow_pol(:,:), pow_pol_gaus(:,:)
+ complex(8),allocatable :: xc_ei_av(:,:), xctemp(:),xlfield(:,:),xc_L(:,:), xpow_gaus(:),xpulse(:),wft(:),wftp(:),wftf(:),xhugo(:)
+ complex(8),allocatable :: wft_pol(:,:),wftf_pol(:,:), pow_pol_diff(:), wft_s(:,:), wftf_s(:,:), xpow_gaus_s(:), xpulse2(:)
+ complex(8),allocatable :: k1_rho(:,:), k2_rho(:,:), k3_rho(:,:), k4_rho(:,:), k5_rho(:,:), k6_rho(:,:), k7_rho(:,:), k8_rho(:,:)
+ complex(8),allocatable :: xc_rho(:,:,:)
 
 contains 
 
 subroutine getVariables
 
-NAMELIST /outputs/    inbox,rdm_ori,get_sp,get_ei,Dyn_0,Dyn_ei,Dyn_L,TDM_ee,doAbs,doFT,singleDS,doFT_s,singleFT,nofiles,doCovar
-NAMELIST /elecSt/     model,me,mh,eps,epsout,V0eV,omegaLO,slope,side
-NAMELIST /fineStruc/  Kas,Kbs,Kcs,Kpp,Dso1,Dso2,Dxf
-NAMELIST /pulses/     integ,npulses,t01,t02,t03,timestep,totaltime,omega01,omega02,omega03,phase01,phase02,phase03,&
-                      width01,width02,width03,Ed01,Ed02,Ed03,CEP1,CEP2,CEP3,pgeom,vertex
-NAMELIST /syst/       nQDA,nQDB,nhomoA,nhomoB,nhetero,dispQD,idlink,aA,aB     
-NAMELIST /FT/         FTpow
+NAMELIST /outputs/   inbox,rdm_ori,get_sp,get_ei,Dyn_0,Dyn_ei,Dyn_L,TDM_ee,doAbs,doFT,singleDS,doFT_s,singleFT,nofiles,noMat,doCovar
+NAMELIST /elecSt/    model,me,mh,eps,epsout,V0eV,omegaLO,slope,side
+NAMELIST /fineStruc/ Kas,Kbs,Kcs,Kpp,Dso1,Dso2,Dxf
+NAMELIST /pulses/    integ,npulses,t01,t02,t03,timestep,totaltime,omega01,omega02,omega03,phase01,phase02,phase03,&
+                     width01,width02,width03,Ed01,Ed02,Ed03,CEP1,CEP2,CEP3,pgeom,vertex
+NAMELIST /syst/      nQDA,nQDB,nhomoA,nhomoB,nhetero,dispQD,idlink,aA,aB     
+NAMELIST /FT/        FTpow
 
 open(150,file='QD_quest.def',form='formatted')
 read(150,NML=outputs)
@@ -113,9 +115,11 @@ t03        =  t03*1.e-15_dp/t_au       !t03*1.d-15/t_au
 width01    =  width01*1.e-15_dp/t_au     !width*1.d-15/t_au
 width02    =  width02*1.e-15_dp/t_au     !width*1.d-15/t_au
 width03    =  width03*1.e-15_dp/t_au     !width*1.d-15/t_au
+!omega01    =  0.086e0_dp !omega01*t_au      !omega*1.d15*t_au
 omega01    =  omega01*t_au      !omega*1.d15*t_au
 omega02    =  omega02*t_au      !omega*1.d15*t_au
 omega03    =  omega03*t_au      !omega*1.d15*t_au
+!Ed01       =  0.001e0_dp !Ed01/E_au        !0.024 !Ed/E_au
 Ed01       =  Ed01/E_au        !0.024 !Ed/E_au
 Ed02       =  Ed02/E_au        !0.024 !Ed/E_au
 Ed03       =  Ed03/E_au        !0.024 !Ed/E_au
@@ -127,18 +131,24 @@ call random_number(phase01)
 phase01      =  phase01 * 2.e0_dp * pi
 elseif ( CEP1 .eq. 'p' ) then
 phase01      =  pi
+elseif ( CEP1 .eq. '0' ) then
+phase01      =  0.e0_dp
 endif
 if ( CEP2 .eq. 'r' ) then 
 call random_number(phase02) 
 phase02      =  phase02 * 2.e0_dp * pi
 elseif ( CEP2 .eq. 'p' ) then
 phase02      =  pi
+elseif ( CEP2 .eq. '0' ) then
+phase02      =  0.e0_dp
 endif
 if ( CEP3 .eq. 'r' ) then 
 call random_number(phase03) 
 phase03      =  phase03 * 2.e0_dp * pi
 elseif ( CEP3 .eq. 'p' ) then
 phase03      =  pi
+elseif ( CEP3 .eq. '0' ) then
+phase03      =  0.e0_dp
 endif
 
 allocate(k_1(3),k_2(3),k_3(3),Pe1(3),Pe2(3),Pe3(3),source=0.e0_dp)
@@ -316,7 +326,6 @@ V0e(n)   =-1.e0_dp*(-3.49e0_dp+2.47e0_dp*(2.e9_dp*aR(n))**(-1.32e0_dp))*elec
 V0h(n)   =-1.e0_dp*(-5.23e0_dp-0.74e0_dp*(2.e9_dp*aR(n))**(-0.95e0_dp))*elec
 enddo
 
-
 if ( inbox .eq. 'y' ) then
 
 open(56,file='box-dimers.xyz',form='formatted',action='read')
@@ -329,8 +338,8 @@ Dcenter(n,1) = (QDcoor(n,1) + QDcoor(n+ndim,1))/2.e0_dp
 Dcenter(n,2) = (QDcoor(n,2) + QDcoor(n+ndim,2))/2.e0_dp
 Dcenter(n,3) = (QDcoor(n,3) + QDcoor(n+ndim,3))/2.e0_dp
 enddo
-QDcoor(:,:) = QDcoor(:,:) * 1.e-10_dp
-Dcenter(:,:) = Dcenter(:,:) * 1.e-10_dp
+QDcoor = QDcoor * 1.e-10_dp
+Dcenter = Dcenter * 1.e-10_dp
 
 endif
 

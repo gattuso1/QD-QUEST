@@ -482,15 +482,8 @@ Ham = Ham/Energ_au
 Ham_dir = Ham_dir/Energ_au
 Ham_ex = Ham_ex/Energ_au
 
-!if ( inbox .eq. "y" ) then
+if ( rdm_ori .eq. "y" ) then
 
-!if ( TDM_ee .eq. 'n') then
-!TransHam(0,1) = TransDip_Ana_h1e(n)
-!TransHam(0,2) = TransDip_Ana_h2e(n)
-!do i=0,nstates-1
-!TransHam(i,0) = TransHam(0,i)
-!enddo
-!elseif ( TDM_ee .eq. 'y') then
 TransHam_l(0,1,:) = vector(TransDip_Ana_h1e(n))
 TransHam_l(0,2,:) = vector(TransDip_Ana_h2e(n))
 TransHam_l(1,2,:) = vector(TransDip_Ana_h1h2(n))
@@ -500,31 +493,24 @@ do j=i+1,nstates-1
 TransHam_l(j,i,:) = TransHam_l(i,j,:)
 enddo
 enddo
-!endif
 
-!else 
-!
-!if ( TDM_ee .eq. 'n') then
-!TransHam(0,1) = TransDip_Ana_h1e(n)
-!TransHam(0,2) = TransDip_Ana_h2e(n)
-!do i=0,nstates-1
-!TransHam(i,0) = TransHam(0,i)
-!enddo
-!elseif ( TDM_ee .eq. 'y') then
-!TransHam(0,1) = TransDip_Ana_h1e(n)
-!TransHam(0,2) = TransDip_Ana_h2e(n)
-!TransHam(1,2) = TransDip_Ana_h1h2(n)
-!
-!do i=0,nstates-1
-!do j=i+1,nstates-1
-!TransHam(j,i) = TransHam(i,j)
-!enddo
-!enddo
-!endif
-!
-!endif
+TransHam_l = TransHam_l/D_to_au
+
+elseif  ( rdm_ori .eq. "n" ) then
+
+TransHam(0,1) = TransDip_Ana_h1e(n)
+TransHam(0,2) = TransDip_Ana_h2e(n)
+TransHam(1,2) = TransDip_Ana_h1h2(n)
+
+do i=0,nstates-1
+do j=i+1,nstates-1
+TransHam(j,i) = TransHam(i,j)
+enddo
+enddo
 
 TransHam = TransHam/D_to_au
+
+endif
 
 end subroutine make_Ham_singl
 

@@ -23,8 +23,6 @@ real(kind=8) function r8_uniform_01(seed)
   return
 end function r8_uniform_01
 
-
-
 real(kind=8) function r8_normal_ab(a,b,seed)
   implicit none
 
