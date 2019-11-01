@@ -1,8 +1,8 @@
 #!/bin/bash
 
 gfortran -c Constants_au.f90 
-gfortran -c Variables_au.f90 
 gfortran -c Vectors.f90 
+gfortran -c Variables_au.f90 
 gfortran -c Normal.f90 
 gfortran -c Integrals.f90 
 gfortran -c Make_Ham.f90 

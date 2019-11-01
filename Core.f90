@@ -263,6 +263,7 @@ do t=0,ntime
 time = t*timestep
 
 powtemp = 0.e0_dp
+pow_pol_conv = dcmplx(0.d0,0.d0)
 
 do j=0,nstates-1
 pow_s(n,t) = pow_s(n,t) + 2._dp * sum(TransHam_ei(j,:) * dreal(dconjg(xc_ei(j,t))*xc_ei(:,t)))
@@ -271,23 +272,25 @@ enddo
 pow(t) = pow(t) + pow_s(n,t)
 
 
-if ( inbox .eq. 'y' ) then
-do pol=1,npol
-pow_pol(pol,t) = pow_pol(pol,t) + dcmplx(pow_s(n,t),0.d0)*&
-                  exp(-im*dcmplx(dot_product(l1(pol)*k_1(:)+l2(pol)*k_2(:)+l3(pol)*k_3(:),Dcenter(n,:)),0.e0_dp))
-enddo
-
-!off diagonal convergence of PM signal
-do pol=1,npol
-if ( pol .ne. 41) then
-pow_pol_conv(t) = pow_pol_conv(t) + dcmplx(pow_s(n,t),0.d0)*&
-                     exp(-im*dcmplx(dot_product(l1(pol)*k_1(:)+l2(pol)*k_2(:)+l3(pol)*k_3(:),Dcenter(n,:)),0.e0_dp))* &
-                  exp(-im*dcmplx(dot_product((l1(pol)*k_1(:)+l2(pol)*k_2(:)+l3(pol)*k_3(:))-&
-                                             (l1(41) *k_1(:)+l2(41) *k_2(:)+l3(41) *k_3(:)),Dcenter(n,:)),0.e0_dp))
-endif
-enddo
-
-endif
+!if ( inbox .eq. 'y' ) then
+!do pol=1,npol
+!!pow_pol(pol,t) = pow_pol(pol,t) + dcmplx(pow_s(n,t),0.d0)*&
+!pow_pol(pol,t) = exp(-im*dcmplx(dot_product(l1(pol)*k_1(:)+l2(pol)*k_2(:)+l3(pol)*k_3(:),Dcenter(n,:)),0.e0_dp))
+!enddo
+!
+!!off diagonal convergence of PM signal
+!do pol=1,npol
+!if ( pol .ne. 41) then
+!!pow_pol_conv(t) = pow_pol_conv(t) + dcmplx(pow_s(n,t),0.d0)*&
+!pow_pol_conv(t) = pow_pol_conv(t) + & !exp(-im*dcmplx(dot_product(l1(pol)*k_1(:)+l2(pol)*k_2(:)+l3(pol)*k_3(:),Dcenter(n,:)),0.e0_dp))*&
+!                  exp(-im*dcmplx(dot_product((l1(pol)*k_1(:)+l2(pol)*k_2(:)+l3(pol)*k_3(:))-&
+!                                             (l1(41) *k_1(:)+l2(41) *k_2(:)+l3(41) *k_3(:)),Dcenter(n,:)),0.e0_dp))
+!endif
+!enddo
+!
+!!write(6,*) pow_pol(41,t), pow_pol_conv(t)
+!
+!endif
 
 if (singleDS .eq. 'y' ) then
 write(DipSpec_s,form_DipSpec) time*t_au, pow_s(n,t) 

@@ -3,6 +3,7 @@ module Variables_au
 use omp_lib
 use Constants_au
 use Normal
+use Vectors
 
 implicit none
 
@@ -13,13 +14,14 @@ implicit none
    character*1 :: o_Norm, o_Over, o_Coul, o_DipS, o_Osci, o_Exti, o_DipD, dyn, hamilt, get_ei, finest, get_sp
    character*1 :: TDM_ee, Dyn_0, Dyn_ei, inbox, Dyn_L,doFT,CEP1,CEP2,CEP3,singleFT,nofiles, singleDS, doCovar,doFT_s,doAbs
    character*1 :: rdm_ori, noMat
-   integer :: Pulse_f,Tmat_0_f,Tmat_ei_f,Tmat_x_f,Tmat_y_f,Tmat_z_f,H_0_f,H_dir_f,H_ex_f,H_JK_f,TransAbs
+   integer :: Pulse_f,Tmat_0_f,Tmat_ei_f,Tmat_x_f,Tmat_y_f,Tmat_z_f,H_0_f,H_dir_f,H_ex_f,H_JK_f,TransAbs, DipSpec_conv_f
    integer :: popc_0_f,popc_ei_f,norm_0_f,norm_ei_f,Re_c_ei_f,Im_c_ei_f,Re_c_0_f,Im_c_0_f,TDip_ei_f,tmp, nbands,Liou_f
    integer :: Re_c_L_f,Im_c_L_f,H_ei_f,Etr_0_f,Etr_ei_f,Abs_imp_f, t2, DipSpec, pol, npol, P_Match_f, DipSpec_R_f,DipSpec_NR_f
    character*64 :: form_mat,form_arr,form_abs,form_pop,form_com,form_TDM,form1,form_com_L, form_DipSpec, form_pop_L
    integer :: syst, ndots, n, rmin, rmax, nsys, npulses, nstates, ntime,i,j,k,l,t,lwork, info, idlink, threads, nQDA, nQDB
-   integer :: nhomoA,nhomoB,nhetero,totsys,ndim,nQD, EminID,EmaxID,Estep,nmax,io,abso, kc, kl, nstates2, DipSpec_s
+   integer :: nhomoA,nhomoB,nhetero,totsys,ndim,nQD, EminID,EmaxID,Estep,nmax,io,abso, kc, kl, nstates2, DipSpec_s, pol2
    integer :: TransAbs_NR, TransAbs_R, TransAbs_s, nFT, FTpow, t_ana, f_ana, Pop_c_L_f, TransAbs_P, ierr, liworku, lworku
+   integer :: scos_ssin
    integer,allocatable :: seed(:),icol(:,:),irow(:,:),iwork2(:)
    real(dp) :: a13_1d_he,a13_2d_he,a13_3d_he,a13_4d_he,a15_1d_he,a15_2d_he,a15_3d_he,a15_4d_he,a17_1d_he,a17_2d_he,a17_3d_he,&
                a17_4d_he,a24_1d_he,a24_2d_he,a24_3d_he,a24_4d_he,a26_1d_he,a26_2d_he,a26_3d_he,a26_4d_he,a28_1d_he,a28_2d_he,&
@@ -65,9 +67,9 @@ implicit none
    real(dp),allocatable :: TransHam_d(:,:,:), TransHam_l(:,:,:), TransHam_ei_l(:,:,:), k_1(:), k_2(:), k_3(:), work1(:), work2(:)
    real(dp),allocatable :: Matx(:,:), Maty(:,:), Matz(:,:),spec(:),dipole(:,:)
    real(dp),allocatable :: pow(:),pow_gaus(:),pulses(:), pow_s(:,:), pow_gaus_s(:,:), pulses_FFT(:)
-   real(dp),allocatable :: Scov(:,:), pop(:,:),merge_diag(:,:),merge_odiag(:,:), lfield(:,:), lfield2(:,:)
+   real(dp),allocatable :: Scov(:,:), pop(:,:),merge_diag(:,:),merge_odiag(:,:), lfield(:,:), lfield2(:,:), scos(:), ssin(:)
  complex(8) :: ct1, ct2, ct3, ct4, xt01, xt02, xt03, xhbar, im, xwidth, xomega , xEd, xh, xphase, xtime, xhbar_au
- complex(8) :: integPol, integPol_diff, integPolconv
+ complex(8) :: integPol, integPol_diff, integPolconv, pow_41, pow_41_conv
  complex(8),allocatable :: xHam(:,:) , xHamt(:,:,:), xTransHam(:,:), xE0(:), xHamtk2(:,:,:), xHamtk3(:,:,:), xHamtk4(:,:,:)
  complex(8),allocatable :: xc0(:), xc(:,:), xc_ei(:,:), xcnew(:,:), k1(:), k2(:), k3(:) , k4(:), xHam_ei(:,:), pow_pol_conv(:)
  complex(8),allocatable :: k1_L(:), k2_L(:), k3_L(:) , k4_L(:),  k5_L(:), k6_L(:), k7_L(:) , k8_L(:), xpow_pol(:,:),xliou(:,:,:,:)
@@ -105,7 +107,7 @@ rhoh       = 1.0e0_dp/sqrt((2.e0_dp*mh*omegaLO)/hbar)
 V0         = V0eV*elec
 npol       = 44
 
-if ( ( Dyn_0 .eq. 'y' ) .or. ( Dyn_ei .eq. 'y' ) ) then
+!if ( ( Dyn_0 .eq. 'y' ) .or. ( Dyn_ei .eq. 'y' ) ) then
 
 timestep   =  timestep*1.e-15_dp/t_au  !timestep*1.d-15/t_au
 totaltime  =  totaltime*1.e-15_dp/t_au !totaltime*1.d-15/t_au
@@ -195,15 +197,18 @@ k_3(2) = (2.e0_dp * pi / (cl/(omega03/t_au))) * ( 1000.e0_dp      ) / (sqrt((zba
 k_3(3) = (2.e0_dp * pi / (cl/(omega03/t_au))) * ( zbase / 2.e0_dp ) / (sqrt((zbase / 2.e0_dp)**2+(1000.e0_dp)**2& 
 +(zbase / 2.e0_dp)**2))
 
-Pe1(1) =  ( zbase / 2.e0_dp ) / (sqrt((zbase / 2.e0_dp)**2+(1000.e0_dp)**2+(zbase / 2.e0_dp)**2))
+Pe1(1) =  ( -zbase / 2.e0_dp ) / (sqrt((zbase / 2.e0_dp)**2+(1000.e0_dp)**2+(zbase / 2.e0_dp)**2))
 Pe1(2) =  ( 1000.e0_dp      ) / (sqrt((zbase / 2.e0_dp)**2+(1000.e0_dp)**2+(zbase / 2.e0_dp)**2))
-Pe1(3) =  ( zbase / 2.e0_dp ) / (sqrt((zbase / 2.e0_dp)**2+(1000.e0_dp)**2+(zbase / 2.e0_dp)**2))
-Pe2(1) =  ( zbase / 2.e0_dp ) / (sqrt((zbase / 2.e0_dp)**2+(1000.e0_dp)**2+(zbase / 2.e0_dp)**2))  
+Pe1(3) =  ( -zbase / 2.e0_dp ) / (sqrt((zbase / 2.e0_dp)**2+(1000.e0_dp)**2+(zbase / 2.e0_dp)**2))
+Pe2(1) =  ( -zbase / 2.e0_dp ) / (sqrt((zbase / 2.e0_dp)**2+(1000.e0_dp)**2+(zbase / 2.e0_dp)**2))  
 Pe2(2) =  ( 1000.e0_dp      ) / (sqrt((zbase / 2.e0_dp)**2+(1000.e0_dp)**2+(zbase / 2.e0_dp)**2))
 Pe2(3) =  ( zbase / 2.e0_dp ) / (sqrt((zbase / 2.e0_dp)**2+(1000.e0_dp)**2+(zbase / 2.e0_dp)**2))
 Pe3(1) =  ( zbase / 2.e0_dp ) / (sqrt((zbase / 2.e0_dp)**2+(1000.e0_dp)**2+(zbase / 2.e0_dp)**2))
 Pe3(2) =  ( 1000.e0_dp      ) / (sqrt((zbase / 2.e0_dp)**2+(1000.e0_dp)**2+(zbase / 2.e0_dp)**2))
 Pe3(3) =  ( zbase / 2.e0_dp ) / (sqrt((zbase / 2.e0_dp)**2+(1000.e0_dp)**2+(zbase / 2.e0_dp)**2))
+
+!write(6,*) Pe1(1) , Pe1(2) , Pe1(3), Pe2(1) , Pe2(2) , Pe2(3), Pe3(1) , Pe3(2) , Pe3(3)
+!write(6,*) k_1(1) , k_1(2) , k_1(3), k_2(1) , k_2(2) , k_2(3), k_3(1) , k_3(2) , k_3(3)
 
 elseif ( pgeom .eq. 'triang' ) then
 
@@ -257,7 +262,7 @@ Pe3(1) = 1.e0_dp/sqrt(3.e0_dp)
 Pe3(2) = 1.e0_dp/sqrt(3.e0_dp)
 Pe3(3) = 1.e0_dp/sqrt(3.e0_dp)
 
-endif
+!endif
 
 endif
 
@@ -318,28 +323,24 @@ elseif ( get_sp .eq. 'y' ) then
    enddo
 endif
 
-do n=1,totsys
-epsin(n) = 1.0e0_dp + (eps - 1.0e0_dp) / (1.0e0_dp + (0.75e-9_dp/(2.e0_dp*aR(n)))**1.2e0_dp)
-epsR(n)  = 1.0e0_dp/((1.0e0_dp/epsin(n))-((1.0e0_dp/epsin(n))-(1.0e0_dp/(epsin(n)+3.5e0_dp)))*&
-           (1.e0_dp-(exp(-(36e0_dp/35.e0_dp)*aR(n)/rhoe)+exp(-(36.e0_dp/35.e0_dp)*aR(n)/rhoh))/2.e0_dp))
-V0e(n)   =-1.e0_dp*(-3.49e0_dp+2.47e0_dp*(2.e9_dp*aR(n))**(-1.32e0_dp))*elec
-V0h(n)   =-1.e0_dp*(-5.23e0_dp-0.74e0_dp*(2.e9_dp*aR(n))**(-0.95e0_dp))*elec
-enddo
+!do n=1,totsys
+!epsin(n) = 1.0e0_dp + (eps - 1.0e0_dp) / (1.0e0_dp + (0.75e-9_dp/(2.e0_dp*aR(n)))**1.2e0_dp)
+!epsR(n)  = 1.0e0_dp/((1.0e0_dp/epsin(n))-((1.0e0_dp/epsin(n))-(1.0e0_dp/(epsin(n)+3.5e0_dp)))*&
+!           (1.e0_dp-(exp(-(36e0_dp/35.e0_dp)*aR(n)/rhoe)+exp(-(36.e0_dp/35.e0_dp)*aR(n)/rhoh))/2.e0_dp))
+!V0e(n)   =-1.e0_dp*(-3.49e0_dp+2.47e0_dp*(2.e9_dp*aR(n))**(-1.32e0_dp))*elec
+!V0h(n)   =-1.e0_dp*(-5.23e0_dp-0.74e0_dp*(2.e9_dp*aR(n))**(-0.95e0_dp))*elec
+!enddo
 
 if ( inbox .eq. 'y' ) then
 
-open(56,file='box-dimers.xyz',form='formatted',action='read')
-read(56,*) 
-read(56,*) 
+open(56,file='sphere.xyz')
+write(56,*) nint(totsys/2.e0_dp) 
+write(56,*) 
 do n = 1,nint(totsys/2.e0_dp)
-read(56,*) dummy, QDcoor(n,1), QDcoor(n,2), QDcoor(n,3)
-read(56,*) dummy, QDcoor(n+ndim,1), QDcoor(n+ndim,2), QDcoor(n+ndim,3)
-Dcenter(n,1) = (QDcoor(n,1) + QDcoor(n+ndim,1))/2.e0_dp
-Dcenter(n,2) = (QDcoor(n,2) + QDcoor(n+ndim,2))/2.e0_dp
-Dcenter(n,3) = (QDcoor(n,3) + QDcoor(n+ndim,3))/2.e0_dp
+Dcenter(n,:) = vectorin(1.e16_dp) 
+write(56,*) 'H', Dcenter(n,1), Dcenter(n,2), Dcenter(n,3) 
 enddo
-QDcoor = QDcoor * 1.e-10_dp
-Dcenter = Dcenter * 1.e-10_dp
+Dcenter = Dcenter * 1.e-9_dp 
 
 endif
 

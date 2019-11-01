@@ -1667,8 +1667,6 @@ pulse1*Pe1(1)*Ed01* cos(k_1(1)*Dcenter(n,1)+omega01*(t-t01)+phase01) * exp(-1.e0
 pulse2*Pe2(1)*Ed02* cos(k_2(1)*Dcenter(n,1)+omega02*(t-t02)+phase02) * exp(-1.e0_dp*((t-t02)**2.e0_dp/(2.e0_dp*width02**2.e0_dp)))+&
 pulse3*Pe3(1)*Ed03* cos(k_3(1)*Dcenter(n,1)+omega03*(t-t03)+phase03) * exp(-1.e0_dp*((t-t03)**2.e0_dp/(2.e0_dp*width03**2.e0_dp)))
 
-write(6,*) phase01, phase02
-
 end function pulsex
 
 real(dp) function pulsey(t)

@@ -73,6 +73,8 @@ allocate(pow_pol_gaus(npol,0:ntime+1))
 allocate(l1(npol))
 allocate(l2(npol))
 allocate(l3(npol))
+allocate(scos(npol),source=0.e0_dp)
+allocate(ssin(npol),source=0.e0_dp)
 
 if ( inbox .eq. 'y' ) then
 call get_phases
@@ -202,6 +204,8 @@ open(newunit=DipSpec     ,file='DipSpec.dat')
 open(newunit=P_Match_f   ,file='Phase_Match.dat')
 open(newunit=DipSpec_NR_f,file='DipSpec-NR.dat')
 open(newunit=DipSpec_R_f ,file='DipSpec-R.dat')
+open(newunit=DipSpec_conv_f ,file='DipSpec-conv.dat')
+open(newunit=scos_ssin   ,file='ScosSsin.dat')
 open(60,file='CoheTEST.dat')
 
 matrices = (/ Tmat_0_f,Tmat_ei_f,Tmat_x_f,Tmat_y_f,Tmat_z_f,H_0_f,H_dir_f,H_ex_f,H_JK_f,H_ei_f /)
@@ -271,202 +275,311 @@ endif
 timestep  = timestep  * t_au
 totaltime = totaltime * t_au
 
-do t=0,ntime
-
-time = t*timestep
-
-pow_gaus(t)=exp(-1.d0*((time-totaltime/2.d0)*timestep)**2.d0/(2.d0*(totaltime*timestep/15.d0)**2.d0))*(pow(t)/nsys)
-
-if ( doFT_s .eq. "y" ) then
-pow_gaus_s(:,t)=exp(-1.d0*((time-totaltime/2.d0)*timestep)**2.d0/(2.d0*(totaltime*timestep/15.d0)**2.d0))*pow_s(:,t)
-endif
-
-if ( inbox .eq. 'y' ) then
-pow_pol_gaus(:,t)=&
-   exp(-1.d0*((time-totaltime/2.d0)*timestep)**2.d0/(2.d0*(totaltime*timestep/15.d0)**2.d0))*(pow_pol(:,t)/nsys)
-write(DipSpec_NR_f,*) time, dreal(pow_pol(25,t)), dreal(pow_pol_gaus(25,t))
-write(DipSpec_R_f,*) time, dreal(pow_pol(41,t)), dreal(pow_pol_gaus(41,t))
-endif
-
-!if ( nofiles .eq. 'n' ) then
-write(DipSpec,*) time, pow(t), pow_gaus(t), pulses(t)
+!do t=0,ntime
+!
+!time = t*timestep
+!
+!pow_gaus(t)=exp(-1.d0*((time-totaltime/2.d0)*timestep)**2.d0/(2.d0*(totaltime*timestep/15.d0)**2.d0))*(pow(t)/nsys)
+!
+!if ( doFT_s .eq. "y" ) then
+!pow_gaus_s(:,t)=exp(-1.d0*((time-totaltime/2.d0)*timestep)**2.d0/(2.d0*(totaltime*timestep/15.d0)**2.d0))*pow_s(:,t)
 !endif
+!
+!if ( inbox .eq. 'y' ) then
+!pow_pol_gaus(:,t)=&
+!   exp(-1.d0*((time-totaltime/2.d0)*timestep)**2.d0/(2.d0*(totaltime*timestep/15.d0)**2.d0))*(pow_pol(:,t)/nsys)
+!write(DipSpec_NR_f,*) time, dreal(pow_pol(25,t)), dimag(pow_pol(25,t))
+!write(DipSpec_R_f,*) time, dreal(pow_pol(41,t)), dimag(pow_pol(41,t))
+!write(DipSpec_conv_f,*) time, dreal(pow_pol_conv(t)), dimag(pow_pol_conv(t)) 
+!endif
+!
+!!if ( nofiles .eq. 'n' ) then
+!write(DipSpec,*) time, pow(t), pow_gaus(t), pulses(t)
+!!endif
+!
+!enddo 
 
-enddo 
+!write(6,*) l1(41), l2(41), l3(41) 
+!write(6,*) l1(41)*Pe1(:), l2(41)*Pe2(:), l3(41)*Pe3(:)
 
 if ( inbox .eq. 'y' ) then
+do n=1,nsys
 
+!pow_41 = pow_41 + exp(-im*dcmplx(dot_product(l1(41)*k_1(:)+l2(41)*k_2(:)+l3(41)*k_3(:),Dcenter(n,:)),0.e0_dp))
+!pow_41 = pow_41 + exp(-im*dcmplx(dot_product(l1(41)*k_1(:)+l2(41)*k_2(:)+l3(41)*k_3(:),Dcenter(n,:)),0.e0_dp))
+pow_41 = pow_41 + exp(-im*dcmplx(dot_product(0.d0*Pe1(:)+0.d0*Pe2(:)+0.d0*Pe3(:),Dcenter(n,:)),0.e0_dp))
+!write(6,*) pow_41, exp(-im*dcmplx(dot_product(l1(41)*k_1(:)+l2(41)*k_2(:)+l3(41)*k_3(:),Dcenter(n,:)),0.e0_dp))
+
+!scos = scos + cos((1.d0/545.d-9)*(((l1(pol)-l1(41))*Pe1(1) + (l2(pol)-l2(41))*Pe2(1) + (l3(pol)-l3(41))*Pe3(1))*Dcenter(n,1) + &
+!((l1(pol)-l1(41))*Pe1(2) + (l2(pol)-l2(41))*Pe2(2) + (l3(pol)-l3(41))*Pe3(2))*Dcenter(n,2) + &
+!((l1(pol)-l1(41))*Pe1(3) + (l2(pol)-l2(41))*Pe2(3) + (l3(pol)-l3(41))*Pe3(3))*Dcenter(n,3)))
+!
+!ssin = ssin + sin((1.d0/545.d-9)*(((l1(pol)-l1(41))*Pe1(1) + (l2(pol)-l2(41))*Pe2(1) + (l3(pol)-l3(41))*Pe3(1))*Dcenter(n,1) + &
+!((l1(pol)-l1(41))*Pe1(2) + (l2(pol)-l2(41))*Pe2(2) + (l3(pol)-l3(41))*Pe3(2))*Dcenter(n,2) + &
+!((l1(pol)-l1(41))*Pe1(3) + (l2(pol)-l2(41))*Pe2(3) + (l3(pol)-l3(41))*Pe3(3))*Dcenter(n,3)))
+
+!write(6,*) n, (1.d0/545.d-9)*(((l1(41))*Pe1(1) + (l2(pol)-l2(41))*Pe2(1) + (l3(pol)-l3(41))*Pe3(1))*Dcenter(n,1) + &
+!((l1(41))*Pe1(2) + (l2(pol)-l2(41))*Pe2(2) + (l3(pol)-l3(41))*Pe3(2))*Dcenter(n,2) + &
+!((l1(41))*Pe1(3) + (l2(pol)-l2(41))*Pe2(3) + (l3(pol)-l3(41))*Pe3(3))*Dcenter(n,3)) - &
+!(1.d0/545.d-9)*(((l1(39))*Pe1(1) + (l2(pol)-l2(39))*Pe2(1) + (l3(pol)-l3(39))*Pe3(1))*Dcenter(n,1) + &
+!((l1(39))*Pe1(2) + (l2(pol)-l2(39))*Pe2(2) + (l3(pol)-l3(39))*Pe3(2))*Dcenter(n,2) + &
+!((l1(39))*Pe1(3) + (l2(pol)-l2(39))*Pe2(3) + (l3(pol)-l3(39))*Pe3(3))*Dcenter(n,3))
+
+!write(6,*) ((l1(27)-l1(41))*Pe1(1) + (l2(27)-l2(41))*Pe2(1) + (l3(27)-l3(41))*Pe3(1))*Dcenter(n,1), &
+!           ((l1(27)-l1(41))*Pe1(1) + (l2(27)-l2(41))*Pe2(1) + (l3(27)-l3(41))*Pe3(1))*Dcenter(n,2), &
+!           ((l1(27)-l1(41))*Pe1(1) + (l2(27)-l2(41))*Pe2(1) + (l3(27)-l3(41))*Pe3(1))*Dcenter(n,3)
+!write(6,*) ((l1(27)-l1(41))*Pe1(1) + (l2(27)-l2(41))*Pe2(1) + (l3(27)-l3(41))*Pe3(1)), &
+
+!write(6,*) (l1(27)-l1(41))*Pe1(1) + (l2(27)-l2(41))*Pe2(1) + (l3(27)-l3(41))*Pe3(1)
+
+!n, (1.d0/545.d-9)*(((l1(27)-l1(41))*Pe1(1) + (l2(27)-l2(41))*Pe2(1) + (l3(27)-l3(41))*Pe3(1))*Dcenter(n,1)+&
+!((l1(27)-l1(41))*Pe1(2) + (l2(27)-l2(41))*Pe2(2) + (l3(27)-l3(41))*Pe3(2))*Dcenter(n,2) + &
+!((l1(27)-l1(41))*Pe1(3) + (l2(27)-l2(41))*Pe2(3) + (l3(27)-l3(41))*Pe3(3))*Dcenter(n,3)), &
+!write(6,*) n, &
+!cos((1.d0/545.d-9)*(((l1(30)-l1(41))*Pe1(1) + (l2(30)-l2(41))*Pe2(1) + (l3(30)-l3(41))*Pe3(1))*Dcenter(n,1) + &
+!((l1(30)-l1(41))*Pe1(2) + (l2(30)-l2(41))*Pe2(2) + (l3(30)-l3(41))*Pe3(2))*Dcenter(n,2) + &
+!((l1(30)-l1(41))*Pe1(3) + (l2(30)-l2(41))*Pe2(3) + (l3(30)-l3(41))*Pe3(3))*Dcenter(n,3))), &
+!sin((1.d0/545.d-9)*(((l1(30)-l1(41))*Pe1(1) + (l2(30)-l2(41))*Pe2(1) + (l3(30)-l3(41))*Pe3(1))*Dcenter(n,1) + &
+!((l1(30)-l1(41))*Pe1(2) + (l2(30)-l2(41))*Pe2(2) + (l3(30)-l3(41))*Pe3(2))*Dcenter(n,2) + &
+!((l1(30)-l1(41))*Pe1(3) + (l2(30)-l2(41))*Pe2(3) + (l3(30)-l3(41))*Pe3(3))*Dcenter(n,3)))
+
+enddo
+
+!write(6,*) scos, ssin
+
+!off diagonal convergence of PM signal
 do pol=1,npol
-integPol = dcmplx(0.d0,0.d0)
-integPolconv = dcmplx(0.d0,0.d0)
-do t=0,ntime
-time = t*timestep
-integPol = integPol + (dcmplx(timestep,0.e0_dp)*(pow_pol(pol,t) + pow_pol(pol,t+1)))/2.e0_dp
-integPolconv = integPolconv + (dcmplx(timestep,0.e0_dp)*(pow_pol_conv(t) + pow_pol_conv(t+1)))/2.e0_dp
-enddo
-write(P_Match_f,*) pol, l1(pol), l2(pol), l3(pol), dreal(integPol), dimag(integPol), dreal(integPolconv), &
-                       dimag(integPolconv)
+if  ( pol .ne. 41)  then !.and. ( pol .ne. 1) .and. ( pol .ne. 3).and. ( pol .ne. 5).and. ( pol .ne. 24).and. ( pol .ne. 27) & 
+!.and. ( pol .ne. 32).and. ( pol .ne. 36).and. ( pol .ne. 37) .and. ( pol .ne. 39) .and. ( pol .ne. 19) .and. ( pol .ne. 15) ) then
+do n=1,nsys
+!pow_41_conv = pow_41_conv + exp(im * (1.d0/545.d-9) * & 
+
+scos(pol) = scos(pol) + cos(((1.d0/545.d-9)*&
+(((l1(pol)-l1(41))*Pe1(1) + (l2(pol)-l2(41))*Pe2(1) + (l3(pol)-l3(41))*Pe3(1))*Dcenter(n,1) + &
+((l1(pol)-l1(41))*Pe1(2) + (l2(pol)-l2(41))*Pe2(2) + (l3(pol)-l3(41))*Pe3(2))*Dcenter(n,2) + &
+((l1(pol)-l1(41))*Pe1(3) + (l2(pol)-l2(41))*Pe2(3) + (l3(pol)-l3(41))*Pe3(3))*Dcenter(n,3)))) 
+ssin(pol) = ssin(pol) + sin(((1.d0/545.d-9)*&
+(((l1(pol)-l1(41))*Pe1(1) + (l2(pol)-l2(41))*Pe2(1) + (l3(pol)-l3(41))*Pe3(1))*Dcenter(n,1) + &
+((l1(pol)-l1(41))*Pe1(2) + (l2(pol)-l2(41))*Pe2(2) + (l3(pol)-l3(41))*Pe3(2))*Dcenter(n,2) + &
+((l1(pol)-l1(41))*Pe1(3) + (l2(pol)-l2(41))*Pe2(3) + (l3(pol)-l3(41))*Pe3(3))*Dcenter(n,3))))
+
+!write(6,*) cos((1.d0/545.d-9)*&
+!((l1(pol)-l1(41))*Pe1(1) + (l2(pol)-l2(41))*Pe2(1) + (l3(pol)-l3(41))*Pe3(1))*Dcenter(n,1) + &
+!((l1(pol)-l1(41))*Pe1(2) + (l2(pol)-l2(41))*Pe2(2) + (l3(pol)-l3(41))*Pe3(2))*Dcenter(n,2) + &
+!((l1(pol)-l1(41))*Pe1(3) + (l2(pol)-l2(41))*Pe2(3) + (l3(pol)-l3(41))*Pe3(3))*Dcenter(n,3)), &
+!           cos((1.d0/545.d-9)*&
+! ((l1(pol)-l1(41))*Pe1(1) + (l2(pol)-l2(41))*Pe2(1) + (l3(pol)-l3(41))*Pe3(1))*Dcenter(n,1) + &
+! ((l1(pol)-l1(41))*Pe1(2) + (l2(pol)-l2(41))*Pe2(2) + (l3(pol)-l3(41))*Pe3(2))*Dcenter(n,2) + &
+! ((l1(pol)-l1(41))*Pe1(3) + (l2(pol)-l2(41))*Pe2(3) + (l3(pol)-l3(41))*Pe3(3))*Dcenter(n,3)))
+
+
+
+!write(6,*) pol, n, (1.d0/545.d-9)*(((l1(pol)-l1(41))*Pe1(1) + (l2(pol)-l2(41))*Pe2(1) + (l3(pol)-l3(41))*Pe3(1))*Dcenter(n,1) + &
+!((l1(pol)-l1(41))*Pe1(2) + (l2(pol)-l2(41))*Pe2(2) + (l3(pol)-l3(41))*Pe3(2))*Dcenter(n,2) + &
+!((l1(pol)-l1(41))*Pe1(3) + (l2(pol)-l2(41))*Pe2(3) + (l3(pol)-l3(41))*Pe3(3))*Dcenter(n,3)), &
+!cos((1.d0/545.d-9)*&
+!(((l1(pol)-l1(41))*Pe1(1) + (l2(pol)-l2(41))*Pe2(1) + (l3(pol)-l3(41))*Pe3(1))*Dcenter(n,1) + &
+! ((l1(pol)-l1(41))*Pe1(2) + (l2(pol)-l2(41))*Pe2(2) + (l3(pol)-l3(41))*Pe3(2))*Dcenter(n,2) + &
+! ((l1(pol)-l1(41))*Pe1(3) + (l2(pol)-l2(41))*Pe2(3) + (l3(pol)-l3(41))*Pe3(3))*Dcenter(n,3))), &
+!sin((1.d0/545.d-9)*(((l1(pol)-l1(41))*Pe1(1) + (l2(pol)-l2(41))*Pe2(1) + (l3(pol)-l3(41))*Pe3(1))*Dcenter(n,1) + &
+!((l1(pol)-l1(41))*Pe1(2) + (l2(pol)-l2(41))*Pe2(2) + (l3(pol)-l3(41))*Pe3(2))*Dcenter(n,2) + &
+!((l1(pol)-l1(41))*Pe1(3) + (l2(pol)-l2(41))*Pe2(3) + (l3(pol)-l3(41))*Pe3(3))*Dcenter(n,3)))
+
+!write(6,*) (1.d0/545.d-9)*(((l1(pol)-l1(41))*Pe1(1) + (l2(pol)-l2(41))*Pe2(1) + (l3(pol)-l3(41))*Pe3(1))*Dcenter(n,1) + &
+!((l1(pol)-l1(41))*Pe1(2) + (l2(pol)-l2(41))*Pe2(2) + (l3(pol)-l3(41))*Pe3(2))*Dcenter(n,2) + &
+!((l1(pol)-l1(41))*Pe1(3) + (l2(pol)-l2(41))*Pe2(3) + (l3(pol)-l3(41))*Pe3(3))*Dcenter(n,3))
+
+!write(6,*) n, 1.d9*Dcenter(n,:)
+
 enddo
 
-!integPol_diff = dcmplx(0.d0,0.d0)
+write(scos_ssin,*) pol, scos(pol), ssin(pol)
 
+endif
+
+enddo
+
+!pow_41_conv = pow_41_conv / npol
+
+!write(6,*) dreal(pow_41), dimag(pow_41), dreal(pow_41_conv), dimag(pow_41_conv)
+
+endif
+
+!if ( inbox .eq. 'y' ) then
+!
+!do pol=1,npol
+!integPol = dcmplx(0.d0,0.d0)
+!integPolconv = dcmplx(0.d0,0.d0)
 !do t=0,ntime
 !time = t*timestep
-!integPol_diff = integPol_diff + abs(dcmplx(timestep,0.e0_dp)*(pow_pol_diff(t) + pow_pol_diff(t+1))/2.e0_dp)
+!integPol = integPol + (dcmplx(timestep,0.e0_dp)*(pow_pol(pol,t) + pow_pol(pol,t+1)))/2.e0_dp
+!integPolconv = integPolconv + (dcmplx(timestep,0.e0_dp)*(pow_pol_conv(t) + pow_pol_conv(t+1)))/2.e0_dp
+!enddo
+!write(P_Match_f,*) pol, l1(pol), l2(pol), l3(pol), abs(integPol), abs(integPolconv)
 !enddo
 !
-!write(6,*) pol, dreal(integPol_diff)
-
-endif
-
-FTscale = h/(elec*(2.e0_dp**FTpow)*timestep)
-!gives the scale of FT vectors
-t=0
-do while ( t*FTscale .le. 4.d0 )
-t=t+1
-enddo
-nFT=t
-FTscale = h/(elec*(2.e0_dp**FTpow)*timestep)
-
-if ( doFT .eq. 'y' ) then
-
-allocate(wft(0:nFT+1))
-allocate(wft_s(totsys,0:nFT+1))
-allocate(wft_pol(npol,0:nFT+1))
-allocate(wftp(0:nFT+1))
-allocate(wftf_s(totsys,0:nFT+1))
-allocate(wftf(0:nFT+1))
-allocate(xpow_gaus(0:nint(2.e0_dp**FTpow)))
-allocate(xpulse(0:nint(2.e0_dp**FTpow)))
-
-do t=0,ntime
-xpow_gaus(t) = dcmplx(pow_gaus(t),0.d0)
-xpulse(t)  = dcmplx(pulses_FFT(t),0.d0)
-enddo
-
-do t=ntime+1,nint(2.d0**FTpow)
-xpow_gaus(t) = dcmplx(0.d0,0.d0)
-xpulse(t)  = dcmplx(0.d0,0.d0)
-enddo
-
-call fft(xpulse)
-call fft(xpow_gaus)
-
-t=0
-do while ( t*FTscale .le. 4.d0 ) 
-wftf(t)= -2.e0_dp * dimag(sqrt(dreal(xpow_gaus(t))**2+dimag(xpow_gaus(t))**2) * dconjg(xpulse(t)))
-!if ( nofiles .eq. 'n' ) then
-write(TransAbs,*) t*FTscale, dreal(wftf(t))
+!!integPol_diff = dcmplx(0.d0,0.d0)
+!
+!!do t=0,ntime
+!!time = t*timestep
+!!integPol_diff = integPol_diff + abs(dcmplx(timestep,0.e0_dp)*(pow_pol_diff(t) + pow_pol_diff(t+1))/2.e0_dp)
+!!enddo
+!!
+!!write(6,*) pol, dreal(integPol_diff)
+!
 !endif
-t = t + 1 
-enddo
+!
+!FTscale = h/(elec*(2.e0_dp**FTpow)*timestep)
+!!gives the scale of FT vectors
+!t=0
+!do while ( t*FTscale .le. 4.d0 )
+!t=t+1
+!enddo
+!nFT=t
+!FTscale = h/(elec*(2.e0_dp**FTpow)*timestep)
+!
+!if ( doFT .eq. 'y' ) then
+!
+!allocate(wft(0:nFT+1))
+!allocate(wft_s(totsys,0:nFT+1))
+!allocate(wft_pol(npol,0:nFT+1))
+!allocate(wftp(0:nFT+1))
+!allocate(wftf_s(totsys,0:nFT+1))
+!allocate(wftf(0:nFT+1))
+!allocate(xpow_gaus(0:nint(2.e0_dp**FTpow)))
+!allocate(xpulse(0:nint(2.e0_dp**FTpow)))
+!
+!print*, nint(2.e0_dp**FTpow), ntime
+!
+!do t=0,ntime
+!xpow_gaus(t) = dcmplx(pow_gaus(t),0.d0)
+!xpulse(t)  = dcmplx(pulses_FFT(t),0.d0)
+!enddo
+!
+!do t=ntime+1,nint(2.d0**FTpow)
+!xpow_gaus(t) = dcmplx(0.d0,0.d0)
+!xpulse(t)  = dcmplx(0.d0,0.d0)
+!enddo
+!
+!call fft(xpulse)
+!call fft(xpow_gaus)
+!
+!t=0
+!do while ( t*FTscale .le. 4.d0 ) 
+!wftf(t)= -2.e0_dp * dimag(sqrt(dreal(xpow_gaus(t))**2+dimag(xpow_gaus(t))**2) * dconjg(xpulse(t)))
+!!if ( nofiles .eq. 'n' ) then
+!write(TransAbs,*) t*FTscale, dreal(wftf(t))
+!!endif
+!t = t + 1 
+!enddo
+!
+!if ( doFT_s .eq. "y" ) then
+!
+!do n=1,nsys
+!
+!allocate(xpow_gaus_s(0:nint(2.e0_dp**FTpow)))
+!
+!do t=0,ntime
+!xpow_gaus_s(t)  = dcmplx(pow_gaus_s(n,t),0.d0)
+!enddo
+!do t=ntime+1,nint(2.d0**FTpow)
+!xpow_gaus_s(t)  = dcmplx(0.d0,0.d0)
+!enddo
+!
+!call fft(xpow_gaus_s)
+!
+!t=0
+!do while ( t*FTscale .le. 4.d0 )
+!wftf_s(n,t)= -2.e0_dp * dimag(sqrt(dreal(xpow_gaus_s(t))**2+dimag(xpow_gaus_s(t))**2) * dconjg(xpulse(t)))
+!t = t + 1
+!enddo
+!
+!deallocate(xpow_gaus_s)
+!
+!enddo
+!
+!if ( singleFT .eq. 'y' ) then
+!do n=1,nsys
+!write(cov2,'(a9,i0,a4)') 'TransAbs-', n, '.dat'
+!open(TransAbs_s,file=cov2)
+!t=0
+!do while ( t*FTscale .le. 4.d0 )
+!write(TransAbs_s,*) t*FTscale,  dreal(wftf_s(n,t))
+!t = t + 1
+!enddo
+!close(TransAbs_s)
+!enddo
+!endif
+!
+!endif
+!
+!if ( inbox .eq. 'y' ) then
+!
+!allocate(xpow_pol(44,0:nint(2.e0_dp**FTpow)))
+!allocate(wftf_pol(44,0:nFT+1))
+!
+!do t=0,ntime
+!xpow_pol(:,t)  = pow_pol_gaus(:,t)
+!enddo
+!do t=ntime+1,nint(2.d0**FTpow)
+!xpow_pol(:,t)  = dcmplx(0.d0,0.d0)
+!enddo
+!
+!do pol=1,npol
+!call fft(xpow_pol(pol,:))
+!enddo
+!
+!t=0
+!do while ( t*FTscale .le. 4.d0 )
+!wftf_pol(:,t) = -2.d0 * dimag(sqrt(dreal(xpow_pol(:,t))**2+dimag(xpow_pol(:,t))**2) * dconjg(xpulse(t)))
+!write(TransAbs_P,*)  t*FTscale, dreal(wftf_pol(25,t))
+!write(TransAbs_NR,*)  t*FTscale, dreal(wftf_pol(39,t))
+!write(TransAbs_R,*)  t*FTscale, dreal(wftf_pol(41,t))
+!t = t + 1
+!enddo
+!
+!deallocate(xpow_pol,wftf_pol)
+!
+!endif
+!
+!deallocate(pow,pow_gaus,xpow_gaus,pow_gaus_s,xpulse,pulses,wft,wft_s,wftp)
+!
+!endif
+!
+!if ( doCovar .eq. 'y' ) then
+!
+!allocate(Scov(0:nFT+1,0:nFT+1))
+!
+!open(61,file='Allcov.dat')
+!
+!t=0
+!do while ( t*FTscale .le. 4.d0 )
+!t2=0
+!do while ( t2*FTscale .le. 4.d0 )
+!
+!do k=1,nsys
+!Scov(t,t2) = Scov(t,t2) + sum(dreal(wftf_s(k,t))*dreal(wftf_s(:,t2)))
+!enddo
+!
+!t2 = t2 + 5
+!enddo
+!t = t + 5
+!enddo
+!
+!t=0
+!do while ( t*FTscale .le. 4.d0 )
+!t2=0
+!do while ( t2*FTscale .le. 4.d0 )
+!write(61,'(2f10.6,ES15.6E3)') t*h/(elec*5.24288d-12), t2*h/(elec*5.24288d-12), Scov(t,t2)
+!t2 = t2 + 5
+!enddo
+!write(61,*)
+!t = t + 5
+!enddo
+!
+!endif
 
-if ( doFT_s .eq. "y" ) then
-
-do n=1,nsys
-
-allocate(xpow_gaus_s(0:nint(2.e0_dp**FTpow)))
-
-do t=0,ntime
-xpow_gaus_s(t)  = dcmplx(pow_gaus_s(n,t),0.d0)
-enddo
-do t=ntime+1,nint(2.d0**FTpow)
-xpow_gaus_s(t)  = dcmplx(0.d0,0.d0)
-enddo
-
-call fft(xpow_gaus_s)
-
-t=0
-do while ( t*FTscale .le. 4.d0 )
-wftf_s(n,t)= -2.e0_dp * dimag(sqrt(dreal(xpow_gaus_s(t))**2+dimag(xpow_gaus_s(t))**2) * dconjg(xpulse(t)))
-t = t + 1
-enddo
-
-deallocate(xpow_gaus_s)
-
-enddo
-
-if ( singleFT .eq. 'y' ) then
-do n=1,nsys
-write(cov2,'(a9,i0,a4)') 'TransAbs-', n, '.dat'
-open(TransAbs_s,file=cov2)
-t=0
-do while ( t*FTscale .le. 4.d0 )
-write(TransAbs_s,*) t*FTscale,  dreal(wftf_s(n,t))
-t = t + 1
-enddo
-close(TransAbs_s)
-enddo
-endif
-
-endif
-
-if ( inbox .eq. 'y' ) then
-
-allocate(xpow_pol(44,0:nint(2.e0_dp**FTpow)))
-allocate(wftf_pol(44,0:nFT+1))
-
-do t=0,ntime
-xpow_pol(:,t)  = pow_pol_gaus(:,t)
-enddo
-do t=ntime+1,nint(2.d0**FTpow)
-xpow_pol(:,t)  = dcmplx(0.d0,0.d0)
-enddo
-
-do pol=1,npol
-call fft(xpow_pol(pol,:))
-enddo
-
-t=0
-do while ( t*FTscale .le. 4.d0 )
-wftf_pol(:,t) = -2.d0 * dimag(sqrt(dreal(xpow_pol(:,t))**2+dimag(xpow_pol(:,t))**2) * dconjg(xpulse(t)))
-write(TransAbs_P,*)  t*FTscale, dreal(wftf_pol(25,t))
-write(TransAbs_NR,*)  t*FTscale, dreal(wftf_pol(39,t))
-write(TransAbs_R,*)  t*FTscale, dreal(wftf_pol(41,t))
-t = t + 1
-enddo
-
-deallocate(xpow_pol,wftf_pol)
-
-endif
-
-deallocate(pow,pow_gaus,xpow_gaus,pow_gaus_s,xpulse,pulses,wft,wft_s,wftp)
-
-endif
-
-if ( doCovar .eq. 'y' ) then
-
-allocate(Scov(0:nFT+1,0:nFT+1))
-
-open(61,file='Allcov.dat')
-
-t=0
-do while ( t*FTscale .le. 4.d0 )
-t2=0
-do while ( t2*FTscale .le. 4.d0 )
-
-do k=1,nsys
-Scov(t,t2) = Scov(t,t2) + sum(dreal(wftf_s(k,t))*dreal(wftf_s(:,t2)))
-enddo
-
-t2 = t2 + 5
-enddo
-t = t + 5
-enddo
-
-t=0
-do while ( t*FTscale .le. 4.d0 )
-t2=0
-do while ( t2*FTscale .le. 4.d0 )
-write(61,'(2f10.6,ES15.6E3)') t*h/(elec*5.24288d-12), t2*h/(elec*5.24288d-12), Scov(t,t2)
-t2 = t2 + 5
-enddo
-write(61,*)
-t = t + 5
-enddo
-
-endif
-
+!call system('sleep 1')
 call system('find . -size 0 -delete')
 
 !!$OMP END DO

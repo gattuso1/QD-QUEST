@@ -41,19 +41,26 @@ function vectorin(ddot)
       call random_number(rand1)
       call random_number(rand2)
       call random_number(rand3)
-      teta = rand1*2*PI
-      phi = acos(2*rand2-1)
-      dval = rand3*ddot
+      !teta = rand1*2*PI
+      !phi = acos(2*rand2-1)
+      rand3 = rand3*ddot
 
-      vectorin(1)=0
-      vectorin(2)=0
-      vectorin(3)=0
+      !vectorin(1)=0
+      !vectorin(2)=0
+      !vectorin(3)=0
 
-      vectorin(1)= dval*sqrt(1-cos(phi)**2)*cos(teta)
+      !vectorin(1)= dval*sqrt(1-cos(phi)**2)*cos(teta)
 
-      vectorin(2)= dval*sqrt(1-cos(phi)**2)*sin(teta)
+      !vectorin(2)= dval*sqrt(1-cos(phi)**2)*sin(teta)
 
-      vectorin(3)= dval*cos(phi)
+      !vectorin(3)= dval*cos(phi)
+
+    teta = rand1 * 2.0_dp * pi
+    phi = dacos(2.0_dp * rand2 - 1.0_dp)
+    dval = rand3**(1._dp/3._dp)
+    vectorin(1)= dval * sin(phi) * cos(teta)
+    vectorin(2)= dval * sin(phi) * sin(teta)
+    vectorin(3)= dval * cos(phi)
 
 end function vectorin
 
