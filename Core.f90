@@ -262,8 +262,8 @@ do t=0,ntime
 
 time = t*timestep
 
-powtemp = 0.e0_dp
-pow_pol_conv = dcmplx(0.d0,0.d0)
+powtemp = 0._dp
+!pow_pol_conv = dcmplx(0.d0,0.d0)
 
 do j=0,nstates-1
 pow_s(n,t) = pow_s(n,t) + 2._dp * sum(TransHam_ei(j,:) * dreal(dconjg(xc_ei(j,t))*xc_ei(:,t)))
@@ -271,32 +271,56 @@ enddo
 
 pow(t) = pow(t) + pow_s(n,t)
 
-
-!if ( inbox .eq. 'y' ) then
+if ( inbox .eq. 'y' ) then
 !do pol=1,npol
-!!pow_pol(pol,t) = pow_pol(pol,t) + dcmplx(pow_s(n,t),0.d0)*&
-!pow_pol(pol,t) = exp(-im*dcmplx(dot_product(l1(pol)*k_1(:)+l2(pol)*k_2(:)+l3(pol)*k_3(:),Dcenter(n,:)),0.e0_dp))
+!pow_pol(pol,t) = pow_pol(pol,t) + dcmplx(pow_s(n,t),0.d0)*&
+!   exp(-im*(1._dp/545.e-9_dp)*dcmplx(dot_product(l1(pol)*Pe1(:)+l2(pol)*Pe2(:)+l3(pol)*Pe3(:),Dcenter(n,:)),0.e0_dp))
 !enddo
-!
-!!off diagonal convergence of PM signal
+
+pow_pol(7,t) = pow_pol(7,t) + dcmplx(pow_s(n,t),0._dp)*&
+   exp(-im*(1._dp/545.e-9_dp)*dcmplx(dot_product(l1(7)*Pe1(:)+l2(7)*Pe2(:)+l3(7)*Pe3(:),Dcenter(n,:)),0.e0_dp))
+pow_pol(8,t) = pow_pol(8,t) + dcmplx(pow_s(n,t),0._dp)*&
+   exp(-im*(1._dp/545.e-9_dp)*dcmplx(dot_product(l1(8)*Pe1(:)+l2(8)*Pe2(:)+l3(8)*Pe3(:),Dcenter(n,:)),0.e0_dp))
+pow_pol(33,t) = pow_pol(33,t) + dcmplx(pow_s(n,t),0._dp)*&
+   exp(-im*(1._dp/545.e-9_dp)*dcmplx(dot_product(l1(33)*Pe1(:)+l2(33)*Pe2(:)+l3(33)*Pe3(:),Dcenter(n,:)),0.e0_dp))
+pow_pol(39,t) = pow_pol(39,t) + dcmplx(pow_s(n,t),0._dp)*&
+   exp(-im*(1._dp/545.e-9_dp)*dcmplx(dot_product(l1(39)*Pe1(:)+l2(39)*Pe2(:)+l3(39)*Pe3(:),Dcenter(n,:)),0.e0_dp))
+pow_pol(41,t) = pow_pol(41,t) + dcmplx(pow_s(n,t),0._dp)*&
+   exp(-im*(1._dp/545.e-9_dp)*dcmplx(dot_product(l1(41)*Pe1(:)+l2(41)*Pe2(:)+l3(41)*Pe3(:),Dcenter(n,:)),0.e0_dp))
+pow_pol(43,t) = pow_pol(43,t) + dcmplx(pow_s(n,t),0._dp)*&
+   exp(-im*(1._dp/545.e-9_dp)*dcmplx(dot_product(l1(43)*Pe1(:)+l2(43)*Pe2(:)+l3(43)*Pe3(:),Dcenter(n,:)),0.e0_dp))
+pow_pol(44,t) = pow_pol(44,t) + dcmplx(pow_s(n,t),0._dp)*&
+   exp(-im*(1._dp/545.e-9_dp)*dcmplx(dot_product(l1(44)*Pe1(:)+l2(44)*Pe2(:)+l3(44)*Pe3(:),Dcenter(n,:)),0.e0_dp))
+
+!off diagonal convergence of PM signal
 !do pol=1,npol
 !if ( pol .ne. 41) then
 !!pow_pol_conv(t) = pow_pol_conv(t) + dcmplx(pow_s(n,t),0.d0)*&
 !pow_pol_conv(t) = pow_pol_conv(t) + & !exp(-im*dcmplx(dot_product(l1(pol)*k_1(:)+l2(pol)*k_2(:)+l3(pol)*k_3(:),Dcenter(n,:)),0.e0_dp))*&
-!                  exp(-im*dcmplx(dot_product((l1(pol)*k_1(:)+l2(pol)*k_2(:)+l3(pol)*k_3(:))-&
-!                                             (l1(41) *k_1(:)+l2(41) *k_2(:)+l3(41) *k_3(:)),Dcenter(n,:)),0.e0_dp))
+!                  exp(-im*dcmplx(dot_product((l1(pol)*Pe1(:)+l2(pol)*Pe2(:)+l3(pol)*Pe3(:))-&
+!                                             (l1(41) *Pe1(:)+l2(41) *Pe2(:)+l3(41) *Pe3(:)),Dcenter(n,:)),0.e0_dp))
 !endif
 !enddo
-!
-!!write(6,*) pow_pol(41,t), pow_pol_conv(t)
-!
-!endif
+
+!write(6,*) pow_pol(41,t), pow_pol_conv(t)
+
+endif
 
 if (singleDS .eq. 'y' ) then
 write(DipSpec_s,form_DipSpec) time*t_au, pow_s(n,t) 
 endif
 
 enddo
+
+!write(6,'(11a8)') 'Re', 'Im', 'Dx' , 'Dy', 'Dz', 'Pex', 'Pey', 'Pez', 'l1', 'l2', 'l3'
+!write(6,'(11f8.4,2x,i5)') &
+!dreal(exp(-im*(1._dp/545.e-9_dp)*dcmplx(dot_product(l1(43)*Pe1(:)+l2(43)*Pe2(:)+l3(43)*Pe3(:),Dcenter(n,:)),0.e0_dp))),&
+!dimag(exp(-im*(1._dp/545.e-9_dp)*dcmplx(dot_product(l1(43)*Pe1(:)+l2(43)*Pe2(:)+l3(43)*Pe3(:),Dcenter(n,:)),0.e0_dp))),&
+!Dcenter(n,:)*10**5, Pe1(:), l1(43), l2(43), l3(43), n
+!write(6,'(11f8.4,2x,i5)') &
+!dreal(exp(-im*(1._dp/545.e-9_dp)*dcmplx(dot_product(l1(44)*Pe1(:)+l2(44)*Pe2(:)+l3(44)*Pe3(:),Dcenter(n,:)),0.e0_dp))),&
+!dimag(exp(-im*(1._dp/545.e-9_dp)*dcmplx(dot_product(l1(44)*Pe1(:)+l2(44)*Pe2(:)+l3(44)*Pe3(:),Dcenter(n,:)),0.e0_dp))),&
+!Dcenter(n,:)*10**5, Pe1(:), l1(44), l2(44), l3(44), n
 
 if (singleDS .eq. 'y' ) then
 close(DipSpec_s)

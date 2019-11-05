@@ -21,7 +21,8 @@ implicit none
    integer :: syst, ndots, n, rmin, rmax, nsys, npulses, nstates, ntime,i,j,k,l,t,lwork, info, idlink, threads, nQDA, nQDB
    integer :: nhomoA,nhomoB,nhetero,totsys,ndim,nQD, EminID,EmaxID,Estep,nmax,io,abso, kc, kl, nstates2, DipSpec_s, pol2
    integer :: TransAbs_NR, TransAbs_R, TransAbs_s, nFT, FTpow, t_ana, f_ana, Pop_c_L_f, TransAbs_P, ierr, liworku, lworku
-   integer :: scos_ssin
+   integer :: scos_ssin,TransAbs_7_f,TransAbs_17_f,TransAbs_33_f,TransAbs_39_f,TransAbs_41_f,TransAbs_44_f,DipSpec_7_f,DipSpec_17_f
+   integer :: DipSpec_33_f,DipSpec_39_f,DipSpec_41_f,DipSpec_44_f, sphere, DipSpec_43_f, TransAbs_43_f
    integer,allocatable :: seed(:),icol(:,:),irow(:,:),iwork2(:)
    real(dp) :: a13_1d_he,a13_2d_he,a13_3d_he,a13_4d_he,a15_1d_he,a15_2d_he,a15_3d_he,a15_4d_he,a17_1d_he,a17_2d_he,a17_3d_he,&
                a17_4d_he,a24_1d_he,a24_2d_he,a24_3d_he,a24_4d_he,a26_1d_he,a26_2d_he,a26_3d_he,a26_4d_he,a28_1d_he,a28_2d_he,&
@@ -77,7 +78,7 @@ implicit none
  complex(8),allocatable :: xc_ei_av(:,:), xctemp(:),xlfield(:,:),xc_L(:,:), xpow_gaus(:),xpulse(:),wft(:),wftp(:),wftf(:),xhugo(:)
  complex(8),allocatable :: wft_pol(:,:),wftf_pol(:,:), pow_pol_diff(:), wft_s(:,:), wftf_s(:,:), xpow_gaus_s(:), xpulse2(:)
  complex(8),allocatable :: k1_rho(:,:), k2_rho(:,:), k3_rho(:,:), k4_rho(:,:), k5_rho(:,:), k6_rho(:,:), k7_rho(:,:), k8_rho(:,:)
- complex(8),allocatable :: xc_rho(:,:,:)
+ complex(8),allocatable :: xc_rho(:,:,:), wftf_t1(:)
 
 contains 
 
@@ -107,7 +108,7 @@ rhoh       = 1.0e0_dp/sqrt((2.e0_dp*mh*omegaLO)/hbar)
 V0         = V0eV*elec
 npol       = 44
 
-!if ( ( Dyn_0 .eq. 'y' ) .or. ( Dyn_ei .eq. 'y' ) ) then
+if ( ( Dyn_0 .eq. 'y' ) .or. ( Dyn_ei .eq. 'y' ) ) then
 
 timestep   =  timestep*1.e-15_dp/t_au  !timestep*1.d-15/t_au
 totaltime  =  totaltime*1.e-15_dp/t_au !totaltime*1.d-15/t_au
@@ -117,11 +118,9 @@ t03        =  t03*1.e-15_dp/t_au       !t03*1.d-15/t_au
 width01    =  width01*1.e-15_dp/t_au     !width*1.d-15/t_au
 width02    =  width02*1.e-15_dp/t_au     !width*1.d-15/t_au
 width03    =  width03*1.e-15_dp/t_au     !width*1.d-15/t_au
-!omega01    =  0.086e0_dp !omega01*t_au      !omega*1.d15*t_au
 omega01    =  omega01*t_au      !omega*1.d15*t_au
 omega02    =  omega02*t_au      !omega*1.d15*t_au
 omega03    =  omega03*t_au      !omega*1.d15*t_au
-!Ed01       =  0.001e0_dp !Ed01/E_au        !0.024 !Ed/E_au
 Ed01       =  Ed01/E_au        !0.024 !Ed/E_au
 Ed02       =  Ed02/E_au        !0.024 !Ed/E_au
 Ed03       =  Ed03/E_au        !0.024 !Ed/E_au
@@ -207,9 +206,6 @@ Pe3(1) =  ( zbase / 2.e0_dp ) / (sqrt((zbase / 2.e0_dp)**2+(1000.e0_dp)**2+(zbas
 Pe3(2) =  ( 1000.e0_dp      ) / (sqrt((zbase / 2.e0_dp)**2+(1000.e0_dp)**2+(zbase / 2.e0_dp)**2))
 Pe3(3) =  ( zbase / 2.e0_dp ) / (sqrt((zbase / 2.e0_dp)**2+(1000.e0_dp)**2+(zbase / 2.e0_dp)**2))
 
-!write(6,*) Pe1(1) , Pe1(2) , Pe1(3), Pe2(1) , Pe2(2) , Pe2(3), Pe3(1) , Pe3(2) , Pe3(3)
-!write(6,*) k_1(1) , k_1(2) , k_1(3), k_2(1) , k_2(2) , k_2(3), k_3(1) , k_3(2) , k_3(3)
-
 elseif ( pgeom .eq. 'triang' ) then
 
 zbase= 1000e0_dp*sqrt(2.e0_dp*(1.e0_dp-cos(pi*vertex/180.e0_dp))/(1.e0_dp-(1-cos(pi*vertex/180.e0_dp))/&
@@ -266,7 +262,7 @@ Pe3(3) = 1.e0_dp/sqrt(3.e0_dp)
 
 endif
 
-!endif
+endif
 
 nQD    = nQDA+nQDB
 ndim   = nhomoA+nhomoB+nhetero
@@ -323,24 +319,25 @@ elseif ( get_sp .eq. 'y' ) then
    enddo
 endif
 
-!do n=1,totsys
-!epsin(n) = 1.0e0_dp + (eps - 1.0e0_dp) / (1.0e0_dp + (0.75e-9_dp/(2.e0_dp*aR(n)))**1.2e0_dp)
-!epsR(n)  = 1.0e0_dp/((1.0e0_dp/epsin(n))-((1.0e0_dp/epsin(n))-(1.0e0_dp/(epsin(n)+3.5e0_dp)))*&
-!           (1.e0_dp-(exp(-(36e0_dp/35.e0_dp)*aR(n)/rhoe)+exp(-(36.e0_dp/35.e0_dp)*aR(n)/rhoh))/2.e0_dp))
-!V0e(n)   =-1.e0_dp*(-3.49e0_dp+2.47e0_dp*(2.e9_dp*aR(n))**(-1.32e0_dp))*elec
-!V0h(n)   =-1.e0_dp*(-5.23e0_dp-0.74e0_dp*(2.e9_dp*aR(n))**(-0.95e0_dp))*elec
-!enddo
+do n=1,totsys
+epsin(n) = 1.0e0_dp + (eps - 1.0e0_dp) / (1.0e0_dp + (0.75e-9_dp/(2.e0_dp*aR(n)))**1.2e0_dp)
+epsR(n)  = 1.0e0_dp/((1.0e0_dp/epsin(n))-((1.0e0_dp/epsin(n))-(1.0e0_dp/(epsin(n)+3.5e0_dp)))*&
+           (1.e0_dp-(exp(-(36e0_dp/35.e0_dp)*aR(n)/rhoe)+exp(-(36.e0_dp/35.e0_dp)*aR(n)/rhoh))/2.e0_dp))
+V0e(n)   =-1.e0_dp*(-3.49e0_dp+2.47e0_dp*(2.e9_dp*aR(n))**(-1.32e0_dp))*elec
+V0h(n)   =-1.e0_dp*(-5.23e0_dp-0.74e0_dp*(2.e9_dp*aR(n))**(-0.95e0_dp))*elec
+enddo
 
 if ( inbox .eq. 'y' ) then
 
-open(56,file='sphere.xyz')
-write(56,*) nint(totsys/2.e0_dp) 
-write(56,*) 
+open(newunit=sphere,file='sphere.xyz')
+write(sphere,*) nint(totsys/2.e0_dp) 
+write(sphere,*) 
 do n = 1,nint(totsys/2.e0_dp)
 Dcenter(n,:) = vectorin(1.e16_dp) 
-write(56,*) 'H', Dcenter(n,1), Dcenter(n,2), Dcenter(n,3) 
+Dcenter(n,:) = (Dcenter(n,:) + 1e16_dp**(1._dp/3._dp)) * 1.e-9_dp
+write(sphere,*) 'H', Dcenter(n,1), Dcenter(n,2), Dcenter(n,3) 
 enddo
-Dcenter = Dcenter * 1.e-9_dp 
+!Dcenter = (Dcenter-(1.e16_dp)**(1._dp/3._dp) * 1.e-9_dp 
 
 endif
 
