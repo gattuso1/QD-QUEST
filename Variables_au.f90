@@ -106,7 +106,7 @@ mh         = mh*m0
 rhoe       = 1.0e0_dp/sqrt((2.e0_dp*me*omegaLO)/hbar)
 rhoh       = 1.0e0_dp/sqrt((2.e0_dp*mh*omegaLO)/hbar)
 V0         = V0eV*elec
-npol       = 44
+npol       = 146
 
 if ( ( Dyn_0 .eq. 'y' ) .or. ( Dyn_ei .eq. 'y' ) ) then
 
