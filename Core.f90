@@ -1,9 +1,9 @@
 write(form_mat,'("(",i0,"ES16.5E2)")') nstates
 write(form_TDM,'("(",i0,"f16.8)")') nstates
 if (n .le. nQDA+nQDB) then
-write(form_arr,'("(f16.8,16x,",i0,"f16.8)")') nstates+1
+write(form_arr,'("(f16.8,16x,",i0,"f14.8)")') nstates+1
 elseif (n .gt. nQDA+nQDB) then
-write(form_arr,'("(",i0,"f16.8)")') nstates+3
+write(form_arr,'("(",i0,"f16.12)")') nstates+3
 endif
 write(form_abs,'("(2f16.8,2x,i0)")') 
 write(form_pop,'("(",i0,"ES17.8E3,ES25.16E3)")') nstates+1
@@ -11,6 +11,12 @@ write(form_com,'("(ES12.5E3,",i0,"ES18.8E3)")') nstates+1
 write(form_com_L,'("(ES12.5E3,",i0,"ES18.8E3,ES28.15)")') nstates2+1
 write(form_pop_L,'("(ES12.5E3,",i0,"ES18.8E3,f28.15)")') nstates
 write(form_DipSpec,'("(ES12.5E3,",i0,"ES18.8E3)")') nstates+2
+
+!!!!!Creates sum of TDM matrices and lambda vectors for avg dynamics
+if ( Dyn_avg .eq. "y" ) then
+Ham0_avg     = Ham0_avg     + Ham
+TransHam_avg = TransHam_avg + TransHam
+endif
 
 if ( get_ei .eq. 'y' ) then
 Ham_ei = Ham
@@ -33,6 +39,22 @@ deallocate(work1)
 deallocate(work2)
 deallocate(iwork2)
 
+call make_Ham_l
+
+!!!!!Creates sum of TDM matrices and lambda vectors for avg dynamics
+!if ( Dyn_avg .eq. "y" ) then
+!print*, size(lambda_avg), size(lambda)
+!do i=0,nstates-1
+!lambda_avg(i)         = lambda_avg(i)         + lambda(i)
+!do j=0,nstates-1
+!TransHam_avg_l(i,j,1) = TransHam_avg_l(i,j,1) + TransHam_ei_l(i,j,1)
+!TransHam_avg_l(i,j,2) = TransHam_avg_l(i,j,2) + TransHam_ei_l(i,j,2)
+!TransHam_avg_l(i,j,3) = TransHam_avg_l(i,j,3) + TransHam_ei_l(i,j,3)
+!TransHam_avg(i,j)     = TransHam_avg(i,j)     + TransHam_ei(i,j)
+!enddo
+!enddo
+!endif
+
 !!!Make eigenstate TDM
 if ( rdm_ori .eq. "n" ) then
 Mat(:,:) = matmul(TransHam(:,:),Ham_ei(:,:))
@@ -46,8 +68,6 @@ TransHam_ei_l(:,:,2) = matmul(transpose(Ham_ei(:,:)),Maty(:,:))
 TransHam_ei_l(:,:,3) = matmul(transpose(Ham_ei(:,:)),Matz(:,:))
 TransHam_ei = sqrt(TransHam_ei_l(:,:,1)**2 + TransHam_ei_l(:,:,2)**2 + TransHam_ei_l(:,:,1)**2)
 endif
-
-call make_Ham_l
 
 if ( noMat .eq. "n" ) then
 do i=1,size(matrices)
@@ -189,24 +209,30 @@ if ( ( Dyn_0 .eq. 'y' ) .or. ( Dyn_ei .eq. 'y' ) .or. ( Dyn_L .eq. 'y' ) ) then
 
 !!!Opens output files
 if ( nofiles .eq. 'n' ) then
+if ( ( Dyn_0 .eq. 'y' ) ) then
 write(popc,'(a5,i5.5,a4)') 'Popc-', n, '.dat'
-write(popc_ei,'(a8,i5.5,a4)') 'Popc_ei-', n, '.dat'
 write(Re_c,'(a5,i5.5,a4)') 'Re_c-', n, '.dat'
 write(Im_c,'(a5,i5.5,a4)') 'Im_c-', n, '.dat'
+open(newunit=popc_0_f   ,file=popc)    !; popc_0_f = 44
+open(newunit=Re_c_0_f   ,file=Re_c)    !; Re_c_0_f = 54
+open(newunit=Im_c_0_f   ,file=Im_c)    !; Im_c_0_f = 55
+endif
+if ( ( Dyn_ei .eq. 'y' ) ) then
+write(popc_ei,'(a8,i5.5,a4)') 'Popc_ei-', n, '.dat'
 write(Re_c_ei,'(a8,i5.5,a4)') 'Re_c_ei-', n, '.dat'
 write(Im_c_ei,'(a8,i5.5,a4)') 'Im_c_ei-', n, '.dat'
-write(Re_c_L,'(a7,i5.5,a4)') 'Re_c_L-', n, '.dat'
-write(Im_c_L,'(a7,i5.5,a4)') 'Im_c_L-', n, '.dat'
-write(Pop_c_L,'(a8,i5.5,a4)') 'Pop_c_L-', n, '.dat'
-open(newunit=popc_0_f   ,file=popc)    !; popc_0_f = 44
 open(newunit=popc_ei_f  ,file=popc_ei) !; popc_ei_f = 49
 open(newunit=Re_c_ei_f  ,file=Re_c_ei) !; Re_c_ei_f = 52
 open(newunit=Im_c_ei_f  ,file=Im_c_ei) !; Im_c_ei_f = 53
-open(newunit=Re_c_0_f   ,file=Re_c)    !; Re_c_0_f = 54
-open(newunit=Im_c_0_f   ,file=Im_c)    !; Im_c_0_f = 55
+endif
+if ( ( Dyn_L .eq. 'y' ) ) then
+write(Re_c_L,'(a7,i5.5,a4)') 'Re_c_L-', n, '.dat'
+write(Im_c_L,'(a7,i5.5,a4)') 'Im_c_L-', n, '.dat'
+write(Pop_c_L,'(a8,i5.5,a4)') 'Pop_c_L-', n, '.dat'
 open(newunit=Re_c_L_f   ,file=Re_c_L)    !; Im_c_0_f = 55
 open(newunit=Im_c_L_f   ,file=Im_c_L)    !; Im_c_0_f = 55
 open(newunit=Pop_c_L_f  ,file=Pop_c_L)    !; Im_c_0_f = 55
+endif
 endif
 
 !!!!!INITIAL POPULATIONS
@@ -228,27 +254,39 @@ xc_L(0,0) = dcmplx(1.e0_dp,0.0e0_dp)
 call RK_0_ei
 
 if ( nofiles .eq. 'y' ) then
+if ( ( Dyn_0 .eq. 'y' ) ) then
 close(popc_0_f   ,status="delete")
-close(popc_ei_f  ,status="delete")
-close(norm_0_f   ,status="delete")
-close(norm_ei_f  ,status="delete")
-close(Re_c_ei_f  ,status="delete")
-close(Im_c_ei_f  ,status="delete")
+!close(norm_0_f   ,status="delete")
 close(Re_c_0_f   ,status="delete")
 close(Im_c_0_f   ,status="delete")
+endif
+if ( ( Dyn_ei .eq. 'y' ) ) then
+close(popc_ei_f  ,status="delete")
+!close(norm_ei_f  ,status="delete")
+close(Re_c_ei_f  ,status="delete")
+close(Im_c_ei_f  ,status="delete")
+endif
+if ( ( Dyn_L .eq. 'y' ) ) then
 close(Re_c_L_f   ,status="delete")
 close(Im_c_L_f   ,status="delete")
+endif
 elseif ( nofiles .eq. 'n' ) then
+if ( ( Dyn_0 .eq. 'y' ) ) then
 close(popc_0_f )
-close(popc_ei_f)
-close(norm_0_f )
-close(norm_ei_f)
-close(Re_c_ei_f)
-close(Im_c_ei_f)
+!close(norm_0_f )
 close(Re_c_0_f )
 close(Im_c_0_f )
+endif
+if ( ( Dyn_ei .eq. 'y' ) ) then
+!close(norm_ei_f)
+close(Re_c_ei_f)
+close(Im_c_ei_f)
+close(popc_ei_f)
+endif
+if ( ( Dyn_L .eq. 'y' ) ) then
 close(Re_c_L_f )
 close(Im_c_L_f )
+endif
 endif
 
 endif
@@ -277,20 +315,20 @@ if ( inbox .eq. 'y' ) then
 !   exp(-im*(1._dp/545.e-9_dp)*dcmplx(dot_product(l1(pol)*Pe1(:)+l2(pol)*Pe2(:)+l3(pol)*Pe3(:),Dcenter(n,:)),0.e0_dp))
 !enddo
 
-pow_pol(7,t) = pow_pol(7,t) + dcmplx(pow_s(n,t),0._dp)*&
-   exp(-im*(1._dp/545.e-9_dp)*dcmplx(dot_product(l1(7)*Pe1(:)+l2(7)*Pe2(:)+l3(7)*Pe3(:),Dcenter(n,:)),0.e0_dp))
-pow_pol(8,t) = pow_pol(8,t) + dcmplx(pow_s(n,t),0._dp)*&
-   exp(-im*(1._dp/545.e-9_dp)*dcmplx(dot_product(l1(8)*Pe1(:)+l2(8)*Pe2(:)+l3(8)*Pe3(:),Dcenter(n,:)),0.e0_dp))
-pow_pol(33,t) = pow_pol(33,t) + dcmplx(pow_s(n,t),0._dp)*&
-   exp(-im*(1._dp/545.e-9_dp)*dcmplx(dot_product(l1(33)*Pe1(:)+l2(33)*Pe2(:)+l3(33)*Pe3(:),Dcenter(n,:)),0.e0_dp))
-pow_pol(39,t) = pow_pol(39,t) + dcmplx(pow_s(n,t),0._dp)*&
-   exp(-im*(1._dp/545.e-9_dp)*dcmplx(dot_product(l1(39)*Pe1(:)+l2(39)*Pe2(:)+l3(39)*Pe3(:),Dcenter(n,:)),0.e0_dp))
-pow_pol(41,t) = pow_pol(41,t) + dcmplx(pow_s(n,t),0._dp)*&
-   exp(-im*(1._dp/545.e-9_dp)*dcmplx(dot_product(l1(41)*Pe1(:)+l2(41)*Pe2(:)+l3(41)*Pe3(:),Dcenter(n,:)),0.e0_dp))
-pow_pol(43,t) = pow_pol(43,t) + dcmplx(pow_s(n,t),0._dp)*&
-   exp(-im*(1._dp/545.e-9_dp)*dcmplx(dot_product(l1(43)*Pe1(:)+l2(43)*Pe2(:)+l3(43)*Pe3(:),Dcenter(n,:)),0.e0_dp))
-pow_pol(44,t) = pow_pol(44,t) + dcmplx(pow_s(n,t),0._dp)*&
-   exp(-im*(1._dp/545.e-9_dp)*dcmplx(dot_product(l1(44)*Pe1(:)+l2(44)*Pe2(:)+l3(44)*Pe3(:),Dcenter(n,:)),0.e0_dp))
+!pow_pol(7,t) = pow_pol(7,t) + dcmplx(pow_s(n,t),0._dp)*&
+!   exp(-im*(1._dp/545.e-9_dp)*dcmplx(dot_product(l1(7)*Pe1(:)+l2(7)*Pe2(:)+l3(7)*Pe3(:),Dcenter(n,:)),0.e0_dp))
+!pow_pol(8,t) = pow_pol(8,t) + dcmplx(pow_s(n,t),0._dp)*&
+!   exp(-im*(1._dp/545.e-9_dp)*dcmplx(dot_product(l1(8)*Pe1(:)+l2(8)*Pe2(:)+l3(8)*Pe3(:),Dcenter(n,:)),0.e0_dp))
+!pow_pol(33,t) = pow_pol(33,t) + dcmplx(pow_s(n,t),0._dp)*&
+!   exp(-im*(1._dp/545.e-9_dp)*dcmplx(dot_product(l1(33)*Pe1(:)+l2(33)*Pe2(:)+l3(33)*Pe3(:),Dcenter(n,:)),0.e0_dp))
+!pow_pol(39,t) = pow_pol(39,t) + dcmplx(pow_s(n,t),0._dp)*&
+!   exp(-im*(1._dp/545.e-9_dp)*dcmplx(dot_product(l1(39)*Pe1(:)+l2(39)*Pe2(:)+l3(39)*Pe3(:),Dcenter(n,:)),0.e0_dp))
+!pow_pol(41,t) = pow_pol(41,t) + dcmplx(pow_s(n,t),0._dp)*&
+!   exp(-im*(1._dp/545.e-9_dp)*dcmplx(dot_product(l1(41)*Pe1(:)+l2(41)*Pe2(:)+l3(41)*Pe3(:),Dcenter(n,:)),0.e0_dp))
+!pow_pol(43,t) = pow_pol(43,t) + dcmplx(pow_s(n,t),0._dp)*&
+!   exp(-im*(1._dp/545.e-9_dp)*dcmplx(dot_product(l1(43)*Pe1(:)+l2(43)*Pe2(:)+l3(43)*Pe3(:),Dcenter(n,:)),0.e0_dp))
+!pow_pol(44,t) = pow_pol(44,t) + dcmplx(pow_s(n,t),0._dp)*&
+!   exp(-im*(1._dp/545.e-9_dp)*dcmplx(dot_product(l1(44)*Pe1(:)+l2(44)*Pe2(:)+l3(44)*Pe3(:),Dcenter(n,:)),0.e0_dp))
 
 !off diagonal convergence of PM signal
 !do pol=1,npol
@@ -329,5 +367,5 @@ endif
 deallocate(TransHam,TransHam_ei_l,TransHam_l,TransHam_d,TransHam_ei,Mat,Matx,Maty,Matz,Ham,Ham_l,Ham_0,Ham_dir,Ham_ex,Ham_ei,haml)
 deallocate(Transvec,TransMat_ei,lambda,xc,k1,k2,k3,k4,k5,k6,k7,k8,c0,xc_ei,xc_L,xc0,pop)
 deallocate(k1_L,k2_L,k3_L,k4_L,k5_L,k6_L,k7_L,k8_L)
-deallocate(merge_diag,merge_odiag,icol,irow,xliou,lfield,lfield2)
+deallocate(merge_diag,merge_odiag,icol,irow,xliou,lfield)
 deallocate(xc_rho,k1_rho,k2_rho,k3_rho,k4_rho,k5_rho,k6_rho,k7_rho,k8_rho)

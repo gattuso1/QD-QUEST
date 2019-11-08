@@ -13,7 +13,7 @@ implicit none
    character*64 :: Re_c, Im_c, syst_n, Re_c_l, Im_c_L, cov, cov2, Pop_c_L
    character*1 :: o_Norm, o_Over, o_Coul, o_DipS, o_Osci, o_Exti, o_DipD, dyn, hamilt, get_ei, finest, get_sp
    character*1 :: TDM_ee, Dyn_0, Dyn_ei, inbox, Dyn_L,doFT,CEP1,CEP2,CEP3,singleFT,nofiles, singleDS, doCovar,doFT_s,doAbs
-   character*1 :: rdm_ori, noMat
+   character*1 :: rdm_ori, noMat, Dyn_avg
    integer :: Pulse_f,Tmat_0_f,Tmat_ei_f,Tmat_x_f,Tmat_y_f,Tmat_z_f,H_0_f,H_dir_f,H_ex_f,H_JK_f,TransAbs, DipSpec_conv_f
    integer :: popc_0_f,popc_ei_f,norm_0_f,norm_ei_f,Re_c_ei_f,Im_c_ei_f,Re_c_0_f,Im_c_0_f,TDip_ei_f,tmp, nbands,Liou_f
    integer :: Re_c_L_f,Im_c_L_f,H_ei_f,Etr_0_f,Etr_ei_f,Abs_imp_f, t2, DipSpec, pol, npol, P_Match_f, DipSpec_R_f,DipSpec_NR_f
@@ -23,6 +23,10 @@ implicit none
    integer :: TransAbs_NR, TransAbs_R, TransAbs_s, nFT, FTpow, t_ana, f_ana, Pop_c_L_f, TransAbs_P, ierr, liworku, lworku
    integer :: scos_ssin,TransAbs_7_f,TransAbs_17_f,TransAbs_33_f,TransAbs_39_f,TransAbs_41_f,TransAbs_44_f,DipSpec_7_f,DipSpec_17_f
    integer :: DipSpec_33_f,DipSpec_39_f,DipSpec_41_f,DipSpec_44_f, sphere, DipSpec_43_f, TransAbs_43_f
+   integer :: Tmat_avg_f, Tmat_avgx_f, Tmat_avgy_f, Tmat_avgz_f, Etr_avg_f, popc_avg_f, Re_c_avg_f, Im_c_avg_f, TransAbs_avg
+   integer :: DipSpec_avg, P_Match_avg, TransAbs_avg_7_f, TransAbs_avg_17_f, TransAbs_avg_33_f, TransAbs_avg_39_f, TransAbs_avg_41_f
+   integer :: TransAbs_avg_43_f, TransAbs_avg_44_f, DipSpec_avg_7_f, DipSpec_avg_17_f, DipSpec_avg_33_f, DipSpec_avg_39_f
+   integer :: DipSpec_avg_41_f, DipSpec_avg_43_f, DipSpec_avg_44_f, Dyn_avg_flag, error
    integer,allocatable :: seed(:),icol(:,:),irow(:,:),iwork2(:)
    real(dp) :: a13_1d_he,a13_2d_he,a13_3d_he,a13_4d_he,a15_1d_he,a15_2d_he,a15_3d_he,a15_4d_he,a17_1d_he,a17_2d_he,a17_3d_he,&
                a17_4d_he,a24_1d_he,a24_2d_he,a24_3d_he,a24_4d_he,a26_1d_he,a26_2d_he,a26_3d_he,a26_4d_he,a28_1d_he,a28_2d_he,&
@@ -46,7 +50,7 @@ implicit none
                a36_1e_he,a36_2e_he,a36_3e_he,a36_4e_he,a38_1e_he,a38_2e_he,a38_3e_he,a38_4e_he,a45_1e_he,a45_2e_he,a45_3e_he,&
                a45_4e_he,a47_1e_he,a47_2e_he,a47_3e_he,a47_4e_he,a56_1e_he,a56_2e_he,a56_3e_he,a56_4e_he,a58_1e_he,a58_2e_he,&
                a58_3e_he,a58_4e_he,a67_1e_he,a67_2e_he,a67_3e_he,a67_4e_he,a78_1e_he,a78_2e_he,a78_3e_he,a78_4e_he
-   real(dp) :: tp1,tp2,tp3,tp4,tp5,tp6,tp7,tp8, time_ana
+   real(dp) :: tp1,tp2,tp3,tp4,tp5,tp6,tp7,tp8, time_ana, aR_avgA, aR_avgB
    real(dp) :: tpx1,tpx2,tpx3,tpx4,tpx5,tpx6,tpx7,tpx8
    real(dp) :: tpy1,tpy2,tpy3,tpy4,tpy5,tpy6,tpy7,tpy8
    real(dp) :: tpz1,tpz2,tpz3,tpz4,tpz5,tpz6,tpz7,tpz8
@@ -66,9 +70,10 @@ implicit none
    real(dp),allocatable :: TransMat_ei(:,:), TransHam0(:,:), Ham_0(:), Ham_dir(:,:), Ham_ex(:,:), Ham_ei(:,:), Ham_l(:,:), haml(:,:)
    real(dp),allocatable :: TransDip_Ana_h1h2(:), TransHam_ei(:,:), Mat(:,:), QDcoor(:,:), Dcenter(:,:), Pe1(:), Pe2(:), Pe3(:)
    real(dp),allocatable :: TransHam_d(:,:,:), TransHam_l(:,:,:), TransHam_ei_l(:,:,:), k_1(:), k_2(:), k_3(:), work1(:), work2(:)
-   real(dp),allocatable :: Matx(:,:), Maty(:,:), Matz(:,:),spec(:),dipole(:,:)
+   real(dp),allocatable :: Matx(:,:), Maty(:,:), Matz(:,:),spec(:),dipole(:,:), Ham0_avg(:,:)
    real(dp),allocatable :: pow(:),pow_gaus(:),pulses(:), pow_s(:,:), pow_gaus_s(:,:), pulses_FFT(:)
-   real(dp),allocatable :: Scov(:,:), pop(:,:),merge_diag(:,:),merge_odiag(:,:), lfield(:,:), lfield2(:,:), scos(:), ssin(:)
+   real(dp),allocatable :: Scov(:,:), pop(:,:),merge_diag(:,:),merge_odiag(:,:), scos(:), ssin(:), lfield(:,:)
+   real(dp),allocatable :: TransHam_avg(:,:),TransHam_avg_l(:,:,:),lambda_avg(:), bloblo(:), blabla(:)
  complex(8) :: ct1, ct2, ct3, ct4, xt01, xt02, xt03, xhbar, im, xwidth, xomega , xEd, xh, xphase, xtime, xhbar_au
  complex(8) :: integPol, integPol_diff, integPolconv, pow_41, pow_41_conv
  complex(8),allocatable :: xHam(:,:) , xHamt(:,:,:), xTransHam(:,:), xE0(:), xHamtk2(:,:,:), xHamtk3(:,:,:), xHamtk4(:,:,:)
@@ -84,7 +89,8 @@ contains
 
 subroutine getVariables
 
-NAMELIST /outputs/   inbox,rdm_ori,get_sp,get_ei,Dyn_0,Dyn_ei,Dyn_L,TDM_ee,doAbs,doFT,singleDS,doFT_s,singleFT,nofiles,noMat,doCovar
+NAMELIST /outputs/   inbox,rdm_ori,get_sp,get_ei,Dyn_0,Dyn_ei,Dyn_L,Dyn_avg,TDM_ee,&
+                     doAbs,doFT,singleDS,doFT_s,singleFT,nofiles,noMat,doCovar
 NAMELIST /elecSt/    model,me,mh,eps,epsout,V0eV,omegaLO,slope,side
 NAMELIST /fineStruc/ Kas,Kbs,Kcs,Kpp,Dso1,Dso2,Dxf
 NAMELIST /pulses/    integ,npulses,t01,t02,t03,timestep,totaltime,omega01,omega02,omega03,phase01,phase02,phase03,&
@@ -100,15 +106,17 @@ read(150,NML=pulses)
 read(150,NML=syst)
 read(150,NML=FT)
 
+Dyn_avg_flag = 0
 im         = dcmplx(0.0e0_dp,1.0e0_dp)
 me         = me*m0
 mh         = mh*m0
 rhoe       = 1.0e0_dp/sqrt((2.e0_dp*me*omegaLO)/hbar)
 rhoh       = 1.0e0_dp/sqrt((2.e0_dp*mh*omegaLO)/hbar)
 V0         = V0eV*elec
+!npol       = 44
 npol       = 146
 
-if ( ( Dyn_0 .eq. 'y' ) .or. ( Dyn_ei .eq. 'y' ) ) then
+if ( ( Dyn_0 .eq. 'y' ) .or. ( Dyn_ei .eq. 'y' ) .or. ( Dyn_L .eq. 'y' ) ) then
 
 timestep   =  timestep*1.e-15_dp/t_au  !timestep*1.d-15/t_au
 totaltime  =  totaltime*1.e-15_dp/t_au !totaltime*1.d-15/t_au

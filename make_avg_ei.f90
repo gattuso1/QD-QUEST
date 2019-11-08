@@ -9,9 +9,9 @@ real*8,allocatable :: Im_c(:,:,:), Re_c(:,:,:)
 complex*8 :: im
 
 im = dcmplx(0.d0,1.d0)
-n=20000
-nsys = 500
-nstates= 5
+n=10000
+nsys = 2000
+nstates= 9
 
 allocate(Si(n,nsys,nstates),S(n,nstates),omega(n),Scov(n,n),Re_c(n,nsys,nstates), Im_c(n,nsys,nstates))
 open(15,file='Cohe_ei_avg.dat')
@@ -37,7 +37,7 @@ enddo
 
 do i=1,n
 do j=1,nstates
-S(i,j) =  S(i,j) + sum(2.d0*real((Re_c(i,:,j) - im*Im_c(i,:,j))*(Re_c(i,:,1) + im*Im_c(i,:,1))))
+S(i,j) =  S(i,j) + sum(real((Re_c(i,:,j) - im*Im_c(i,:,j))*(Re_c(i,:,1) + im*Im_c(i,:,1))))
 enddo
 enddo
 

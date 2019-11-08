@@ -41,9 +41,9 @@ read(21,*) (TransDip_eix(n,0,j),j=0,nstates-1)
 read(21,'(A128)')
 read(21,'(A128)')
 
-do i=1,nstates-1
-write(6,*) Energy(n,i), (TransDip_eix(n,0,i))**2 ,i
-enddo
+!do i=1,nstates-1
+!write(6,*) Energy(n,i), (TransDip_eix(n,0,i))**2 ,i
+!enddo
 
 enddo
 
@@ -70,9 +70,9 @@ read(21,'(A128)')
 read(21,'(A128)')
 read(21,'(A128)')
 
-do i=1,nstates-1
-write(6,*) Energy(n,i), (TransDip_eix(n,0,i))**2 ,i
-enddo
+!do i=1,nstates-1
+!write(6,*) Energy(n,i), (TransDip_eix(n,0,i))**2 ,i
+!enddo
 
 enddo
 

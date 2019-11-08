@@ -45,12 +45,10 @@ allocate(xc_rho(0:nstates-1,0:nstates-1,0:ntime+1),&
 allocate(merge_diag(0:nstates2-1,0:nstates2-1),&
          merge_odiag(0:nstates2-1,0:nstates2-1), source = 0.e0_dp )
 
-allocate(xliou(0:nstates-1,0:nstates-1,0:nstates-1,0:nstates-1),lfield(0:nstates2-1,0:nstates2-1),&
-         lfield2(0:nstates2-1,0:nstates2-1))
+allocate(xliou(0:nstates-1,0:nstates-1,0:nstates-1,0:nstates-1),lfield(0:nstates2-1,0:nstates2-1))
 
 xliou = dcmplx(0.e0_dp,0.e0_dp)
 lfield = dcmplx(0.e0_dp,0.e0_dp)
-lfield2 = dcmplx(0.e0_dp,0.e0_dp)
 
 
 allocate(irow(0:nstates2-1,2),icol(0:nstates2-1,2),source=0)
