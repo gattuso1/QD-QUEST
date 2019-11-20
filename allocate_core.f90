@@ -18,7 +18,8 @@ allocate(TransHam(0:nstates-1,0:nstates-1),&
          Ham_0(0:nstates-1),&
          Ham_dir(0:nstates-1,0:nstates-1),&
          Ham_ex(0:nstates-1,0:nstates-1),&
-         Ham_ei(0:nstates-1,0:nstates-1),source=0.e0_dp)
+         Ham_ei(0:nstates-1,0:nstates-1),&
+         maxid(0:nstates-1),source=0.e0_dp)
 
 allocate(xc(0:nstates-1,0:ntime+1),&
          xc0(0:nstates-1),&
@@ -51,5 +52,5 @@ xliou = dcmplx(0.e0_dp,0.e0_dp)
 lfield = dcmplx(0.e0_dp,0.e0_dp)
 
 
-allocate(irow(0:nstates2-1,2),icol(0:nstates2-1,2),source=0)
+allocate(irow(0:nstates2-1,2),icol(0:nstates2-1,2),zero(0:nstates-1),source=0)
 

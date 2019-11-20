@@ -1,0 +1,8 @@
+#!/bin/bash
+
+gfortran -c Constants_au.f90 
+gfortran -c make_fft.f90
+gfortran make_fft.o Constants_au.o -o make_fft
+
+
+

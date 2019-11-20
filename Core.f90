@@ -18,19 +18,13 @@ Ham0_avg     = Ham0_avg     + Ham
 TransHam_avg = TransHam_avg + TransHam
 endif
 
+!write(6,*) (TransHam(i,0)*Energ_au/elec, i=0,nstates-1)
+
 if ( get_ei .eq. 'y' ) then
 Ham_ei = Ham
 allocate(lambda(0:nstates-1),source = 0.e0_dp)
 allocate(iwork2(3+5*nstates),source=0)
 allocate(work1(6*nstates),work2(1+6*nstates+2*nstates*nstates),source=0.e0_dp)
-!allocate(work(1))
-!call dsyev('V','U', nstates, Ham_ei(0:nstates-1,0:nstates-1), nstates, lambda, Work, -1, info)
-!lwork=nint(work(1))
-!deallocate (work)
-!allocate(work(0:lwork))
-!call dsyev('V', 'U', nstates, Ham_ei(0:nstates-1,0:nstates-1), nstates, lambda, Work, lwork, info)
-!deallocate (work)
-
 lworku=1+6*nstates+2*nstates*nstates
 liworku=3+5*nstates
 ierr=0
@@ -40,20 +34,6 @@ deallocate(work2)
 deallocate(iwork2)
 
 call make_Ham_l
-
-!!!!!Creates sum of TDM matrices and lambda vectors for avg dynamics
-!if ( Dyn_avg .eq. "y" ) then
-!print*, size(lambda_avg), size(lambda)
-!do i=0,nstates-1
-!lambda_avg(i)         = lambda_avg(i)         + lambda(i)
-!do j=0,nstates-1
-!TransHam_avg_l(i,j,1) = TransHam_avg_l(i,j,1) + TransHam_ei_l(i,j,1)
-!TransHam_avg_l(i,j,2) = TransHam_avg_l(i,j,2) + TransHam_ei_l(i,j,2)
-!TransHam_avg_l(i,j,3) = TransHam_avg_l(i,j,3) + TransHam_ei_l(i,j,3)
-!TransHam_avg(i,j)     = TransHam_avg(i,j)     + TransHam_ei(i,j)
-!enddo
-!enddo
-!endif
 
 !!!Make eigenstate TDM
 if ( rdm_ori .eq. "n" ) then
@@ -99,6 +79,23 @@ write(Abs_imp_f,form_abs) lambda(i)*Energ_au/elec, &
 !write(Abs_imp_f,form_abs) lambda(i)*Energ_au/elec, (TransHam_ei(0,i))**2 ,i
 !endif
 enddo
+
+!!!!!labelling of eigenstates
+Ham_ei = abs(Ham_ei)
+do i=0,nstates-1
+maxid(i) = maxval(Ham_ei(:,i))
+enddo
+do i = 0,nstates-1
+do j = 0,nstates-1
+if (Ham_ei(i,j) .eq. maxid(j)) then
+        zero(j) = i
+        exit
+endif
+enddo
+enddo
+write(label_0,*) n, (zero(j), j=0,nstates-1)
+
+!!!!!!!!!!!!
 
 if ( noMat .eq. "n" ) then
 do i=1,size(matrices)
@@ -315,20 +312,24 @@ if ( inbox .eq. 'y' ) then
 !   exp(-im*(1._dp/545.e-9_dp)*dcmplx(dot_product(l1(pol)*Pe1(:)+l2(pol)*Pe2(:)+l3(pol)*Pe3(:),Dcenter(n,:)),0.e0_dp))
 !enddo
 
-!pow_pol(7,t) = pow_pol(7,t) + dcmplx(pow_s(n,t),0._dp)*&
+!Pow_pol(7,t) = pow_pol(7,t) + dcmplx(pow_s(n,t),0._dp)*&
 !   exp(-im*(1._dp/545.e-9_dp)*dcmplx(dot_product(l1(7)*Pe1(:)+l2(7)*Pe2(:)+l3(7)*Pe3(:),Dcenter(n,:)),0.e0_dp))
-!pow_pol(8,t) = pow_pol(8,t) + dcmplx(pow_s(n,t),0._dp)*&
+!Pow_pol(8,t) = pow_pol(8,t) + dcmplx(pow_s(n,t),0._dp)*&
 !   exp(-im*(1._dp/545.e-9_dp)*dcmplx(dot_product(l1(8)*Pe1(:)+l2(8)*Pe2(:)+l3(8)*Pe3(:),Dcenter(n,:)),0.e0_dp))
-!pow_pol(33,t) = pow_pol(33,t) + dcmplx(pow_s(n,t),0._dp)*&
+!Pow_pol(33,t) = pow_pol(33,t) + dcmplx(pow_s(n,t),0._dp)*&
 !   exp(-im*(1._dp/545.e-9_dp)*dcmplx(dot_product(l1(33)*Pe1(:)+l2(33)*Pe2(:)+l3(33)*Pe3(:),Dcenter(n,:)),0.e0_dp))
-!pow_pol(39,t) = pow_pol(39,t) + dcmplx(pow_s(n,t),0._dp)*&
-!   exp(-im*(1._dp/545.e-9_dp)*dcmplx(dot_product(l1(39)*Pe1(:)+l2(39)*Pe2(:)+l3(39)*Pe3(:),Dcenter(n,:)),0.e0_dp))
-!pow_pol(41,t) = pow_pol(41,t) + dcmplx(pow_s(n,t),0._dp)*&
-!   exp(-im*(1._dp/545.e-9_dp)*dcmplx(dot_product(l1(41)*Pe1(:)+l2(41)*Pe2(:)+l3(41)*Pe3(:),Dcenter(n,:)),0.e0_dp))
-!pow_pol(43,t) = pow_pol(43,t) + dcmplx(pow_s(n,t),0._dp)*&
-!   exp(-im*(1._dp/545.e-9_dp)*dcmplx(dot_product(l1(43)*Pe1(:)+l2(43)*Pe2(:)+l3(43)*Pe3(:),Dcenter(n,:)),0.e0_dp))
-!pow_pol(44,t) = pow_pol(44,t) + dcmplx(pow_s(n,t),0._dp)*&
-!   exp(-im*(1._dp/545.e-9_dp)*dcmplx(dot_product(l1(44)*Pe1(:)+l2(44)*Pe2(:)+l3(44)*Pe3(:),Dcenter(n,:)),0.e0_dp))
+
+pow_pol(39,t) = pow_pol(39,t) + dcmplx(pow_s(n,t),0._dp)*&
+   exp(-im*(1._dp/545.e-9_dp)*dcmplx(dot_product(l1(39)*Pe1(:)+l2(39)*Pe2(:)+l3(39)*Pe3(:),Dcenter(n,:)),0.e0_dp))
+
+pow_pol(41,t) = pow_pol(41,t) + dcmplx(pow_s(n,t),0._dp)*&
+   exp(-im*(1._dp/545.e-9_dp)*dcmplx(dot_product(l1(41)*Pe1(:)+l2(41)*Pe2(:)+l3(41)*Pe3(:),Dcenter(n,:)),0.e0_dp))
+
+pow_pol(43,t) = pow_pol(43,t) + dcmplx(pow_s(n,t),0._dp)*&
+   exp(-im*(1._dp/545.e-9_dp)*dcmplx(dot_product(l1(43)*Pe1(:)+l2(43)*Pe2(:)+l3(43)*Pe3(:),Dcenter(n,:)),0.e0_dp))
+
+pow_pol(44,t) = pow_pol(44,t) + dcmplx(pow_s(n,t),0._dp)*&
+   exp(-im*(1._dp/545.e-9_dp)*dcmplx(dot_product(l1(44)*Pe1(:)+l2(44)*Pe2(:)+l3(44)*Pe3(:),Dcenter(n,:)),0.e0_dp))
 
 !off diagonal convergence of PM signal
 !do pol=1,npol
@@ -367,5 +368,5 @@ endif
 deallocate(TransHam,TransHam_ei_l,TransHam_l,TransHam_d,TransHam_ei,Mat,Matx,Maty,Matz,Ham,Ham_l,Ham_0,Ham_dir,Ham_ex,Ham_ei,haml)
 deallocate(Transvec,TransMat_ei,lambda,xc,k1,k2,k3,k4,k5,k6,k7,k8,c0,xc_ei,xc_L,xc0,pop)
 deallocate(k1_L,k2_L,k3_L,k4_L,k5_L,k6_L,k7_L,k8_L)
-deallocate(merge_diag,merge_odiag,icol,irow,xliou,lfield)
+deallocate(merge_diag,merge_odiag,icol,irow,xliou,lfield,maxid,zero)
 deallocate(xc_rho,k1_rho,k2_rho,k3_rho,k4_rho,k5_rho,k6_rho,k7_rho,k8_rho)
