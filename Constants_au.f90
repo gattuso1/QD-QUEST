@@ -6,7 +6,7 @@ use, intrinsic :: iso_fortran_env
 implicit none 
 
    integer,  parameter :: dp = SELECTED_REAL_KIND(15,307)
-   real(dp), parameter :: pi = 4.0e0_dp*datan(1.0e0_dp)
+   real(dp), parameter :: pi = 4.0_dp*datan(1.0_dp)
    real(dp), parameter :: E_au = 5.1422065211e11_dp
    real(dp), parameter :: Dip_au = 8.4783532619e-30_dp
    real(dp), parameter :: a0 = 5.291772109217e-11_dp

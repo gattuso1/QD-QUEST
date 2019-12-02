@@ -79,6 +79,8 @@ allocate(ssin(npol),source=0.e0_dp)
 allocate(TransHam_avg(0:2,0:2))
 allocate(TransHam_avg_l(0:2,0:2,3))
 allocate(Ham0_avg(0:2,0:2))
+allocate(eTDM(9,9,3),source=0._dp)
+allocate(rotmat(3,3))
 
 if ( inbox .eq. 'y' ) then
 call get_phases
@@ -232,6 +234,8 @@ matrices = (/ Tmat_0_f,Tmat_ei_f,Tmat_x_f,Tmat_y_f,Tmat_z_f,H_0_f,H_dir_f,H_ex_f
 write(Pulse_f,'("#  time                      pulse1                    pulse2                    pulse3")')
 
 !$OMP PARALLEL DO private(lambda,work,Ham,Mat,TransHam_ei,Ham_ei,TransHam,Ham_dir,Ham_ex,Ham_l,xc0,xc,xc_ei)
+
+call make_eTDM
 
 do n=1,nsys
 

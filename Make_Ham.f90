@@ -178,30 +178,58 @@ Ham_ex = Ham_ex/Energ_au
 
 if ( rdm_ori .eq. "y" ) then
 
-TransHam_l(0,1,:) = vector(TransDip_Ana_h1e(n))
-TransHam_l(0,2,:) = vector(TransDip_Ana_h2e(n))
-TransHam_l(0,3,:) = vector(TransDip_Ana_h1e(n+ndim))
-TransHam_l(0,4,:) = vector(TransDip_Ana_h2e(n+ndim))
-TransHam_l(0,5,:) = vector(TransDip_Fit_h1e_he(aR(n+ndim),aR(n)))
-TransHam_l(0,6,:) = vector(TransDip_Fit_h2e_he(aR(n+ndim),aR(n)))
-TransHam_l(0,7,:) = vector(TransDip_Fit_h1e_he(aR(n),aR(n+ndim)))
-TransHam_l(0,8,:) = vector(TransDip_Fit_h2e_he(aR(n),aR(n+ndim)))
-TransHam_l(1,2,:) = vector(TransDip_Ana_h1h2(n))
-TransHam_l(1,5,:) = vector(TransDip_Fit_ee_he(aR(n+ndim),aR(n)))
-TransHam_l(1,7,:) = vector(TransDip_Fit_h1h1_he(aR(n+ndim),aR(n)))
-TransHam_l(1,8,:) = vector(TransDip_Fit_h1h2_he(aR(n),aR(n+ndim)))
-TransHam_l(2,6,:) = vector(TransDip_Fit_ee_he(aR(n+ndim),aR(n)))
-TransHam_l(2,7,:) = vector(TransDip_Fit_h1h2_he(aR(n+ndim),aR(n)))
-TransHam_l(2,8,:) = vector(TransDip_Fit_h2h2_he(aR(n+ndim),aR(n)))
-TransHam_l(3,4,:) = vector(TransDip_Ana_h1h2(n+ndim))
-TransHam_l(3,5,:) = vector(TransDip_Fit_h1h1_he(aR(n+ndim),aR(n)))
-TransHam_l(3,6,:) = vector(TransDip_Fit_h1h2_he(aR(n+ndim),aR(n)))
-TransHam_l(3,7,:) = vector(TransDip_Fit_ee_he(aR(n+ndim),aR(n)))
-TransHam_l(4,5,:) = vector(TransDip_Fit_h1h2_he(aR(n),aR(n+ndim)))
-TransHam_l(4,6,:) = vector(TransDip_Fit_h2h2_he(aR(n+ndim),aR(n)))
-TransHam_l(4,8,:) = vector(TransDip_Fit_ee_he(aR(n+ndim),aR(n)))
-TransHam_l(5,6,:) = vector(TransDip_Ana_h1h2(n))
-TransHam_l(7,8,:) = vector(TransDip_Ana_h1h2(n+ndim))
+call random_number(psirot)
+call random_number(phirot)
+call random_number(thetarot)
+
+psirot   = psirot   * 2._dp*pi
+phirot   = phirot   * 2._dp*pi
+thetarot = thetarot * 2._dp*pi
+
+!rotmat(1,1)= cos(psirot)   * cos(phirot)   - cos(thetarot) * sin(phirot) * sin(psirot)
+!rotmat(1,2)= cos(psirot)   * sin(phirot)   + cos(thetarot) * cos(phirot) * sin(psirot)
+!rotmat(1,3)= sin(psirot)   * sin(thetarot)
+!rotmat(2,1)=-sin(psirot)   * cos(phirot)   - cos(thetarot) * sin(phirot) * cos(psirot)
+!rotmat(2,2)=-sin(psirot)   * sin(phirot)   + cos(thetarot) * cos(phirot) * cos(psirot) 
+!rotmat(2,3)= cos(psirot)   * sin(thetarot)
+!rotmat(3,1)= sin(thetarot) * sin(phirot)
+!rotmat(3,2)=-sin(thetarot) * cos(phirot) 
+!rotmat(3,3)= cos(thetarot)
+
+rotmat(1,1)= cos(phirot)*cos(thetarot)*cos(psirot) - sin(phirot)*sin(psirot)
+rotmat(1,2)=-cos(phirot)*cos(thetarot)*sin(psirot) - sin(phirot)*cos(psirot)
+rotmat(1,3)= cos(phirot)*sin(thetarot)
+rotmat(2,1)= sin(phirot)*cos(thetarot)*cos(psirot) + cos(phirot)*sin(psirot)
+rotmat(2,2)=-sin(phirot)*cos(thetarot)*sin(psirot) + cos(phirot)*cos(psirot)
+rotmat(2,3)= sin(phirot)*sin(thetarot)
+rotmat(3,1)=-sin(thetarot)*cos(psirot)
+rotmat(3,2)= sin(thetarot)*sin(psirot)
+rotmat(3,3)= cos(thetarot)
+
+TransHam_l(0,1,:) = matmul(rotmat,eTDM(0,1,:))*(TransDip_Ana_h1e(n))
+TransHam_l(0,2,:) = matmul(rotmat,eTDM(0,2,:))*(TransDip_Ana_h2e(n))
+TransHam_l(0,3,:) = matmul(rotmat,eTDM(0,3,:))*(TransDip_Ana_h1e(n+ndim))
+TransHam_l(0,4,:) = matmul(rotmat,eTDM(0,4,:))*(TransDip_Ana_h2e(n+ndim))
+TransHam_l(0,5,:) = matmul(rotmat,eTDM(0,5,:))*(TransDip_Fit_h1e_he(aR(n+ndim),aR(n)))
+TransHam_l(0,6,:) = matmul(rotmat,eTDM(0,6,:))*(TransDip_Fit_h2e_he(aR(n+ndim),aR(n)))
+TransHam_l(0,7,:) = matmul(rotmat,eTDM(0,7,:))*(TransDip_Fit_h1e_he(aR(n),aR(n+ndim)))
+TransHam_l(0,8,:) = matmul(rotmat,eTDM(0,8,:))*(TransDip_Fit_h2e_he(aR(n),aR(n+ndim)))
+TransHam_l(1,2,:) = matmul(rotmat,eTDM(1,2,:))*(TransDip_Ana_h1h2(n))
+TransHam_l(1,5,:) = matmul(rotmat,eTDM(1,5,:))*(TransDip_Fit_ee_he(aR(n+ndim),aR(n)))
+TransHam_l(1,7,:) = matmul(rotmat,eTDM(1,7,:))*(TransDip_Fit_h1h1_he(aR(n+ndim),aR(n)))
+TransHam_l(1,8,:) = matmul(rotmat,eTDM(1,8,:))*(TransDip_Fit_h1h2_he(aR(n),aR(n+ndim)))
+TransHam_l(2,6,:) = matmul(rotmat,eTDM(2,6,:))*(TransDip_Fit_ee_he(aR(n+ndim),aR(n)))
+TransHam_l(2,7,:) = matmul(rotmat,eTDM(2,7,:))*(TransDip_Fit_h1h2_he(aR(n+ndim),aR(n)))
+TransHam_l(2,8,:) = matmul(rotmat,eTDM(2,8,:))*(TransDip_Fit_h2h2_he(aR(n+ndim),aR(n)))
+TransHam_l(3,4,:) = matmul(rotmat,eTDM(3,4,:))*(TransDip_Ana_h1h2(n+ndim))
+TransHam_l(3,5,:) = matmul(rotmat,eTDM(3,5,:))*(TransDip_Fit_h1h1_he(aR(n+ndim),aR(n)))
+TransHam_l(3,6,:) = matmul(rotmat,eTDM(3,6,:))*(TransDip_Fit_h1h2_he(aR(n+ndim),aR(n)))
+TransHam_l(3,7,:) = matmul(rotmat,eTDM(3,7,:))*(TransDip_Fit_ee_he(aR(n+ndim),aR(n)))
+TransHam_l(4,5,:) = matmul(rotmat,eTDM(4,5,:))*(TransDip_Fit_h1h2_he(aR(n),aR(n+ndim)))
+TransHam_l(4,6,:) = matmul(rotmat,eTDM(4,6,:))*(TransDip_Fit_h2h2_he(aR(n+ndim),aR(n)))
+TransHam_l(4,8,:) = matmul(rotmat,eTDM(4,8,:))*(TransDip_Fit_ee_he(aR(n+ndim),aR(n)))
+TransHam_l(5,6,:) = matmul(rotmat,eTDM(5,6,:))*(TransDip_Ana_h1h2(n))
+TransHam_l(7,8,:) = matmul(rotmat,eTDM(7,8,:))*(TransDip_Ana_h1h2(n+ndim))
 
 do i=0,nstates-1
 do j=i+1,nstates-1
@@ -954,12 +982,33 @@ l1(145)=   0.0e0_dp ; l2(145)= -1.0e0_dp ; l3(145)=  4.0e0_dp
 l1(146)=   0.0e0_dp ; l2(146)=  1.0e0_dp ; l3(146)= -4.0e0_dp
 end subroutine
 
-!subroutine make_Ham_avg
-!
-!do i=1,nstates-1
-!Ham_ei(i,:) = sum(Ham_ei(i,
-!enddo
-!
-!end subroutine
+subroutine make_eTDM
+
+eTDM(0,1,:) = vector(1._dp) 
+eTDM(0,2,:) = vector(1._dp)
+eTDM(0,3,:) = vector(1._dp)
+eTDM(0,4,:) = vector(1._dp)
+eTDM(0,5,:) = vector(1._dp)
+eTDM(0,6,:) = vector(1._dp)
+eTDM(0,7,:) = vector(1._dp)
+eTDM(0,8,:) = vector(1._dp)
+eTDM(1,2,:) = vector(1._dp)
+eTDM(1,5,:) = vector(1._dp)
+eTDM(1,7,:) = vector(1._dp)
+eTDM(1,8,:) = vector(1._dp)
+eTDM(2,6,:) = vector(1._dp)
+eTDM(2,7,:) = vector(1._dp)
+eTDM(2,8,:) = vector(1._dp)
+eTDM(3,4,:) = vector(1._dp)
+eTDM(3,5,:) = vector(1._dp)
+eTDM(3,6,:) = vector(1._dp)
+eTDM(3,7,:) = vector(1._dp)
+eTDM(4,5,:) = vector(1._dp)
+eTDM(4,6,:) = vector(1._dp)
+eTDM(4,8,:) = vector(1._dp)
+eTDM(5,6,:) = vector(1._dp)
+eTDM(7,8,:) = vector(1._dp)
+
+end subroutine
 
 end module Make_Ham

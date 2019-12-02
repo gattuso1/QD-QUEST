@@ -10,7 +10,7 @@ complex*8 :: im
 
 im = dcmplx(0.d0,1.d0)
 n=10000
-nsys = 2000
+nsys = 4000
 nstates= 9
 
 allocate(Si(n,nsys,nstates),S(n,nstates),omega(n),Scov(n,n),Re_c(n,nsys,nstates), Im_c(n,nsys,nstates))

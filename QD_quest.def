@@ -1,6 +1,6 @@
 &outputs !Select output and computation modules, yes ("y") or ("no") 
 inbox    = "n" !For phase matching directions, read coordinates in space, orient mus ... 
-rdm_ori  = "n" !For phase matching directions, read coordinates in space, orient mus ... 
+rdm_ori  = "y" !For phase matching directions, read coordinates in space, orient mus ... 
 get_sp   = "n" !recover sampling from a previous Etransitions_0.dat
 get_ei   = "y" !Generates eigenstate vectors and TDM 
 Dyn_0    = "n" !Should I perform dynamics in 0 order basis?
@@ -9,7 +9,7 @@ Dyn_L    = "n" !Should I perform Liouville quantum dynamics?
 Dyn_avg  = "n" !Should I perform Liouville quantum dynamics on average of ei Hamiltonians?
 TDM_ee   = "y" !Request interexciton TDM or not
 doAbs    = "n" !Request absorption spectrum
-doFT     = "y" !Perform FT of coherences for all systems
+doFT     = "n" !Perform FT of coherences for all systems
 singleDS = "n" !Create single Dipole Spectrum files for each system, doFT must be yes
 singleFT = "n" !Create single FT files for each system
 doFT_s   = "n" !Do Fourier Transform for each system
@@ -47,7 +47,7 @@ t01        = 50.d0     !Pulse 1 centered at (s)
 t02        = 100.d0     !Pulse 2 centered at (s)
 t03        = 150.d0     !Pulse 3 centered at (s)
 timestep   = 0.010d0      !Time step of quantum dynamic
-totaltime  = 1000.d0     !Total time simulated (s)
+totaltime  = 2000.d0     !Total time simulated (s)
 omega01    = 0.55d15      !Frequency (s-1)
 omega02    = 0.55d15      !Frequency (s-1)
 omega03    = 0.55d15      !Frequency (s-1)
@@ -69,11 +69,11 @@ nQDA      = 0          !Number of dimers
 nQDB      = 0          !Number of dimers
 nhomoA    = 0          !Number of dimers
 nhomoB    = 0          !Number of dimers
-nhetero   = 4000          !Number of dimers
+nhetero   = 10          !Number of dimers
 dispQD    = 0.01d0      !Dispersion of QD radius
 idlink    = 20         !Linker length
-aA        = 1.3d-9      !Radius of QDA
-aB        = 2.2d-9      !Radius of QDA
+aA        = 1.175d-9      !Radius of QDA
+aB        = 1.925d-9      !Radius of QDA
 /
 
 &FT !Parameters of the FT

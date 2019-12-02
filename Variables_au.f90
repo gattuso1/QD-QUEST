@@ -56,14 +56,14 @@ implicit none
    real(dp) :: tpy1,tpy2,tpy3,tpy4,tpy5,tpy6,tpy7,tpy8
    real(dp) :: tpz1,tpz2,tpz3,tpz4,tpz5,tpz6,tpz7,tpz8
    real(dp) :: aA, aB, me, mh, eps, epsout, V0, omegaLO, rhoe, rhoh, slope, V0eV, minr, maxr, rsteps, side, link
-   real(dp) :: sigma_conv,Emin,Emax,x,w1,w2,w,wstep,powtemp,time_FFT, FTscale
+   real(dp) :: sigma_conv,Emin,Emax,x,w1,w2,w,wstep,powtemp,time_FFT, FTscale, psirot, phirot, thetarot
    real(dp) :: vertex, zbase, alphae, alphah1, alphah2, betae, betah1, betah2, rdm1, rdm2
    real(dp) :: dispQD, displink, rdmlinker, rdmQDA, rdmQDB, t01, t02, t03, timestep, totaltime, distQD, Kpp, Dsop, Kp
    real(dp) :: omega01, omega02, omega03, phase01, phase02, phase03, width01, width02, width03, Ed01, Ed02, Ed03
    real(dp) :: pulse1, pulse2, pulse3, test, time, cnorm, cnormabs, cnormconj, cnorm2, cnorm2_ei, Kas, Kbs, Kcs, Dso1, Dso2, Dxf
-   real(dp),allocatable :: aR(:), aRA(:), aRB(:), epsin(:), epsR(:), V0e(:), V0h(:), linker(:), Eg(:), TDM(:)
+   real(dp),allocatable :: aR(:), aRA(:), aRB(:), epsin(:), epsR(:), V0e(:), V0h(:), linker(:), Eg(:), TDM(:), eTDM(:,:,:)
    real(dp),allocatable :: epsinA(:), epsinB(:), epsRA(:), epsRB(:), V0eA(:), V0eB(:), V0hA(:), V0hB(:),l1(:), l2(:), l3(:)
-   real(dp),allocatable ::  Cb_eh1(:), Cb_eh2(:), Norm_Ana_e(:), Norm_Ana_h1(:), Norm_Ana_h2(:), Eeh1(:), Eeh2(:)
+   real(dp),allocatable :: Cb_eh1(:), Cb_eh2(:), Norm_Ana_e(:), Norm_Ana_h1(:), Norm_Ana_h2(:), Eeh1(:), Eeh2(:)
    real(dp),allocatable :: OverlapAna_h1e(:), OverlapAna_h2e(:), Cb_Num_eh1(:), Cb_Num_eh1_eh2(:), Cb_Num_eh2(:)
    real(dp),allocatable :: minEe(:,:),minEh(:,:), TransDip_Num_h1e(:), TransDip_Num_h2e(:), work(:), lambda(:)
    real(dp),allocatable :: TransDip_Ana_h1e(:), TransDip_Ana_h2e(:), Oscillator_Ana_h1e(:), Oscillator_Ana_h2e(:), Transvec(:)
@@ -74,7 +74,7 @@ implicit none
    real(dp),allocatable :: Matx(:,:), Maty(:,:), Matz(:,:),spec(:),dipole(:,:), Ham0_avg(:,:)
    real(dp),allocatable :: pow(:),pow_gaus(:),pulses(:), pow_s(:,:), pow_gaus_s(:,:), pulses_FFT(:)
    real(dp),allocatable :: Scov(:,:), pop(:,:),merge_diag(:,:),merge_odiag(:,:), scos(:), ssin(:), lfield(:,:)
-   real(dp),allocatable :: TransHam_avg(:,:),TransHam_avg_l(:,:,:),lambda_avg(:), bloblo(:), blabla(:),maxid(:)
+   real(dp),allocatable :: TransHam_avg(:,:),TransHam_avg_l(:,:,:),lambda_avg(:), bloblo(:), blabla(:),maxid(:), rotmat(:,:)
  complex(8) :: ct1, ct2, ct3, ct4, xt01, xt02, xt03, xhbar, im, xwidth, xomega , xEd, xh, xphase, xtime, xhbar_au
  complex(8) :: integPol, integPol_diff, integPolconv, pow_41, pow_41_conv
  complex(8),allocatable :: xHam(:,:) , xHamt(:,:,:), xTransHam(:,:), xE0(:), xHamtk2(:,:,:), xHamtk3(:,:,:), xHamtk4(:,:,:)
@@ -287,7 +287,6 @@ linker = 0.2e-9_dp
 elseif ( idlink .eq. 55 ) then
 linker = 0.55e-9_dp
 endif
- 
  
 call random_seed(size = n)
 allocate(seed(n))
