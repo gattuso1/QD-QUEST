@@ -620,6 +620,7 @@ do while ( t*FTscale .le. 4.d0 )
 wftf(t)= -2.e0_dp * dimag(sqrt(dreal(xpow_gaus(t))**2+dimag(xpow_gaus(t))**2) * dconjg(xpulse(t)))
 !if ( nofiles .eq. 'n' ) then
 write(TransAbs,*) t*FTscale, dreal(wftf(t)), dreal(xpow_gaus(t)), dimag(xpow_gaus(t))
+!write(6,*) t*FTscale, dreal(xpulse(t)), dimag(xpulse(t))
 !endif
 t = t + 1 
 enddo

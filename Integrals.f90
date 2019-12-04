@@ -1696,7 +1696,8 @@ f_ana = 0
 do t=0,ntime
 
 time = t*timestep
-time_FFT = t*timestep*2.e0_dp*pi
+!time_FFT = t*timestep*2.e0_dp*pi
+time_FFT = t*timestep
 
 if ( n .eq. 1 ) then
 
