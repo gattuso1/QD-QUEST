@@ -2134,23 +2134,23 @@ end subroutine RK_0_ei
 
 subroutine Convolution
 
-rewind Abs_Imp_f
+rewind Abs_imp_f
 open(newunit=abso,file="Absorption.dat")
 
 k=0
 
 do
-read(Abs_Imp_f,*,iostat=io)
+read(Abs_imp_f,*,iostat=io)
 if (io .ne. 0) exit
 k = k + 1
 enddo
 
 allocate(dipole(2,k))
 
-rewind Abs_Imp_f
+rewind Abs_imp_f
 
 do i=1,k
-read(Abs_Imp_f,*) dipole(1,i), dipole(2,i)
+read(Abs_imp_f,*) dipole(1,i), dipole(2,i)
 !print*, dipole(1,i), dipole(2,i)
 enddo
 

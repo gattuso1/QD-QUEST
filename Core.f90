@@ -73,10 +73,10 @@ write(Tmat_x_f,form_TDM) (TransHam_ei_l(i,j,1), j=0,nstates-1)
 write(Tmat_y_f,form_TDM) (TransHam_ei_l(i,j,2), j=0,nstates-1)
 write(Tmat_z_f,form_TDM) (TransHam_ei_l(i,j,3), j=0,nstates-1)
 endif
-write(Abs_imp_f,form_abs) lambda(i)*Energ_au/elec, &
-                         sqrt((TransHam_ei_l(0,i,1))**2+(TransHam_ei_l(0,i,2))**2+(TransHam_ei_l(0,i,3))**2) ,i
+!write(Abs_imp_f,form_abs) lambda(i)*Energ_au/elec, &
+!                         sqrt((TransHam_ei_l(0,i,1))**2+(TransHam_ei_l(0,i,2))**2+(TransHam_ei_l(0,i,3))**2) ,i
 !elseif ( inbox .eq. "n" ) then
-!write(Abs_imp_f,form_abs) lambda(i)*Energ_au/elec, (TransHam_ei(0,i))**2 ,i
+write(Abs_imp_f,form_abs) lambda(i)*Energ_au/elec, (TransHam_ei(0,i))**2 ,i
 !endif
 enddo
 
