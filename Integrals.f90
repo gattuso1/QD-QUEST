@@ -2036,7 +2036,7 @@ cnorm2 = sum(dreal(xc_ei(:,t))**2 + dimag(xc_ei(:,t))**2)
 write(popc_ei_f,form_pop) time*t_au, (dreal(xc_ei(i,t))**2+dimag(xc_ei(i,t))**2, i=0,nstates-1), cnorm2
 write(Re_c_ei_f,form_com) time*t_au, (dreal(xc_ei(i,t)), i=0,nstates-1)
 write(Im_c_ei_f,form_com) time*t_au, (dimag(xc_ei(i,t)), i=0,nstates-1)
-write(60,*) time*t_au, dreal(dconjg(xc_ei(2,t))*xc_ei(5,t)), dreal(dconjg(xc_ei(5,t))*xc_ei(2,t))
+!write(60,*) time*t_au, dreal(dconjg(xc_ei(2,t))*xc_ei(5,t)), dreal(dconjg(xc_ei(5,t))*xc_ei(2,t))
 endif
 endif
 

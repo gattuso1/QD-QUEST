@@ -253,13 +253,11 @@ call RK_0_ei
 if ( nofiles .eq. 'y' ) then
 if ( ( Dyn_0 .eq. 'y' ) ) then
 close(popc_0_f   ,status="delete")
-!close(norm_0_f   ,status="delete")
 close(Re_c_0_f   ,status="delete")
 close(Im_c_0_f   ,status="delete")
 endif
 if ( ( Dyn_ei .eq. 'y' ) ) then
 close(popc_ei_f  ,status="delete")
-!close(norm_ei_f  ,status="delete")
 close(Re_c_ei_f  ,status="delete")
 close(Im_c_ei_f  ,status="delete")
 endif
@@ -270,12 +268,10 @@ endif
 elseif ( nofiles .eq. 'n' ) then
 if ( ( Dyn_0 .eq. 'y' ) ) then
 close(popc_0_f )
-!close(norm_0_f )
 close(Re_c_0_f )
 close(Im_c_0_f )
 endif
 if ( ( Dyn_ei .eq. 'y' ) ) then
-!close(norm_ei_f)
 close(Re_c_ei_f)
 close(Im_c_ei_f)
 close(popc_ei_f)
@@ -367,6 +363,6 @@ endif
 
 deallocate(TransHam,TransHam_ei_l,TransHam_l,TransHam_d,TransHam_ei,Mat,Matx,Maty,Matz,Ham,Ham_l,Ham_0,Ham_dir,Ham_ex,Ham_ei,haml)
 deallocate(Transvec,TransMat_ei,lambda,xc,k1,k2,k3,k4,k5,k6,k7,k8,c0,xc_ei,xc_L,xc0,pop)
-deallocate(k1_L,k2_L,k3_L,k4_L,k5_L,k6_L,k7_L,k8_L)
-deallocate(merge_diag,merge_odiag,icol,irow,xliou,lfield,maxid,zero)
-deallocate(xc_rho,k1_rho,k2_rho,k3_rho,k4_rho,k5_rho,k6_rho,k7_rho,k8_rho)
+!deallocate(k1_L,k2_L,k3_L,k4_L,k5_L,k6_L,k7_L,k8_L,xliou,lfield)
+deallocate(merge_diag,merge_odiag,icol,irow,maxid,zero)
+!deallocate(xc_rho,k1_rho,k2_rho,k3_rho,k4_rho,k5_rho,k6_rho,k7_rho,k8_rho)

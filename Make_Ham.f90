@@ -292,6 +292,8 @@ Ham_0(1)     = minEe(1,n) + minEh(1,n)  + V0
 Ham_dir(1,1) = elec*(a11_1d_ho + a11_2d_ho / ((aR(n)*1e9_dp)**a11_3d_ho)) 
 Ham_ex(1,1)  = elec*(a11_1e_ho + a11_2e_ho / ((aR(n)*1e9_dp)**a11_3e_ho))
 
+write(6,*) Ham_0(1)/elec, Ham_dir(1,1)/elec, Ham_ex(1,1)/elec
+
 Ham_0(2)     = minEe(1,n) + minEh(2,n) + V0 
 Ham_dir(2,2) = elec*(a22_1d_ho + a22_2d_ho / ((aR(n)*1e9_dp)**a22_3d_ho))
 Ham_ex(2,2)  = elec*(a22_1e_ho + a22_2e_ho / ((aR(n)*1e9_dp)**a22_3e_ho))
@@ -481,6 +483,9 @@ Ham_0(1)   = minEe(1,n) + minEh(1,n)  + V0
 Ham_dir(1,1) = elec*(a11_1d_ho + a11_2d_ho / ((aR(n)*1d9)**a11_3d_ho)) 
 Ham_ex(1,1)  = elec*(a11_1e_ho + a11_2e_ho / ((aR(n)*1d9)**a11_3e_ho))
 
+!write(6,*) abs((- 1.d0*Ham_dir(1,1) + Ham_ex(1,1))/elec)
+!write(6,*) Ham_0(1)/elec, Ham_dir(1,1)/elec, Ham_ex(1,1)/elec
+
 Ham_0(2)   = minEe(1,n) + minEh(2,n) + V0 
 Ham_dir(2,2) = elec*(a22_1d_ho + a22_2d_ho / ((aR(n)*1d9)**a22_3d_ho))
 Ham_ex(2,2)  = elec*(a22_1e_ho + a22_2e_ho / ((aR(n)*1d9)**a22_3e_ho))
@@ -535,6 +540,8 @@ do j=i+1,nstates-1
 TransHam(j,i) = TransHam(i,j)
 enddo
 enddo
+
+!write(6,*) TransDip_Ana_h1h2(n)
 
 TransHam = TransHam/D_to_au
 
@@ -619,6 +626,8 @@ Ham(j+12,j+11) = Ham(j+4,j+5)
 TransHam(0 ,j+3 ) = abs(TDM(k))/sqrt(3.d0) 
 TransHam(0 ,j+7 ) = abs(TDM(k))/sqrt(3.d0)
 TransHam(0 ,j+10) = abs(TDM(k))/sqrt(3.d0)
+
+!Interdot fine structure dipole moment non diagonal elements between 0, -1, +1, S to S, T to T
 
 !print*, TransHam(j+0 ,j+3 )
 
@@ -712,10 +721,21 @@ j = j + 15
 
 enddo
 
+do i=1,24
+do j=i+1,24
+if ( mul(i) .eq. mul(j) ) then
+TransHam(i,j) = abs(TransDip_Ana_h1h2(n))/sqrt(276.)
+endif
+enddo
+enddo
+
 Ham = Ham/Energ_au
+TransHam = TransHam/D_to_au
 
 do i=0,nstates-1
-TransHam(i,0) = TransHam(0,i)
+do j=i+1,nstates-1
+TransHam(j,i) = TransHam(i,j)
+enddo
 enddo
 
 end subroutine make_Ham_FS_FO

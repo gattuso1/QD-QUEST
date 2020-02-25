@@ -14,6 +14,7 @@ implicit none
    character*1 :: o_Norm, o_Over, o_Coul, o_DipS, o_Osci, o_Exti, o_DipD, dyn, hamilt, get_ei, finest, get_sp
    character*1 :: TDM_ee, Dyn_0, Dyn_ei, inbox, Dyn_L,doFT,CEP1,CEP2,CEP3,singleFT,nofiles, singleDS, doCovar,doFT_s,doAbs
    character*1 :: rdm_ori, noMat, Dyn_avg
+   character*1, allocatable :: mul(:)
    logical :: isit
    integer :: Pulse_f,Tmat_0_f,Tmat_ei_f,Tmat_x_f,Tmat_y_f,Tmat_z_f,H_0_f,H_dir_f,H_ex_f,H_JK_f,TransAbs, DipSpec_conv_f
    integer :: popc_0_f,popc_ei_f,norm_0_f,norm_ei_f,Re_c_ei_f,Im_c_ei_f,Re_c_0_f,Im_c_0_f,TDip_ei_f,tmp, nbands,Liou_f
@@ -51,7 +52,7 @@ implicit none
                a36_1e_he,a36_2e_he,a36_3e_he,a36_4e_he,a38_1e_he,a38_2e_he,a38_3e_he,a38_4e_he,a45_1e_he,a45_2e_he,a45_3e_he,&
                a45_4e_he,a47_1e_he,a47_2e_he,a47_3e_he,a47_4e_he,a56_1e_he,a56_2e_he,a56_3e_he,a56_4e_he,a58_1e_he,a58_2e_he,&
                a58_3e_he,a58_4e_he,a67_1e_he,a67_2e_he,a67_3e_he,a67_4e_he,a78_1e_he,a78_2e_he,a78_3e_he,a78_4e_he
-   real(dp) :: tp1,tp2,tp3,tp4,tp5,tp6,tp7,tp8, time_ana, aR_avgA, aR_avgB
+   real(dp) :: tp1,tp2,tp3,tp4,tp5,tp6,tp7,tp8, time_ana, aR_avgA, aR_avgB, start, finish
    real(dp) :: tpx1,tpx2,tpx3,tpx4,tpx5,tpx6,tpx7,tpx8
    real(dp) :: tpy1,tpy2,tpy3,tpy4,tpy5,tpy6,tpy7,tpy8
    real(dp) :: tpz1,tpz2,tpz3,tpz4,tpz5,tpz6,tpz7,tpz8
@@ -116,6 +117,7 @@ rhoh       = 1.0e0_dp/sqrt((2.e0_dp*mh*omegaLO)/hbar)
 V0         = V0eV*elec
 !npol       = 44
 npol       = 146
+!dispQD = dispQD*0.9d0
 
 if ( ( Dyn_0 .eq. 'y' ) .or. ( Dyn_ei .eq. 'y' ) .or. ( Dyn_L .eq. 'y' ) ) then
 
@@ -293,23 +295,49 @@ allocate(seed(n))
 call random_seed(get=seed)
 
 if ( get_sp .eq. 'n' ) then
+!   do n=1,nQDA
+!   aR(n) = r8_NORMAL_AB(aA,dispQD*1e-9_dp,seed(1))
+!   enddo
+!   do n=nQDA+1,nQDA+nQDB
+!   aR(n) = r8_NORMAL_AB(aB,dispQD*1e-9_dp,seed(2))
+!   enddo
+!   do n=nQDA+nQDB+1,nQDA+nQDB+nhomoA
+!   aR(n) = r8_NORMAL_AB(aA,dispQD*1e-9_dp,seed(1))
+!   aR(n+ndim) = r8_NORMAL_AB(aA,dispQD*1e-9_dp,seed(2))
+!   enddo
+!   do n=nQDA+nQDB+nhomoA+1,nQDA+nQDB+nhomoA+nhomoB
+!   aR(n) = r8_NORMAL_AB(aB,dispQD*1e-9_dp,seed(1))
+!   aR(n+ndim) = r8_NORMAL_AB(aB,dispQD*1e-9_dp,seed(2))
+!   enddo
+!   do n=nQDA+nQDB+nhomoA+nhomoB+1,nQDA+nQDB+nhomoA+nhomoB+nhetero
+!   aR(n) = r8_NORMAL_AB(aA,dispQD*1e-9_dp,seed(1))
+!   aR(n+ndim) = r8_NORMAL_AB(aB,dispQD*1e-9_dp,seed(2))
+!   enddo
    do n=1,nQDA
-   aR(n) = r8_NORMAL_AB(aA,dispQD*1e-9_dp,seed(1))
+   !aR(n) = r8_NORMAL_AB(aA,dispQD*aA/sqrt(2._dp*log(2._dp)),seed(1))
+   aR(n) = r8_NORMAL_AB(aA,dispQD*aA,seed(1))
    enddo
    do n=nQDA+1,nQDA+nQDB
-   aR(n) = r8_NORMAL_AB(aB,dispQD*1e-9_dp,seed(2))
+   !aR(n) = r8_NORMAL_AB(aB,dispQD*aB/sqrt(2._dp*log(2._dp)),seed(2))
+   aR(n) = r8_NORMAL_AB(aB,dispQD*aB,seed(2))
    enddo
    do n=nQDA+nQDB+1,nQDA+nQDB+nhomoA
-   aR(n) = r8_NORMAL_AB(aA,dispQD*1e-9_dp,seed(1))
-   aR(n+ndim) = r8_NORMAL_AB(aA,dispQD*1e-9_dp,seed(2))
+   !aR(n) = r8_NORMAL_AB(aA,dispQD*aA/sqrt(2._dp*log(2._dp)),seed(1))
+   !aR(n+ndim) = r8_NORMAL_AB(aA,dispQD*aA/sqrt(2._dp*log(2._dp)),seed(2))
+   aR(n) = r8_NORMAL_AB(aA,dispQD*aA,seed(1))
+   aR(n+ndim) = r8_NORMAL_AB(aA,dispQD*aA,seed(2))
    enddo
    do n=nQDA+nQDB+nhomoA+1,nQDA+nQDB+nhomoA+nhomoB
-   aR(n) = r8_NORMAL_AB(aB,dispQD*1e-9_dp,seed(1))
-   aR(n+ndim) = r8_NORMAL_AB(aB,dispQD*1e-9_dp,seed(2))
+   !aR(n) = r8_NORMAL_AB(aB,dispQD*aA/sqrt(2._dp*log(2._dp)),seed(1))
+   !aR(n+ndim) = r8_NORMAL_AB(aB,dispQD*aB/sqrt(2._dp*log(2._dp)),seed(2))
+   aR(n) = r8_NORMAL_AB(aB,dispQD*aB,seed(1))
+   aR(n+ndim) = r8_NORMAL_AB(aB,dispQD*aB,seed(2))
    enddo
    do n=nQDA+nQDB+nhomoA+nhomoB+1,nQDA+nQDB+nhomoA+nhomoB+nhetero
-   aR(n) = r8_NORMAL_AB(aA,dispQD*1e-9_dp,seed(1))
-   aR(n+ndim) = r8_NORMAL_AB(aB,dispQD*1e-9_dp,seed(2))
+   !aR(n) = r8_NORMAL_AB(aA,dispQD*aA/sqrt(2._dp*log(2._dp)),seed(1))
+   !aR(n+ndim) = r8_NORMAL_AB(aB,dispQD*aB/sqrt(2._dp*log(2._dp)),seed(2))
+   aR(n) = r8_NORMAL_AB(aA,dispQD*aA,seed(1))
+   aR(n+ndim) = r8_NORMAL_AB(aB,dispQD*aB,seed(2))
    enddo
 elseif ( get_sp .eq. 'y' ) then
    call system("mv Etransitions-he_0.dat tmp.dat ")
