@@ -1031,4 +1031,118 @@ eTDM(7,8,:) = vector(1._dp)
 
 end subroutine
 
+subroutine make_distMat
+
+open(newunit=getMat,file='getDmat.sh')
+
+write(getMat,*) "#!/bin/bash"
+write(getMat,*) 
+write(getMat,*) "cat > plot-distrib-tmp <<EOF"
+write(getMat,*) 
+write(getMat,*) "width = 0.002"
+write(getMat,*) "set boxwidth width absolute"
+write(getMat,*) "set style fill solid 1.0"
+write(getMat,*) "bin_width = width;"
+write(getMat,*) "bin_number(x) = floor(x/bin_width)"
+write(getMat,*) "rounded(x) = bin_width * ( bin_number(x) )"
+write(getMat,*) "set table 'test1.dat'"
+write(getMat,*) "plot 'Etransitions-he_ei.dat' using (rounded(\$4)):(1) smooth frequency "
+write(getMat,*) "unset table"
+write(getMat,*) "set table 'test2.dat'"
+write(getMat,*) "plot 'Etransitions-he_ei.dat' using (rounded(\$5)):(1) smooth frequency "
+write(getMat,*) "unset table"
+write(getMat,*) "set table 'test3.dat'"
+write(getMat,*) "plot 'Etransitions-he_ei.dat' using (rounded(\$6)):(1) smooth frequency "
+write(getMat,*) "unset table"
+write(getMat,*) "set table 'test4.dat'"
+write(getMat,*) "plot 'Etransitions-he_ei.dat' using (rounded(\$7)):(1) smooth frequency "
+write(getMat,*) "unset table"
+write(getMat,*) "set table 'test5.dat'"
+write(getMat,*) "plot 'Etransitions-he_ei.dat' using (rounded(\$8)):(1) smooth frequency "
+write(getMat,*) "unset table"
+write(getMat,*) "set table 'test6.dat'"
+write(getMat,*) "plot 'Etransitions-he_ei.dat' using (rounded(\$9)):(1) smooth frequency "
+write(getMat,*) "unset table"
+write(getMat,*) "set table 'test7.dat'"
+write(getMat,*) "plot 'Etransitions-he_ei.dat' using (rounded(\$10)):(1) smooth frequency"
+write(getMat,*) "unset table"
+write(getMat,*) "set table 'test8.dat'"
+write(getMat,*) "plot 'Etransitions-he_ei.dat' using (rounded(\$11)):(1) smooth frequency "
+write(getMat,*) "unset table"
+write(getMat,*) 
+write(getMat,*) "a2=2.5"
+write(getMat,*) "b2=2.5" 
+write(getMat,*) "c2=2.5"
+write(getMat,*) "d2=2.5"
+write(getMat,*) "e2=2.5"
+write(getMat,*) "f2=2.5"
+write(getMat,*) "g2=2.5"
+write(getMat,*) "h2=2.5"
+write(getMat,*) 
+write(getMat,*) "f1(x) = (a1/(a3*(2*pi)**0.5))*exp(-(x-a2)**2/(2*(a3)**2))" 
+write(getMat,*) "f2(x) = (b1/(b3*(2*pi)**0.5))*exp(-(x-b2)**2/(2*(b3)**2))"
+write(getMat,*) "f3(x) = (c1/(c3*(2*pi)**0.5))*exp(-(x-c2)**2/(2*(c3)**2))"
+write(getMat,*) "f4(x) = (d1/(d3*(2*pi)**0.5))*exp(-(x-d2)**2/(2*(d3)**2))"
+write(getMat,*) "f5(x) = (e1/(e3*(2*pi)**0.5))*exp(-(x-e2)**2/(2*(e3)**2))"
+write(getMat,*) "f6(x) = (f1/(f3*(2*pi)**0.5))*exp(-(x-f2)**2/(2*(f3)**2))"
+write(getMat,*) "f7(x) = (g1/(g3*(2*pi)**0.5))*exp(-(x-g2)**2/(2*(g3)**2))"
+write(getMat,*) "f8(x) = (h1/(h3*(2*pi)**0.5))*exp(-(x-h2)**2/(2*(h3)**2))"
+write(getMat,*) 
+write(getMat,*) "fit f1(x) 'test1.dat' via a1,a2,a3"
+write(getMat,*) "save fit 'fit1.dat'"
+write(getMat,*) "fit f2(x) 'test2.dat' via b1,b2,b3"
+write(getMat,*) "save fit 'fit2.dat'"
+write(getMat,*) "fit f3(x) 'test3.dat' via c1,c2,c3"
+write(getMat,*) "save fit 'fit3.dat'"
+write(getMat,*) "fit f4(x) 'test4.dat' via d1,d2,d3"
+write(getMat,*) "save fit 'fit4.dat'"
+write(getMat,*) "fit f5(x) 'test5.dat' via e1,e2,e3"
+write(getMat,*) "save fit 'fit5.dat'"
+write(getMat,*) "fit f6(x) 'test6.dat' via f1,f2,f3"
+write(getMat,*) "save fit 'fit6.dat'"
+write(getMat,*) "fit f7(x) 'test7.dat' via g1,g2,g3"
+write(getMat,*) "save fit 'fit7.dat'"
+write(getMat,*) "fit f8(x) 'test8.dat' via h1,h2,h3"
+write(getMat,*) "save fit 'fit8.dat'"
+write(getMat,*) 
+write(getMat,*) "EOF"
+write(getMat,*) 
+write(getMat,*) "gnuplot plot-distrib-tmp 2> tmp"
+write(getMat,*) 
+write(getMat,*) "rm tmp2"
+write(getMat,*) 
+write(getMat,*) "grep 'a3              =' fit1.dat | awk '{print $3}' >> tmp2" 
+write(getMat,*) "grep 'b3              =' fit2.dat | awk '{print $3}' >> tmp2"
+write(getMat,*) "grep 'c3              =' fit3.dat | awk '{print $3}' >> tmp2"
+write(getMat,*) "grep 'd3              =' fit4.dat | awk '{print $3}' >> tmp2"
+write(getMat,*) "grep 'e3              =' fit5.dat | awk '{print $3}' >> tmp2"
+write(getMat,*) "grep 'f3              =' fit6.dat | awk '{print $3}' >> tmp2"
+write(getMat,*) "grep 'g3              =' fit7.dat | awk '{print $3}' >> tmp2"
+write(getMat,*) "grep 'h3              =' fit8.dat | awk '{print $3}' >> tmp2"
+
+allocate(sigma(8))
+
+call system('sh getDmat.sh')
+
+open(newunit=sigfit,file='tmp2')
+open(newunit=Dmat,file='Dmat.dat')
+
+do i=1,8
+read(sigfit,*) sigma(i)
+enddo
+
+write(Dmat,'(9f16.8)') 0._dp, (sigma(j), j=1,8)
+do i=1,8
+write(Dmat,'(9f16.8)') sigma(i), (abs(sigma(i)-sigma(j)), j=1,8)
+enddo
+
+write(Dmat,*) 
+
+write(Dmat,'(9f16.8)') 0._dp, (1.e15_dp*6.582119570e-16_dp/sigma(j), j=1,8)
+do i=1,8
+write(Dmat,'(9f16.8)') 1.e15_dp*6.582119570e-16_dp/sigma(i), (1.e15_dp*6.582119570e-16_dp/abs(sigma(i)-sigma(j)), j=1,8)
+enddo
+
+end subroutine
+
 end module Make_Ham

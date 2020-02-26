@@ -15,3 +15,5 @@ plot*
 *BAK
 *xyz
 *.png
+tmp*
+*.sh

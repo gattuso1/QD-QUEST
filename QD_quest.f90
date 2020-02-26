@@ -281,17 +281,17 @@ include 'Core.f90'
 
 elseif ( (n .gt. nQDA+nQDB) .and. ( model .eq. "SB" ) ) then
 
-call cpu_time(start)
+!call cpu_time(start)
 
 nstates=9
-print*, "Computing system number:    ", n, "which possesses", nstates, "states"
+!print*, "Computing system number:    ", n, "which possesses", nstates, "states"
 include 'allocate_core.f90'
 call make_Ham_he
 include 'Core.f90'
 
-call cpu_time(finish)
+!call cpu_time(finish)
 
-write(6,*) "Time", finish-start
+!write(6,*) "Time", finish-start
 
 endif
 
@@ -414,6 +414,13 @@ close(Im_c_avg_f   ,status="delete")
 endif
 
 endif
+
+if ( doDmat .eq. 'y' ) then
+
+call make_distMat !system(sh getDmat.sh)
+
+endif
+
 
 if ( doAbs .eq. "y" ) then
 call Convolution
