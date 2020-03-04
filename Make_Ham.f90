@@ -186,16 +186,6 @@ psirot   = psirot   * 2._dp*pi
 phirot   = phirot   * 2._dp*pi
 thetarot = thetarot * 2._dp*pi
 
-!rotmat(1,1)= cos(psirot)   * cos(phirot)   - cos(thetarot) * sin(phirot) * sin(psirot)
-!rotmat(1,2)= cos(psirot)   * sin(phirot)   + cos(thetarot) * cos(phirot) * sin(psirot)
-!rotmat(1,3)= sin(psirot)   * sin(thetarot)
-!rotmat(2,1)=-sin(psirot)   * cos(phirot)   - cos(thetarot) * sin(phirot) * cos(psirot)
-!rotmat(2,2)=-sin(psirot)   * sin(phirot)   + cos(thetarot) * cos(phirot) * cos(psirot) 
-!rotmat(2,3)= cos(psirot)   * sin(thetarot)
-!rotmat(3,1)= sin(thetarot) * sin(phirot)
-!rotmat(3,2)=-sin(thetarot) * cos(phirot) 
-!rotmat(3,3)= cos(thetarot)
-
 rotmat(1,1)= cos(phirot)*cos(thetarot)*cos(psirot) - sin(phirot)*sin(psirot)
 rotmat(1,2)=-cos(phirot)*cos(thetarot)*sin(psirot) - sin(phirot)*cos(psirot)
 rotmat(1,3)= cos(phirot)*sin(thetarot)
@@ -292,7 +282,7 @@ Ham_0(1)     = minEe(1,n) + minEh(1,n)  + V0
 Ham_dir(1,1) = elec*(a11_1d_ho + a11_2d_ho / ((aR(n)*1e9_dp)**a11_3d_ho)) 
 Ham_ex(1,1)  = elec*(a11_1e_ho + a11_2e_ho / ((aR(n)*1e9_dp)**a11_3e_ho))
 
-write(6,*) Ham_0(1)/elec, Ham_dir(1,1)/elec, Ham_ex(1,1)/elec
+!write(6,*) Ham_0(1)/elec, Ham_dir(1,1)/elec, Ham_ex(1,1)/elec
 
 Ham_0(2)     = minEe(1,n) + minEh(2,n) + V0 
 Ham_dir(2,2) = elec*(a22_1d_ho + a22_2d_ho / ((aR(n)*1e9_dp)**a22_3d_ho))
@@ -346,14 +336,32 @@ Ham = Ham/Energ_au
 Ham_dir = Ham_dir/Energ_au
 Ham_ex = Ham_ex/Energ_au
 
-!if ( inbox .eq. "y" ) then
+if ( rdm_ori .eq. "y" ) then
 
-TransHam_l(0,1,:) = vector(TransDip_Ana_h1e(n))
-TransHam_l(0,2,:) = vector(TransDip_Ana_h2e(n))
-TransHam_l(0,3,:) = vector(TransDip_Ana_h1e(n+ndim))
-TransHam_l(0,4,:) = vector(TransDip_Ana_h2e(n+ndim))
-TransHam_l(1,2,:) = vector(TransDip_Ana_h1h2(n))
-TransHam_l(3,4,:) = vector(TransDip_Ana_h1h2(n+ndim))
+call random_number(psirot)
+call random_number(phirot)
+call random_number(thetarot)
+
+psirot   = psirot   * 2._dp*pi
+phirot   = phirot   * 2._dp*pi
+thetarot = thetarot * 2._dp*pi
+
+rotmat(1,1)= cos(phirot)*cos(thetarot)*cos(psirot) - sin(phirot)*sin(psirot)
+rotmat(1,2)=-cos(phirot)*cos(thetarot)*sin(psirot) - sin(phirot)*cos(psirot)
+rotmat(1,3)= cos(phirot)*sin(thetarot)
+rotmat(2,1)= sin(phirot)*cos(thetarot)*cos(psirot) + cos(phirot)*sin(psirot)
+rotmat(2,2)=-sin(phirot)*cos(thetarot)*sin(psirot) + cos(phirot)*cos(psirot)
+rotmat(2,3)= sin(phirot)*sin(thetarot)
+rotmat(3,1)=-sin(thetarot)*cos(psirot)
+rotmat(3,2)= sin(thetarot)*sin(psirot)
+rotmat(3,3)= cos(thetarot)
+
+TransHam_l(0,1,:) = matmul(rotmat,eTDM(0,1,:))*(TransDip_Ana_h1e(n))
+TransHam_l(0,2,:) = matmul(rotmat,eTDM(0,2,:))*(TransDip_Ana_h2e(n))
+TransHam_l(0,3,:) = matmul(rotmat,eTDM(0,3,:))*(TransDip_Ana_h1e(n+ndim))
+TransHam_l(0,4,:) = matmul(rotmat,eTDM(0,4,:))*(TransDip_Ana_h2e(n+ndim))
+TransHam_l(1,2,:) = matmul(rotmat,eTDM(1,2,:))*(TransDip_Ana_h1h2(n))
+TransHam_l(3,4,:) = matmul(rotmat,eTDM(3,4,:))*(TransDip_Ana_h1h2(n+ndim))
 
 do i=0,nstates-1
 do j=i+1,nstates-1
@@ -361,22 +369,24 @@ TransHam_l(j,i,:) = TransHam_l(i,j,:)
 enddo
 enddo
 
-!else 
-!
-!TransHam(0,1) = TransDip_Ana_h1e(n)
-!TransHam(0,2) = TransDip_Ana_h2e(n)
-!TransHam(0,3) = TransDip_Ana_h1e(n+ndim)
-!TransHam(0,4) = TransDip_Ana_h2e(n+ndim)
-!TransHam(1,2) = TransDip_Ana_h1h2(n)
-!TransHam(3,4) = TransDip_Ana_h1h2(n+ndim)
-!
-!do i=0,nstates-1
-!do j=i+1,nstates-1
-!TransHam(j,i) = TransHam(i,j)
-!enddo
-!enddo
-!
-!endif
+TransHam_l = TransHam_l/D_to_au
+
+elseif ( rdm_ori .eq. "n" ) then
+
+TransHam(0,1) = TransDip_Ana_h1e(n)
+TransHam(0,2) = TransDip_Ana_h2e(n)
+TransHam(0,3) = TransDip_Ana_h1e(n+ndim)
+TransHam(0,4) = TransDip_Ana_h2e(n+ndim)
+TransHam(1,2) = TransDip_Ana_h1h2(n)
+TransHam(3,4) = TransDip_Ana_h1h2(n+ndim)
+
+do i=0,nstates-1
+do j=i+1,nstates-1
+TransHam(j,i) = TransHam(i,j)
+enddo
+enddo
+
+endif
 
 TransHam = TransHam/D_to_au
 
@@ -485,6 +495,7 @@ Ham_ex(1,1)  = elec*(a11_1e_ho + a11_2e_ho / ((aR(n)*1d9)**a11_3e_ho))
 
 !write(6,*) abs((- 1.d0*Ham_dir(1,1) + Ham_ex(1,1))/elec)
 !write(6,*) Ham_0(1)/elec, Ham_dir(1,1)/elec, Ham_ex(1,1)/elec
+!write(6,*) minEe(1,n)/elec, minEh(1,n)/elec, minEh(2,n)/elec
 
 Ham_0(2)   = minEe(1,n) + minEh(2,n) + V0 
 Ham_dir(2,2) = elec*(a22_1d_ho + a22_2d_ho / ((aR(n)*1d9)**a22_3d_ho))
@@ -1035,100 +1046,111 @@ subroutine make_distMat
 
 open(newunit=getMat,file='getDmat.sh')
 
-write(getMat,*) "#!/bin/bash"
-write(getMat,*) 
-write(getMat,*) "cat > plot-distrib-tmp <<EOF"
-write(getMat,*) 
-write(getMat,*) "width = 0.002"
-write(getMat,*) "set boxwidth width absolute"
-write(getMat,*) "set style fill solid 1.0"
-write(getMat,*) "bin_width = width;"
-write(getMat,*) "bin_number(x) = floor(x/bin_width)"
-write(getMat,*) "rounded(x) = bin_width * ( bin_number(x) )"
-write(getMat,*) "set table 'test1.dat'"
-write(getMat,*) "plot 'Etransitions-he_ei.dat' using (rounded(\$4)):(1) smooth frequency "
-write(getMat,*) "unset table"
-write(getMat,*) "set table 'test2.dat'"
-write(getMat,*) "plot 'Etransitions-he_ei.dat' using (rounded(\$5)):(1) smooth frequency "
-write(getMat,*) "unset table"
-write(getMat,*) "set table 'test3.dat'"
-write(getMat,*) "plot 'Etransitions-he_ei.dat' using (rounded(\$6)):(1) smooth frequency "
-write(getMat,*) "unset table"
-write(getMat,*) "set table 'test4.dat'"
-write(getMat,*) "plot 'Etransitions-he_ei.dat' using (rounded(\$7)):(1) smooth frequency "
-write(getMat,*) "unset table"
-write(getMat,*) "set table 'test5.dat'"
-write(getMat,*) "plot 'Etransitions-he_ei.dat' using (rounded(\$8)):(1) smooth frequency "
-write(getMat,*) "unset table"
-write(getMat,*) "set table 'test6.dat'"
-write(getMat,*) "plot 'Etransitions-he_ei.dat' using (rounded(\$9)):(1) smooth frequency "
-write(getMat,*) "unset table"
-write(getMat,*) "set table 'test7.dat'"
-write(getMat,*) "plot 'Etransitions-he_ei.dat' using (rounded(\$10)):(1) smooth frequency"
-write(getMat,*) "unset table"
-write(getMat,*) "set table 'test8.dat'"
-write(getMat,*) "plot 'Etransitions-he_ei.dat' using (rounded(\$11)):(1) smooth frequency "
-write(getMat,*) "unset table"
-write(getMat,*) 
-write(getMat,*) "a2=2.5"
-write(getMat,*) "b2=2.5" 
-write(getMat,*) "c2=2.5"
-write(getMat,*) "d2=2.5"
-write(getMat,*) "e2=2.5"
-write(getMat,*) "f2=2.5"
-write(getMat,*) "g2=2.5"
-write(getMat,*) "h2=2.5"
-write(getMat,*) 
-write(getMat,*) "f1(x) = (a1/(a3*(2*pi)**0.5))*exp(-(x-a2)**2/(2*(a3)**2))" 
-write(getMat,*) "f2(x) = (b1/(b3*(2*pi)**0.5))*exp(-(x-b2)**2/(2*(b3)**2))"
-write(getMat,*) "f3(x) = (c1/(c3*(2*pi)**0.5))*exp(-(x-c2)**2/(2*(c3)**2))"
-write(getMat,*) "f4(x) = (d1/(d3*(2*pi)**0.5))*exp(-(x-d2)**2/(2*(d3)**2))"
-write(getMat,*) "f5(x) = (e1/(e3*(2*pi)**0.5))*exp(-(x-e2)**2/(2*(e3)**2))"
-write(getMat,*) "f6(x) = (f1/(f3*(2*pi)**0.5))*exp(-(x-f2)**2/(2*(f3)**2))"
-write(getMat,*) "f7(x) = (g1/(g3*(2*pi)**0.5))*exp(-(x-g2)**2/(2*(g3)**2))"
-write(getMat,*) "f8(x) = (h1/(h3*(2*pi)**0.5))*exp(-(x-h2)**2/(2*(h3)**2))"
-write(getMat,*) 
-write(getMat,*) "fit f1(x) 'test1.dat' via a1,a2,a3"
-write(getMat,*) "save fit 'fit1.dat'"
-write(getMat,*) "fit f2(x) 'test2.dat' via b1,b2,b3"
-write(getMat,*) "save fit 'fit2.dat'"
-write(getMat,*) "fit f3(x) 'test3.dat' via c1,c2,c3"
-write(getMat,*) "save fit 'fit3.dat'"
-write(getMat,*) "fit f4(x) 'test4.dat' via d1,d2,d3"
-write(getMat,*) "save fit 'fit4.dat'"
-write(getMat,*) "fit f5(x) 'test5.dat' via e1,e2,e3"
-write(getMat,*) "save fit 'fit5.dat'"
-write(getMat,*) "fit f6(x) 'test6.dat' via f1,f2,f3"
-write(getMat,*) "save fit 'fit6.dat'"
-write(getMat,*) "fit f7(x) 'test7.dat' via g1,g2,g3"
-write(getMat,*) "save fit 'fit7.dat'"
-write(getMat,*) "fit f8(x) 'test8.dat' via h1,h2,h3"
-write(getMat,*) "save fit 'fit8.dat'"
-write(getMat,*) 
-write(getMat,*) "EOF"
-write(getMat,*) 
-write(getMat,*) "gnuplot plot-distrib-tmp 2> tmp"
-write(getMat,*) 
-write(getMat,*) "rm tmp2"
-write(getMat,*) 
-write(getMat,*) "grep 'a3              =' fit1.dat | awk '{print $3}' >> tmp2" 
-write(getMat,*) "grep 'b3              =' fit2.dat | awk '{print $3}' >> tmp2"
-write(getMat,*) "grep 'c3              =' fit3.dat | awk '{print $3}' >> tmp2"
-write(getMat,*) "grep 'd3              =' fit4.dat | awk '{print $3}' >> tmp2"
-write(getMat,*) "grep 'e3              =' fit5.dat | awk '{print $3}' >> tmp2"
-write(getMat,*) "grep 'f3              =' fit6.dat | awk '{print $3}' >> tmp2"
-write(getMat,*) "grep 'g3              =' fit7.dat | awk '{print $3}' >> tmp2"
-write(getMat,*) "grep 'h3              =' fit8.dat | awk '{print $3}' >> tmp2"
+!write(getMat,*) "#!/bin/bash"
+!write(getMat,*) 
+!write(getMat,*) "cat > plot-distrib-tmp <<EOF"
+!write(getMat,*) 
+!write(getMat,*) "width = 0.002"
+!write(getMat,*) "set boxwidth width absolute"
+!write(getMat,*) "set style fill solid 1.0"
+!write(getMat,*) "bin_width = width;"
+!write(getMat,*) "bin_number(x) = floor(x/bin_width)"
+!write(getMat,*) "rounded(x) = bin_width * ( bin_number(x) )"
+!write(getMat,*) "set table 'test1.dat'"
+!write(getMat,*) "plot 'Etransitions-he_ei.dat' using (rounded(\$4)):(1) smooth frequency "
+!write(getMat,*) "unset table"
+!write(getMat,*) "set table 'test2.dat'"
+!write(getMat,*) "plot 'Etransitions-he_ei.dat' using (rounded(\$5)):(1) smooth frequency "
+!write(getMat,*) "unset table"
+!write(getMat,*) "set table 'test3.dat'"
+!write(getMat,*) "plot 'Etransitions-he_ei.dat' using (rounded(\$6)):(1) smooth frequency "
+!write(getMat,*) "unset table"
+!write(getMat,*) "set table 'test4.dat'"
+!write(getMat,*) "plot 'Etransitions-he_ei.dat' using (rounded(\$7)):(1) smooth frequency "
+!write(getMat,*) "unset table"
+!write(getMat,*) "set table 'test5.dat'"
+!write(getMat,*) "plot 'Etransitions-he_ei.dat' using (rounded(\$8)):(1) smooth frequency "
+!write(getMat,*) "unset table"
+!write(getMat,*) "set table 'test6.dat'"
+!write(getMat,*) "plot 'Etransitions-he_ei.dat' using (rounded(\$9)):(1) smooth frequency "
+!write(getMat,*) "unset table"
+!write(getMat,*) "set table 'test7.dat'"
+!write(getMat,*) "plot 'Etransitions-he_ei.dat' using (rounded(\$10)):(1) smooth frequency"
+!write(getMat,*) "unset table"
+!write(getMat,*) "set table 'test8.dat'"
+!write(getMat,*) "plot 'Etransitions-he_ei.dat' using (rounded(\$11)):(1) smooth frequency "
+!write(getMat,*) "unset table"
+!write(getMat,*) 
+!write(getMat,*) "a2=2.5"
+!write(getMat,*) "b2=2.5" 
+!write(getMat,*) "c2=2.5"
+!write(getMat,*) "d2=2.5"
+!write(getMat,*) "e2=2.5"
+!write(getMat,*) "f2=2.5"
+!write(getMat,*) "g2=2.5"
+!write(getMat,*) "h2=2.5"
+!write(getMat,*) 
+!write(getMat,*) "f1(x) = (a1/(a3*(2*pi)**0.5))*exp(-(x-a2)**2/(2*(a3)**2))" 
+!write(getMat,*) "f2(x) = (b1/(b3*(2*pi)**0.5))*exp(-(x-b2)**2/(2*(b3)**2))"
+!write(getMat,*) "f3(x) = (c1/(c3*(2*pi)**0.5))*exp(-(x-c2)**2/(2*(c3)**2))"
+!write(getMat,*) "f4(x) = (d1/(d3*(2*pi)**0.5))*exp(-(x-d2)**2/(2*(d3)**2))"
+!write(getMat,*) "f5(x) = (e1/(e3*(2*pi)**0.5))*exp(-(x-e2)**2/(2*(e3)**2))"
+!write(getMat,*) "f6(x) = (f1/(f3*(2*pi)**0.5))*exp(-(x-f2)**2/(2*(f3)**2))"
+!write(getMat,*) "f7(x) = (g1/(g3*(2*pi)**0.5))*exp(-(x-g2)**2/(2*(g3)**2))"
+!write(getMat,*) "f8(x) = (h1/(h3*(2*pi)**0.5))*exp(-(x-h2)**2/(2*(h3)**2))"
+!write(getMat,*) 
+!write(getMat,*) "fit f1(x) 'test1.dat' via a1,a2,a3"
+!write(getMat,*) "save fit 'fit1.dat'"
+!write(getMat,*) "fit f2(x) 'test2.dat' via b1,b2,b3"
+!write(getMat,*) "save fit 'fit2.dat'"
+!write(getMat,*) "fit f3(x) 'test3.dat' via c1,c2,c3"
+!write(getMat,*) "save fit 'fit3.dat'"
+!write(getMat,*) "fit f4(x) 'test4.dat' via d1,d2,d3"
+!write(getMat,*) "save fit 'fit4.dat'"
+!write(getMat,*) "fit f5(x) 'test5.dat' via e1,e2,e3"
+!write(getMat,*) "save fit 'fit5.dat'"
+!write(getMat,*) "fit f6(x) 'test6.dat' via f1,f2,f3"
+!write(getMat,*) "save fit 'fit6.dat'"
+!write(getMat,*) "fit f7(x) 'test7.dat' via g1,g2,g3"
+!write(getMat,*) "save fit 'fit7.dat'"
+!write(getMat,*) "fit f8(x) 'test8.dat' via h1,h2,h3"
+!write(getMat,*) "save fit 'fit8.dat'"
+!write(getMat,*) 
+!write(getMat,*) "EOF"
+!write(getMat,*) 
+!write(getMat,*) "gnuplot plot-distrib-tmp 2> tmp"
+!write(getMat,*) 
+!write(getMat,*) "rm tmp2"
+!write(getMat,*) 
+!write(getMat,*) "grep 'a3              =' fit1.dat | awk '{print $3}' >> tmp2" 
+!write(getMat,*) "grep 'b3              =' fit2.dat | awk '{print $3}' >> tmp2"
+!write(getMat,*) "grep 'c3              =' fit3.dat | awk '{print $3}' >> tmp2"
+!write(getMat,*) "grep 'd3              =' fit4.dat | awk '{print $3}' >> tmp2"
+!write(getMat,*) "grep 'e3              =' fit5.dat | awk '{print $3}' >> tmp2"
+!write(getMat,*) "grep 'f3              =' fit6.dat | awk '{print $3}' >> tmp2"
+!write(getMat,*) "grep 'g3              =' fit7.dat | awk '{print $3}' >> tmp2"
+!write(getMat,*) "grep 'h3              =' fit8.dat | awk '{print $3}' >> tmp2"
+
+include 'getDmat-Sij.f90'
 
 allocate(sigma(8))
+allocate(rho(8,8), source=0._dp)
 
 call system('sh getDmat.sh')
 
 open(newunit=sigfit,file='tmp2')
+open(newunit=rhofit,file='tmp3')
 open(newunit=Dmat,file='Dmat.dat')
 
 do i=1,8
 read(sigfit,*) sigma(i)
+enddo
+
+do i=1,8
+do j=i+1,8
+read(rhofit,*) rho(i,j)
+rho(j,i) = rho(i,j)
+enddo
 enddo
 
 write(Dmat,'(9f16.8)') 0._dp, (sigma(j), j=1,8)
@@ -1141,6 +1163,15 @@ write(Dmat,*)
 write(Dmat,'(9f16.8)') 0._dp, (1.e15_dp*6.582119570e-16_dp/sigma(j), j=1,8)
 do i=1,8
 write(Dmat,'(9f16.8)') 1.e15_dp*6.582119570e-16_dp/sigma(i), (1.e15_dp*6.582119570e-16_dp/abs(sigma(i)-sigma(j)), j=1,8)
+enddo
+
+write(Dmat,*)
+
+write(Dmat,*) "      -               -               -               -               -               -               &
+              -               -               -        "
+do i=1,8
+!write(Dmat,'(a16,f16.8)') "       -        ", 0._dp 
+write(Dmat,'(a16,8f16.8)') "       -        ", (rho(i,j), j=1,8)
 enddo
 
 end subroutine
