@@ -30,12 +30,12 @@ allocate(xc(0:nstates-1,0:ntime+1),&
          k2(0:nstates-1),k3(0:nstates-1),&
          k4(0:nstates-1),k5(0:nstates-1),&
          k6(0:nstates-1),k7(0:nstates-1),&
-         k8(0:nstates-1))
-!         k1_L(0:nstates2-1),&
-!         k2_L(0:nstates2-1),k3_L(0:nstates2-1),&
-!         k4_L(0:nstates2-1),k5_L(0:nstates2-1),&
-!         k6_L(0:nstates2-1),k7_L(0:nstates2-1),&
-!         k8_L(0:nstates2-1))
+         k8(0:nstates-1),&
+         k1_L(0:nstates2-1),&
+         k2_L(0:nstates2-1),k3_L(0:nstates2-1),&
+         k4_L(0:nstates2-1),k5_L(0:nstates2-1),&
+         k6_L(0:nstates2-1),k7_L(0:nstates2-1),&
+         k8_L(0:nstates2-1))
 
 !allocate(xc_rho(0:nstates-1,0:nstates-1,0:ntime+1),&
 !         k1_rho(0:nstates-1,0:nstates-1),&
@@ -45,9 +45,10 @@ allocate(xc(0:nstates-1,0:ntime+1),&
 !         k8_rho(0:nstates-1,0:nstates-1))
 
 allocate(merge_diag(0:nstates2-1,0:nstates2-1),&
-         merge_odiag(0:nstates2-1,0:nstates2-1), source = 0.e0_dp )
+         merge_odiag(0:nstates2-1,0:nstates2-1),&
+         sigD(0:nstates2-1,0:nstates2-1), source = 0.e0_dp )
 
-!allocate(xliou(0:nstates-1,0:nstates-1,0:nstates-1,0:nstates-1),lfield(0:nstates2-1,0:nstates2-1))
+allocate(xliou(0:nstates-1,0:nstates-1,0:nstates-1,0:nstates-1),lfield(0:nstates2-1,0:nstates2-1))
 
 !xliou = dcmplx(0.e0_dp,0.e0_dp)
 !lfield = dcmplx(0.e0_dp,0.e0_dp)

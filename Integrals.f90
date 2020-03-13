@@ -2053,62 +2053,68 @@ tp6 = pulse(time+(2.e0_dp*timestep/3.e0_dp))
 tp7 = pulse(time+(5.e0_dp*timestep/6.e0_dp))
 tp8 = pulse(time+timestep)
 
-k1_L = 0.e0_dp ; k2_L = 0.e0_dp ; k3_L = 0.e0_dp ; k4_L = 0.e0_dp ; k5_L = 0.e0_dp ; k6_L = 0.e0_dp ; k7_L = 0.e0_dp ; k8_L=0.e0_dp 
+k1_L = 0._dp ; k2_L = 0._dp ; k3_L = 0._dp ; k4_L = 0._dp ; k5_L = 0._dp ; k6_L = 0._dp ; k7_L = 0._dp ; k8_L=0._dp 
 
 do i=0,nstates2-1
-k1_L(i) = k1_L(i) + dcmplx(timestep,0.e0_dp) * &
-          sum(dcmplx(0.e0_dp,-1.e0_dp*lfield(i,:)*(merge_diag(i,:)-merge_odiag(i,:)*tp1)) * &
-          xc_L(:,t))
+k1_L(i) = k1_L(i) + dcmplx(timestep,0._dp) * sum((dcmplx(0._dp,-1._dp*lfield(i,:)*(merge_diag(i,:)-merge_odiag(i,:)*tp1)) &
+- (time-t01)*sigD(i,:) &
+) * xc_L(:,t))
+enddo
+
+!do i=0,nstates2-1
+!do j=0,nstates2-1
+!write(6,*) i, j, 0.d0,merge(1.d00*exp(-1.d-0*time*sigD(3,3)), 1.d0, ( ( i .eq. 3 ) .and. ( j .eq. 3) ))
+!enddo
+!enddo
+
+do i=0,nstates2-1
+k2_L(i) = k2_L(i) + dcmplx(timestep,0._dp) * sum((dcmplx(0._dp,-1._dp*lfield(i,:)*(merge_diag(i,:)-merge_odiag(i,:)*tp2)) &
+- (time-t01)*sigD(i,:) &
+) * (xc_L(:,t)+(1._dp/9._dp)*k1_L(:)))
 enddo
 
 do i=0,nstates2-1
-k2_L(i) = k2_L(i) + dcmplx(timestep,0.e0_dp) * &
-          sum(dcmplx(0.e0_dp,-1.e0_dp*lfield(i,:)*(merge_diag(i,:)-merge_odiag(i,:)*tp2)) * &
-          (xc_L(:,t)+(1.e0_dp/9.e0_dp)*k1_L(:)))
+k3_L(i) = k3_L(i) + dcmplx(timestep,0._dp) * sum((dcmplx(0._dp,-1._dp*lfield(i,:)*(merge_diag(i,:)-merge_odiag(i,:)*tp3)) &
+- (time-t01)*sigD(i,:) &
+) * (xc_L(:,t)+(1._dp/24._dp)*(k1_L(:)+3._dp*k2_L(:))))
 enddo
 
 do i=0,nstates2-1
-k3_L(i) = k3_L(i) + dcmplx(timestep,0.e0_dp) * &
-          sum(dcmplx(0.e0_dp,-1.e0_dp*lfield(i,:)*(merge_diag(i,:)-merge_odiag(i,:)*tp3)) * &
-          (xc_L(:,t)+(1.e0_dp/24.e0_dp)*(k1_L(:)+3.e0_dp*k2_L(:))))
+k4_L(i) = k4_L(i) + dcmplx(timestep,0._dp) * sum((dcmplx(0._dp,-1._dp*lfield(i,:)*(merge_diag(i,:)-merge_odiag(i,:)*tp4)) &
+- (time-t01)*sigD(i,:) &
+) * (xc_L(:,t)+(1._dp/6._dp)*(k1_L(:)-3._dp*k2_L(:)+4._dp*k3_L(:))))
 enddo
 
 do i=0,nstates2-1
-k4_L(i) = k4_L(i) + dcmplx(timestep,0.e0_dp) * &
-          sum(dcmplx(0.e0_dp,-1.e0_dp*lfield(i,:)*(merge_diag(i,:)-merge_odiag(i,:)*tp4)) * &
-          (xc_L(:,t)+(1.e0_dp/6.e0_dp)*(k1_L(:)-3.e0_dp*k2_L(:)+4.e0_dp*k3_L(:))))
+k5_L(i) = k5_L(i) + dcmplx(timestep,0._dp) * sum((dcmplx(0._dp,-1._dp*lfield(i,:)*(merge_diag(i,:)-merge_odiag(i,:)*tp5)) &
+- (time-t01)*sigD(i,:) &
+) * (xc_L(:,t)+(1._dp/8._dp)*(-5._dp*k1_L(:)+27._dp*k2_L(:)-24._dp*k3_L(:)+6._dp*k4_L(:))))
 enddo
 
 do i=0,nstates2-1
-k5_L(i) = k5_L(i) + dcmplx(timestep,0.e0_dp) * &
-          sum(dcmplx(0.e0_dp,-1.e0_dp*lfield(i,:)*(merge_diag(i,:)-merge_odiag(i,:)*tp5)) * &
-          (xc_L(:,t)+(1.e0_dp/8.e0_dp)*(-5.e0_dp*k1_L(:)+27.e0_dp*k2_L(:)-24.e0_dp*k3_L(:)+6.e0_dp*k4_L(:))))
+k6_L(i) = k6_L(i) + dcmplx(timestep,0._dp) * sum((dcmplx(0._dp,-1._dp*lfield(i,:)*(merge_diag(i,:)-merge_odiag(i,:)*tp6)) &
+- (time-t01)*sigD(i,:) &
+) * (xc_L(:,t)+(1._dp/9._dp)*(221._dp*k1_L(:)-981._dp*k2_L(:)+867._dp*k3_L(:)-102._dp*k4_L(:)+k5_L(:))))
 enddo
 
 do i=0,nstates2-1
-k6_L(i) = k6_L(i) + dcmplx(timestep,0.e0_dp) * &
-          sum(dcmplx(0.e0_dp,-1.e0_dp*lfield(i,:)*(merge_diag(i,:)-merge_odiag(i,:)*tp6)) * &
-          (xc_L(:,t)+(1.e0_dp/9.e0_dp)*(221.e0_dp*k1_L(:)-981.e0_dp*k2_L(:)+867.e0_dp*k3_L(:)-102.e0_dp*k4_L(:)+k5_L(:))))
+k7_L(i) = k7_L(i) + dcmplx(timestep,0._dp) * sum((dcmplx(0._dp,-1._dp*lfield(i,:)*(merge_diag(i,:)-merge_odiag(i,:)*tp7)) &
+- (time-t01)*sigD(i,:) &
+) * (xc_L(:,t)+(1._dp/48._dp)*(-183._dp*k1_L(:)+678._dp*k2_L(:)-472._dp*k3_L(:)-66._dp*k4_L(:)+80._dp*k5_L(:)+3._dp*k6_L(:))))
 enddo
 
 do i=0,nstates2-1
-k7_L(i) = k7_L(i) + dcmplx(timestep,0.e0_dp) * &
-          sum(dcmplx(0.e0_dp,-1.e0_dp*lfield(i,:)*(merge_diag(i,:)-merge_odiag(i,:)*tp7)) * &
-          (xc_L(:,t)+(1.e0_dp/48.e0_dp)*(-183.e0_dp*k1_L(:)+678.e0_dp*k2_L(:)-472.e0_dp*k3_L(:)-66.e0_dp*k4_L(:)+80.e0_dp*&
-          k5_L(:)+3.e0_dp*k6_L(:))))
-enddo
-
-do i=0,nstates2-1
-k8_L(i) = k8_L(i) + dcmplx(timestep,0.e0_dp) * &
-          sum(dcmplx(0.e0_dp,-1.e0_dp*lfield(i,:)*(merge_diag(i,:)-merge_odiag(i,:)*tp8)) * &
-     (xc_L(:,t)+(1.e0_dp/82.e0_dp) * (716.e0_dp*k1_L(:)-2079.e0_dp*k2_L(:)+1002.e0_dp*k3_L(:)+834.e0_dp*k4_L(:)-454.e0_dp*k5_L(:)-&
-          9.e0_dp*k6_L(:)+72.e0_dp*k7_L(:))))
+k8_L(i) = k8_L(i) + dcmplx(timestep,0._dp) * sum((dcmplx(0._dp,-1._dp*lfield(i,:)*(merge_diag(i,:)-merge_odiag(i,:)*tp8)) &
+- (time-t01)*sigD(i,:) &
+) * (xc_L(:,t)+(1._dp/82._dp) * (716._dp*k1_L(:)-2079._dp*k2_L(:)+1002._dp*k3_L(:)+834._dp*k4_L(:)-454._dp*k5_L(:)-&
+                9._dp*k6_L(:)+72._dp*k7_L(:))))
 enddo
 
 xc_L(:,t+1)=xc_L(:,t)+(41.e0_dp*(k1_L(:)+k8_L(:))+216.e0_dp*(k3_L(:)+k7_L(:))+27.e0_dp*(k4_L(:)+k6_L(:))+272.e0_dp*k5_L(:))&
               /840.e0_dp
 
 if ( nofiles .eq. 'n' ) then
+
 if ( MOD(t,10) .eq. 0 ) then
 cnorm2 = sum(dreal(xc_L(:,t))**2 + dimag(xc_L(:,t))**2)
 write(Re_c_L_f,form_com_L) time*t_au, (dreal(xc_L(i,t)), i=0,nstates2-1)

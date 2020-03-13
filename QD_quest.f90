@@ -188,6 +188,8 @@ TransDip_Ana_h2e(n) = abs(TransDip_Ana(Ae(n),Ah2(n),Be(n),Bh2(n),kine(n),kinh2(n
 
 enddo
 
+deallocate(E,diffe,diffh,Eeh1,Eeh2,Ae,Ah1,Ah2,Be,Bh1,Bh2,kine,kinh1,kinh2,koute,kouth1,kouth2)
+
 open(newunit=Pulse_f     ,file='Pulse.dat')             
 open(newunit=Tmat_0_f    ,file='TransMat.dat')          
 open(newunit=Tmat_ei_f   ,file='TransMat_ei.dat')       
@@ -263,7 +265,7 @@ include 'Core.f90'
 
 elseif ( (n .gt. nQDA+nQDB) .and. ( model .eq. "FO" ) ) then
 
-call cpu_time(start)
+!call cpu_time(start)
 
 nstates=5
 
@@ -272,9 +274,9 @@ include 'allocate_core.f90'
 call make_Ham_he_FO
 include 'Core.f90'
 
-call cpu_time(finish)
+!call cpu_time(finish)
 
-write(6,*) "Time", finish-start
+!write(6,*) "Time", finish-start
 
 elseif ( (n .gt. nQDA+nQDB) .and. ( model .eq. "FS" ) ) then
 
@@ -287,7 +289,7 @@ include 'Core.f90'
 
 elseif ( (n .gt. nQDA+nQDB) .and. ( model .eq. "SB" ) ) then
 
-call cpu_time(start)
+!call cpu_time(start)
 
 nstates=9
 !print*, "Computing system number:    ", n, "which possesses", nstates, "states"
@@ -295,143 +297,25 @@ include 'allocate_core.f90'
 call make_Ham_he
 include 'Core.f90'
 
-call cpu_time(finish)
+!call cpu_time(finish)
 
-write(6,*) "Time", finish-start
+!write(6,*) "Time", finish-start
 
 endif
 
 enddo !end loop number of systems
 
-deallocate(E,diffe,diffh,minEe,minEh,Eeh1,Eeh2,Ae,Ah1,Ah2,Be,Bh1,Bh2,kine,kinh1,kinh2,koute,kouth1,kouth2,TransDip_Ana_h1e,&
-TransDip_Ana_h2e,TransDip_Ana_h1h2)
+deallocate(minEe,minEh,TransDip_Ana_h1e,TransDip_Ana_h2e,TransDip_Ana_h1h2)
 close(Tmat_0_f);close(Tmat_ei_f);close(H_0_f);close(Tmat_y_f);close(Tmat_z_f);close(Pulse_f);close(Tmat_x_f);close(H_dir_f)
 close(H_ex_f);close(H_JK_f);close(H_ei_f);close(Etr_0_f);close(TDip_ei_f);close(Liou_f);close(Etr_ei_f)
 
-!!!!Performs Liouville quantum dynamics on the average eigenstates Hamiltonian 
-if ( Dyn_avg .eq. "y" ) then
-
-open(newunit=Tmat_avg_f       ,file='TransMat_avg.dat')
-open(newunit=Tmat_avgx_f      ,file='TransMat_avg_x.dat')
-open(newunit=Tmat_avgy_f      ,file='TransMat_avg_y.dat')
-open(newunit=Tmat_avgz_f      ,file='TransMat_avg_z.dat')
-open(newunit=Etr_avg_f        ,file='Etransitions-he_avg.dat')
-open(newunit=popc_ei_f       ,file='Pop_c_avg.dat')
-open(newunit=Re_c_ei_f         ,file='Re_c_avg.dat')
-open(newunit=Im_c_ei_f         ,file='Im_c_avg.dat')
-open(newunit=TransAbs_avg     ,file='TransAbs_avg.dat')
-open(newunit=DipSpec_avg      ,file='DipSpec_avg.dat')
-open(newunit=P_Match_avg      ,file='Phase_Match_avg.dat')
-open(newunit=TransAbs_avg_7_f ,file='TransAbs_avg_7.dat')
-open(newunit=TransAbs_avg_17_f,file='TransAbs_avg_17.dat')
-open(newunit=TransAbs_avg_33_f,file='TransAbs_avg_33.dat')
-open(newunit=TransAbs_avg_39_f,file='TransAbs_avg_39.dat')
-open(newunit=TransAbs_avg_41_f,file='TransAbs_avg_41.dat')
-open(newunit=TransAbs_avg_43_f,file='TransAbs_avg_43.dat')
-open(newunit=TransAbs_avg_44_f,file='TransAbs_avg_44.dat')
-open(newunit=DipSpec_avg_7_f  ,file='DipSpec_avg_7.dat')
-open(newunit=DipSpec_avg_17_f ,file='DipSpec_avg_17.dat')
-open(newunit=DipSpec_avg_33_f ,file='DipSpec_avg_33.dat')
-open(newunit=DipSpec_avg_39_f ,file='DipSpec_avg_39.dat')
-open(newunit=DipSpec_avg_41_f ,file='DipSpec_avg_41.dat')
-open(newunit=DipSpec_avg_43_f ,file='DipSpec_avg_43.dat')
-open(newunit=DipSpec_avg_44_f ,file='DipSpec_avg_44.dat')
-
-Dyn_avg_flag = 1
-nstates=3
-nstates2=nstates**2
-
-allocate(haml(0:nstates-1,0:nstates-1))
-allocate(k1_L(0:nstates2-1), &
-         k2_L(0:nstates2-1),k3_L(0:nstates2-1),&
-         k4_L(0:nstates2-1),k5_L(0:nstates2-1),&
-         k6_L(0:nstates2-1),k7_L(0:nstates2-1),&
-         k8_L(0:nstates2-1))
-allocate(xc_L(0:nstates2-1,0:ntime+1))
-allocate(k1(0:nstates-1), &
-         k2(0:nstates-1),k3(0:nstates-1),&
-         k4(0:nstates-1),k5(0:nstates-1),&
-         k6(0:nstates-1),k7(0:nstates-1),&
-         k8(0:nstates-1))
-allocate(xc_ei(0:nstates-1,0:ntime+1))
-allocate(merge_diag(0:nstates2-1,0:nstates2-1),merge_odiag(0:nstates2-1,0:nstates2-1), source = 0.e0_dp )
-allocate(xliou(0:nstates-1,0:nstates-1,0:nstates-1,0:nstates-1),lfield(0:nstates2-1,0:nstates2-1))
-allocate(irow(0:nstates2-1,2),icol(0:nstates2-1,2),source=0)
-allocate(TransHam_ei(0:nstates-1,0:nstates-1),&
-         TransHam_ei_l(0:nstates-1,0:nstates-1,3),&
-         Mat(0:nstates-1,0:nstates-1),&
-         Matx(0:nstates-1,0:nstates-1),&
-         Maty(0:nstates-1,0:nstates-1),&
-         Matz(0:nstates-1,0:nstates-1),&
-         Ham_l(0:nstates-1,0:nstates-1),&
-         Ham_ei(0:nstates-1,0:nstates-1),source=0.e0_dp)
-xliou = dcmplx(0.e0_dp,0.e0_dp)
-lfield = 0.e0_dp
-Ham_l = 0.e0_dp
-
-matrices_avg = (/ Tmat_avg_f, Tmat_avgx_f, Tmat_avgy_f, Tmat_avgz_f /)
-
-print*, "Computing dynamics on averaged Hamiltonian"
-Ham0_avg = Ham0_avg/nsys
-TransHam_avg_l(:,:,1) = TransHam_avg_l(:,:,1)/nsys
-TransHam_avg_l(:,:,2) = TransHam_avg_l(:,:,2)/nsys
-TransHam_avg_l(:,:,3) = TransHam_avg_l(:,:,3)/nsys
-TransHam_avg = TransHam_avg/nsys
-
-Ham_ei = Ham0_avg
-allocate(lambda(0:nstates-1),source = 0.e0_dp)
-allocate(iwork2(3+5*nstates),source=0)
-allocate(work1(6*nstates),work2(1+6*nstates+2*nstates*nstates),source=0.e0_dp)
-lworku=1+6*nstates+2*nstates*nstates
-liworku=3+5*nstates
-ierr=0
-call dsyevd('v','u',nstates, Ham_ei(0:nstates-1,0:nstates-1),nstates,lambda,work2,lworku,iwork2,liworku,ierr)
-deallocate(work1)
-deallocate(work2)
-deallocate(iwork2)
-
-call make_Ham_l
-
-!write(6,*) (Ham_l(j,j)*Energ_au/elec, j=0,nstates-1)
-!!!Make eigenstate TDM
-if ( rdm_ori .eq. "n" ) then
-Mat(:,:) = matmul(TransHam_avg(:,:),Ham_ei(:,:))
-TransHam_ei(:,:) = matmul(transpose(Ham_ei(:,:)),Mat(:,:))
-elseif ( rdm_ori .eq. "y" ) then
-Matx(:,:) = matmul(TransHam_avg_l(:,:,1),Ham_ei(:,:))
-Maty(:,:) = matmul(TransHam_avg_l(:,:,2),Ham_ei(:,:))
-Matz(:,:) = matmul(TransHam_avg_l(:,:,3),Ham_ei(:,:))
-TransHam_ei_l(:,:,1) = matmul(transpose(Ham_ei(:,:)),Matx(:,:))
-TransHam_ei_l(:,:,2) = matmul(transpose(Ham_ei(:,:)),Maty(:,:))
-TransHam_ei_l(:,:,3) = matmul(transpose(Ham_ei(:,:)),Matz(:,:))
-TransHam_ei = sqrt(TransHam_ei_l(:,:,1)**2 + TransHam_ei_l(:,:,2)**2 + TransHam_ei_l(:,:,1)**2)
-endif
-
-write(6,*) TransHam_ei
-
-!write(6,*) lambda*Energ_au/elec
-
-include 'Core_avg.f90'
-
-if ( nofiles .eq. 'y' ) then
-close(popc_avg_f   ,status="delete")
-close(Re_c_avg_f   ,status="delete")
-close(Im_c_avg_f   ,status="delete")
-endif
-
-endif
-
 if ( doDmat .eq. 'y' ) then
-
-call make_distMat !system(sh getDmat.sh)
-
+call make_distMat
 endif
-
 
 if ( doAbs .eq. "y" ) then
 call Convolution
 endif
-
 
 !Write DipSpec sum of all systems + multiplied by a gaussian 
 timestep  = timestep  * t_au
@@ -452,22 +336,10 @@ pow_pol_gaus(39,t)=&
    exp(-1.d0*((time-totaltime/2.d0)*timestep)**2.d0/(2.d0*(totaltime*timestep/15.d0)**2.d0))*(pow_pol(39,t)/nsys)
 pow_pol_gaus(41,t)=&
    exp(-1.d0*((time-totaltime/2.d0)*timestep)**2.d0/(2.d0*(totaltime*timestep/15.d0)**2.d0))*(pow_pol(41,t)/nsys)
-!pow_pol_gaus(43,t)=&
-!   exp(-1.d0*((time-totaltime/2.d0)*timestep)**2.d0/(2.d0*(totaltime*timestep/15.d0)**2.d0))*(pow_pol(43,t)/nsys)
-!pow_pol_gaus(44,t)=&
-!   exp(-1.d0*((time-totaltime/2.d0)*timestep)**2.d0/(2.d0*(totaltime*timestep/15.d0)**2.d0))*(pow_pol(44,t)/nsys)
 !if ( nofiles .eq. 'n' ) then
-!write(DipSpec_7_f,*)  time, dreal(pow_pol(7,t)), dimag(pow_pol(7,t))
-!write(DipSpec_17_f,*) time, dreal(pow_pol(17,t)), dimag(pow_pol(17,t))
-!write(DipSpec_33_f,*) time, dreal(pow_pol(33,t)), dimag(pow_pol(33,t))
 !write(DipSpec_39_f,*) time, dreal(pow_pol(39,t)), dimag(pow_pol(39,t))
 !write(DipSpec_41_f,*) time, dreal(pow_pol(41,t)), dimag(pow_pol(41,t))
-!write(DipSpec_39_f,*) time, dreal(pow_pol_gaus(39,t)), dimag(pow_pol_gaus(39,t))
-!write(DipSpec_41_f,*) time, dreal(pow_pol_gaus(41,t)), dimag(pow_pol_gaus(41,t))
-!write(DipSpec_43_f,*) time, dreal(pow_pol_gaus(43,t)), dimag(pow_pol_gaus(43,t))
-!write(DipSpec_44_f,*) time, dreal(pow_pol_gaus(44,t)), dimag(pow_pol_gaus(44,t))
 !endif
-!write(DipSpec_conv_f,*) time, dreal(pow_pol_conv(t)), dimag(pow_pol_conv(t)) 
 endif
 
 if ( nofiles .eq. 'n' ) then
@@ -475,9 +347,6 @@ write(DipSpec,*) time, pow(t), pow_gaus(t), pulses(t)
 endif
 
 enddo 
-
-!write(6,*) l1(41), l2(41), l3(41) 
-!write(6,*) l1(41)*Pe1(:), l2(41)*Pe2(:), l3(41)*Pe3(:)
 
 !if ( inbox .eq. 'y' ) then
 !do n=1,nsys
@@ -590,19 +459,9 @@ integPolconv = dcmplx(0.d0,0.d0)
 do t=0,ntime
 time = t*timestep
 integPol = integPol + timestep*abs(pow_pol(pol,t) + pow_pol(pol,t+1))/2.e0_dp
-!integPolconv = integPolconv + (dcmplx(timestep,0.e0_dp)*(pow_pol_conv(t) + pow_pol_conv(t+1)))/2.e0_dp
 enddo
-write(P_Match_f,*) pol, l1(pol), l2(pol), l3(pol), integPol!, abs(integPolconv)
+write(P_Match_f,*) pol, l1(pol), l2(pol), l3(pol), integPol
 enddo
-
-!integPol_diff = dcmplx(0.d0,0.d0)
-
-!do t=0,ntime
-!time = t*timestep
-!integPol_diff = integPol_diff + abs(dcmplx(timestep,0.e0_dp)*(pow_pol_diff(t) + pow_pol_diff(t+1))/2.e0_dp)
-!enddo
-!
-!write(6,*) pol, dreal(integPol_diff)
 
 endif
 
@@ -613,7 +472,6 @@ do while ( t*FTscale .le. 4.d0 )
 t=t+1
 enddo
 nFT=t
-FTscale = h/(elec*(2.e0_dp**FTpow)*timestep)
 
 if ( doFT .eq. 'y' ) then
 
@@ -644,7 +502,6 @@ do while ( t*FTscale .le. 4.d0 )
 wftf(t)= -2.e0_dp * dimag(sqrt(dreal(xpow_gaus(t))**2+dimag(xpow_gaus(t))**2) * dconjg(xpulse(t)))
 !if ( nofiles .eq. 'n' ) then
 write(TransAbs,*) t*FTscale, dreal(wftf(t)), dreal(xpow_gaus(t)), dimag(xpow_gaus(t)), abs(xpulse(t))
-!write(6,*) t*FTscale, dreal(xpulse(t)), dimag(xpulse(t))
 !endif
 t = t + 1 
 enddo
@@ -697,33 +554,21 @@ allocate(wftf_pol(44,0:nFT+1))
 do t=0,ntime
 xpow_pol(39,t)  = pow_pol_gaus(39,t)
 xpow_pol(41,t)  = pow_pol_gaus(41,t)
-!xpow_pol(43,t)  = pow_pol_gaus(43,t)
-!xpow_pol(44,t)  = pow_pol_gaus(44,t)
 enddo
 do t=ntime+1,nint(2.d0**FTpow)
 xpow_pol(39,t)  = dcmplx(0.d0,0.d0)
 xpow_pol(41,t)  = dcmplx(0.d0,0.d0)
-!xpow_pol(43,t)  = dcmplx(0.d0,0.d0)
-!xpow_pol(44,t)  = dcmplx(0.d0,0.d0)
 enddo
 
 !do pol=1,npol
 call fft(xpow_pol(39,:))
 call fft(xpow_pol(41,:))
-!call fft(xpow_pol(43,:))
-!call fft(xpow_pol(44,:))
 !enddo
 
 t=0
 do while ( t*FTscale .le. 4.d0 )
-!wftf_pol(:,t) = -2.d0 * dimag(sqrt(dreal(xpow_pol(:,t))**2+dimag(xpow_pol(:,t))**2) * dconjg(xpulse(t)))
-!write(TransAbs_7_f,*)  t*FTscale, dreal(xpow_pol(7,t)) , dimag(xpow_pol(7,t))
-!write(TransAbs_17_f,*) t*FTscale, dreal(xpow_pol(17,t)), dimag(xpow_pol(17,t))
-!write(TransAbs_33_f,*) t*FTscale, dreal(xpow_pol(33,t)), dimag(xpow_pol(33,t))
 write(TransAbs_39_f,*) t*FTscale, dreal(xpow_pol(39,t)), dimag(xpow_pol(39,t)), abs(xpow_pol(39,t))
 write(TransAbs_41_f,*) t*FTscale, dreal(xpow_pol(41,t)), dimag(xpow_pol(41,t)), abs(xpow_pol(41,t))
-!write(TransAbs_43_f,*) t*FTscale, dreal(xpow_pol(43,t)), dimag(xpow_pol(43,t))
-!write(TransAbs_44_f,*) t*FTscale, dreal(xpow_pol(44,t)), dimag(xpow_pol(44,t))
 t = t + 1
 enddo
 
@@ -735,7 +580,6 @@ deallocate(pow,pow_gaus,xpow_gaus,pow_gaus_s,xpulse,pulses,wft,wft_s,wftp)
 
 endif
 
-!
 !if ( doCovar .eq. 'y' ) then
 !
 !allocate(Scov(0:nFT+1,0:nFT+1))

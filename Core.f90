@@ -118,6 +118,49 @@ if ( Dyn_L .eq. 'y' ) then
 write(form1,'("(i4,i4,i4,i4,1x,100(e24.16,1x))")')
 !write(form2,'("(100(f7.3,1x))")')
 
+!      0.00000000    122.26398148    110.35868225     50.16513854     45.26736073
+!    122.26398148        Infinity   1133.35176370     85.06918167     71.88065787
+!    110.35868225   1133.35176370        Infinity     91.97263099     76.74826938
+!     50.16513854     85.06918167     91.97263099        Infinity    463.64770103
+!     45.26736073     71.88065787     76.74826938    463.64770103        Infinity
+sigD = 0._dp
+
+if ( Dec_L .eq. "y" ) then
+
+sig1=0.00533526_dp
+sig2=0.00576011_dp
+sig3=0.0131895_dp
+sig4=0.0137016_dp
+rho12= 0.563941_dp
+rho13=0.946482_dp
+rho14=0.272191_dp
+rho23=0.304623_dp
+rho24=0.925269_dp
+rho34=0._dp
+
+sigD(1 ,1 ) = 1.e0_dp/((2.d0*pi*6.582119570e-16_dp/sig1)/t_au)
+sigD(2 ,2 ) = 1.e0_dp/((2.d0*pi*6.582119570e-16_dp/sig2)/t_au)
+sigD(3 ,3 ) = 1.e0_dp/((2.d0*pi*6.582119570e-16_dp/sig3)/t_au)
+sigD(4 ,4 ) = 1.e0_dp/((2.d0*pi*6.582119570e-16_dp/sig4)/t_au)
+sigD(5 ,5 ) = 1.e0_dp/((2.d0*pi*6.582119570e-16_dp/sig1)/t_au)
+sigD(7 ,7 ) = 1.e0_dp/((2.d0*pi*6.582119570e-16_dp/sqrt(sig1**2 + sig2**2 - 2.d0*rho12*sig1*sig2))/t_au)
+sigD(8 ,8 ) = 1.e0_dp/((2.d0*pi*6.582119570e-16_dp/sqrt(sig1**2 + sig3**2 - 2.d0*rho13*sig1*sig3))/t_au)
+sigD(9 ,9 ) = 1.e0_dp/((2.d0*pi*6.582119570e-16_dp/sqrt(sig1**2 + sig4**2 - 2.d0*rho14*sig1*sig4))/t_au)
+sigD(10,10) = 1.e0_dp/((2.d0*pi*6.582119570e-16_dp/sig2)/t_au)
+sigD(11,11) = 1.e0_dp/((2.d0*pi*6.582119570e-16_dp/sqrt(sig1**2 + sig2**2 - 2.d0*rho12*sig1*sig2))/t_au)
+sigD(13,13) = 1.e0_dp/((2.d0*pi*6.582119570e-16_dp/sqrt(sig2**2 + sig3**2 - 2.d0*rho23*sig2*sig3))/t_au)
+sigD(14,14) = 1.e0_dp/((2.d0*pi*6.582119570e-16_dp/sqrt(sig2**2 + sig4**2 - 2.d0*rho24*sig2*sig4))/t_au)
+sigD(15,15) = 1.e0_dp/((2.d0*pi*6.582119570e-16_dp/sig3)/t_au)
+sigD(16,16) = 1.e0_dp/((2.d0*pi*6.582119570e-16_dp/sqrt(sig1**2 + sig3**2 - 2.d0*rho13*sig1*sig3))/t_au)
+sigD(17,17) = 1.e0_dp/((2.d0*pi*6.582119570e-16_dp/sqrt(sig2**2 + sig3**2 - 2.d0*rho23*sig2*sig3))/t_au)
+sigD(19,19) = 1.e0_dp/((2.d0*pi*6.582119570e-16_dp/sqrt(sig3**2 + sig4**2 - 2.d0*rho34*sig3*sig4))/t_au)
+sigD(20,20) = 1.e0_dp/((2.d0*pi*6.582119570e-16_dp/sig4)/t_au)
+sigD(21,21) = 1.e0_dp/((2.d0*pi*6.582119570e-16_dp/sqrt(sig1**2 + sig4**2 - 2.d0*rho14*sig1*sig4))/t_au)
+sigD(22,22) = 1.e0_dp/((2.d0*pi*6.582119570e-16_dp/sqrt(sig2**2 + sig4**2 - 2.d0*rho24*sig2*sig4))/t_au)
+sigD(23,23) = 1.e0_dp/((2.d0*pi*6.582119570e-16_dp/sqrt(sig3**2 + sig4**2 - 2.d0*rho34*sig3*sig4))/t_au)
+sigD = (2.d0*pi*sigD)**2
+endif
+
 do i=0,nstates2-1
 do j=0,nstates2-1
 merge_diag(i,j)  = real(merge(1,0,i.eq.j),kind=dp)
@@ -191,11 +234,16 @@ enddo
 enddo
 enddo
 
+!Add dephasing
+!do l=0,nstates2-1
+!lfield(l,l) 
+!enddo
+
 !lfield(0,6) = -1.e0_dp*lfield(0,6)
 !lfield(6,0) = lfield(0,6)
 
 !do l=0,nstates2-1
-!write(6,'(i2, 9f18.12)') i, (lfield(l,j), j=0,nstates2-1)
+!write(6,'(9f18.12)') (lfield(l,j), j=0,nstates2-1)
 !enddo
 
 !xlfield = dcmplx(lfield,0.e0_dp)
@@ -363,6 +411,6 @@ endif
 
 deallocate(TransHam,TransHam_ei_l,TransHam_l,TransHam_d,TransHam_ei,Mat,Matx,Maty,Matz,Ham,Ham_l,Ham_0,Ham_dir,Ham_ex,Ham_ei,haml)
 deallocate(Transvec,TransMat_ei,lambda,xc,k1,k2,k3,k4,k5,k6,k7,k8,c0,xc_ei,xc_L,xc0,pop)
-!deallocate(k1_L,k2_L,k3_L,k4_L,k5_L,k6_L,k7_L,k8_L,xliou,lfield)
-deallocate(merge_diag,merge_odiag,icol,irow,maxid,zero)
+deallocate(k1_L,k2_L,k3_L,k4_L,k5_L,k6_L,k7_L,k8_L,xliou,lfield)
+deallocate(merge_diag,merge_odiag,icol,irow,maxid,zero,sigD)
 !deallocate(xc_rho,k1_rho,k2_rho,k3_rho,k4_rho,k5_rho,k6_rho,k7_rho,k8_rho)
